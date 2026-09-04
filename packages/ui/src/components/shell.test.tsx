@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Breadcrumbs } from './Breadcrumbs';
 import { ContactForm } from './ContactForm';
+import { CountryFlag, flagEmoji } from './CountryFlag';
 import { CountUp, parseFigure } from './CountUp';
 import { FactGrid } from './FactGrid';
 import { FilterBar } from './FilterBar';
@@ -640,5 +641,43 @@ describe('<CountUp/> interpolation', () => {
     h.advance(1000);
     expect(container.querySelector('[aria-hidden="true"]')?.textContent).toBe('4.8');
     h.restore();
+  });
+});
+
+describe('flagEmoji', () => {
+  it.each([
+    ['IN', '\u{1F1EE}\u{1F1F3}'],
+    ['GB', '\u{1F1EC}\u{1F1E7}'],
+    ['us', '\u{1F1FA}\u{1F1F8}'],
+    [' de ', '\u{1F1E9}\u{1F1EA}'],
+  ])('turns %s into its flag', (code, expected) => {
+    expect(flagEmoji(code)).toBe(expected);
+  });
+
+  it.each([undefined, '', 'X', 'USA', '12', 'U1'])('returns null for %s', (code) => {
+    expect(flagEmoji(code)).toBeNull();
+  });
+});
+
+describe('<CountryFlag/>', () => {
+  it('renders the flag for a known country', () => {
+    const { container } = render(<CountryFlag countryCode="IN" />);
+    expect(container.textContent).toBe('\u{1F1EE}\u{1F1F3}');
+  });
+
+  it('is decorative, because the card already names the country in text', () => {
+    const { container } = render(<CountryFlag countryCode="CA" />);
+    expect(container.firstElementChild).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('falls back to the building icon when the registry has no country', () => {
+    const { container } = render(<CountryFlag countryCode="" />);
+    expect(container.querySelector('svg')).toBeInTheDocument();
+    expect(container.textContent).toBe('');
+  });
+
+  it('falls back for a malformed code rather than rendering nonsense', () => {
+    const { container } = render(<CountryFlag countryCode="ZZZ" />);
+    expect(container.querySelector('svg')).toBeInTheDocument();
   });
 });

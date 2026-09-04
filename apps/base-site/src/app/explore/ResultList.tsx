@@ -1,6 +1,6 @@
-import { BookOpen, Building2, Newspaper } from 'lucide-react';
+import { BookOpen, Newspaper } from 'lucide-react';
 
-import { IconBubble } from '@rakuxon-path/ui';
+import { CountryFlag, IconBubble } from '@rakuxon-path/ui';
 
 import type { Article, CatalogueResult, Course, Institution } from '@/lib/catalogue/types';
 
@@ -48,7 +48,7 @@ export function InstitutionResults({ result }: { result: CatalogueResult<Institu
         {result.items.map((institution) => (
           <li key={institution.id} className="h-full">
             <article className="flex h-full flex-col rounded-lg border border-border bg-surface p-5 shadow-sm">
-              <IconBubble icon={Building2} tone="tone1" />
+              <CountryFlag countryCode={institution.countryCode} />
               <h3 className="mt-4 font-heading text-base font-semibold text-text">
                 {institution.name}
               </h3>
