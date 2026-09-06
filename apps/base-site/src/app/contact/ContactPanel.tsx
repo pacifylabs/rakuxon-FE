@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 
-import { ContactForm } from '@rakuxon-path/ui';
+import { ContactForm } from '@rakuxon/ui';
 
 import { INTENT_TO_ROLE } from '@/content/contact';
 import { CONTACT_EMAIL } from '@/content/site';

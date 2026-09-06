@@ -9,7 +9,7 @@ import {
   TestimonialMarquee,
   TrustBadge,
   ValueProps,
-} from '@rakuxon-path/ui';
+} from '@rakuxon/ui';
 
 import {
   STUDENTS_CTA,

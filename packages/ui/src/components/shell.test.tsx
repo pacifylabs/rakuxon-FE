@@ -228,7 +228,7 @@ describe('<FilterBar/>', () => {
 });
 
 describe('<ContactForm/>', () => {
-  const email = 'hello@rakuxonpath.com';
+  const email = 'hello@rakuxon.com';
 
   it('labels every field', () => {
     render(<ContactForm fallbackEmail={email} />);

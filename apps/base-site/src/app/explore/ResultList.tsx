@@ -1,6 +1,6 @@
 import { BookOpen, Newspaper } from 'lucide-react';
 
-import { CountryFlag, IconBubble } from '@rakuxon-path/ui';
+import { CountryFlag, IconBubble } from '@rakuxon/ui';
 
 import type { Article, CatalogueResult, Course, Institution } from '@/lib/catalogue/types';
 

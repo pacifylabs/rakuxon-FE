@@ -2,7 +2,7 @@
 
 ## logo.svg / logo.png — not yet supplied
 
-`packages/ui/src/components/LogoMark.tsx` currently *redraws* the Rakuxon Path
+`packages/ui/src/components/LogoMark.tsx` currently *redraws* the Rakuxon
 lockup: the wordmark in the heading font, plus the path line and node. It is a
 faithful interpretation, not the original artwork.
 

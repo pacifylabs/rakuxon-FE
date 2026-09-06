@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
-import { IconBubble, PageHeader, SectionBand } from '@rakuxon-path/ui';
+import { IconBubble, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { CONTACT_HEADER, CONTACT_IMAGE, CONTACT_ROUTES } from '@/content/contact';
 import { CONTACT_EMAIL } from '@/content/site';
@@ -14,7 +14,7 @@ export const dynamic = 'force-static';
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Get in touch with Rakuxon Path — whether you are a student, a recruitment partner, or an institution.',
+    'Get in touch with Rakuxon — whether you are a student, a recruitment partner, or an institution.',
 };
 
 export default function ContactPage() {

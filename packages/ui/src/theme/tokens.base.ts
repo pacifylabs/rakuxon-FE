@@ -1,13 +1,14 @@
 import type { ThemeTokens } from './tokens.types';
 
 /**
- * The base Rakuxon Path theme — the single place a raw value may appear.
+ * The base Rakuxon theme — the single place a raw value may appear.
  * Values transcribed from docs/04a-landing-and-design-system.md § 3.
  */
 export const baseTokens: ThemeTokens = {
   brand: {
-    name: 'Rakuxon Path',
-    nameAccentSuffix: 'Path',
+    name: 'Rakuxon',
+    /* One word, so no slice is painted in the accent tone. */
+    nameAccentSuffix: '',
     tagline: 'From ambition to admission.',
   },
 

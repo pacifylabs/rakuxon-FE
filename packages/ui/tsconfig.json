@@ -1,4 +1,4 @@
 {
-  "extends": "@rakuxon-path/tsconfig/react-library.json",
+  "extends": "@rakuxon/tsconfig/react-library.json",
   "include": ["src", "../../types"]
 }

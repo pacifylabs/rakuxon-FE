@@ -1,6 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 
-import { CtaBand, SectionBand } from '@rakuxon-path/ui';
+import { CtaBand, SectionBand } from '@rakuxon/ui';
 
 import { CLOSING_CTA } from '@/content/home';
 

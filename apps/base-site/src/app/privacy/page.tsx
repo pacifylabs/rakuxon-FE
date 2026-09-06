@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Privacy policy',
-  description: 'What the Rakuxon Path privacy policy will cover. Not yet a published policy.',
+  description: 'What the Rakuxon privacy policy will cover. Not yet a published policy.',
   robots: { index: false },
 };
 

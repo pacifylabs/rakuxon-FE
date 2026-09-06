@@ -1,6 +1,6 @@
-# rakuxon-path-FE
+# rakuxon-FE
 
-Turborepo monorepo for the Rakuxon Path frontend surfaces. See `docs/` for the
+Turborepo monorepo for the Rakuxon frontend surfaces. See `docs/` for the
 PRD, implementation plan, design system and branch strategy.
 
 ## Current state
@@ -43,7 +43,7 @@ CI runs typecheck, test and build on every push.
 ## Deploying
 
 `vercel.json` at the repo root tells Vercel this is a Turborepo: it installs
-from the lockfile, builds only `@rakuxon-path/base-site`, and serves
+from the lockfile, builds only `@rakuxon/base-site`, and serves
 `apps/base-site/.next`.
 
 Two things that will bite otherwise:

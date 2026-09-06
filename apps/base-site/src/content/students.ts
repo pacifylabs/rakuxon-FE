@@ -9,7 +9,7 @@ export const STUDENTS_HERO = {
   eyebrow: 'For students',
   title: 'Find your perfect program — and get in.',
   subcopy:
-    'Most people do not lose a place because they aimed too high. They lose it to a missing transcript, a deadline in another timezone, or a personal statement nobody checked. Rakuxon Path closes those gaps.',
+    'Most people do not lose a place because they aimed too high. They lose it to a missing transcript, a deadline in another timezone, or a personal statement nobody checked. Rakuxon closes those gaps.',
   primaryCta: { label: 'Create a student account', href: SIGN_UP },
   secondaryCta: { label: 'Browse universities', href: ROUTES.universities },
   image: {

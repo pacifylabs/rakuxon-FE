@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Terms of service',
-  description: 'What the Rakuxon Path terms of service will cover. Not yet published terms.',
+  description: 'What the Rakuxon terms of service will cover. Not yet published terms.',
   robots: { index: false },
 };
 

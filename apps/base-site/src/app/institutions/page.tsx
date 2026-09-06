@@ -1,13 +1,6 @@
 import type { Metadata } from 'next';
 
-import {
-  CtaBand,
-  ImageHero,
-  MediaSection,
-  SectionBand,
-  StepItem,
-  ValueProps,
-} from '@rakuxon-path/ui';
+import { CtaBand, ImageHero, MediaSection, SectionBand, StepItem, ValueProps } from '@rakuxon/ui';
 
 import {
   INSTITUTIONS_CTA,

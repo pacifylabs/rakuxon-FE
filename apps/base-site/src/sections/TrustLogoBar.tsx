@@ -1,4 +1,4 @@
-import { LogoBar } from '@rakuxon-path/ui';
+import { LogoBar } from '@rakuxon/ui';
 
 import { TRUST_BAR } from '@/content/home';
 

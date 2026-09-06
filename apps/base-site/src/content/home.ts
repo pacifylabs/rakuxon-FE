@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import type { IconBubbleTone } from '@rakuxon-path/ui';
+import type { IconBubbleTone } from '@rakuxon/ui';
 
 import { ROUTES, SIGN_UP, countryRoute } from './routes';
 

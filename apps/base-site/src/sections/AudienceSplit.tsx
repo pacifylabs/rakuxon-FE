@@ -1,4 +1,4 @@
-import { AudienceCard, Reveal, SectionBand } from '@rakuxon-path/ui';
+import { AudienceCard, Reveal, SectionBand } from '@rakuxon/ui';
 
 import { AUDIENCES } from '@/content/home';
 

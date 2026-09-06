@@ -1,10 +1,10 @@
-# Frontend Architecture & Folder Structure — Rakuxon Path Web
-**Repo:** `rakuxon-path-FE` · Turborepo (pnpm workspaces).
+# Frontend Architecture & Folder Structure — Rakuxon Web
+**Repo:** `rakuxon-FE` · Turborepo (pnpm workspaces).
 
 ## Folder structure
 
 ```
-rakuxon-path-FE/
+rakuxon-FE/
 ├── docs/
 ├── apps/
 │   ├── base-site/           # Next.js SSR/SSG — marketing + intake + course search (SEO)
@@ -15,7 +15,7 @@ rakuxon-path-FE/
 ├── packages/
 │   ├── ui/                  # design system (see 04) + tokens + ThemeProvider
 │   ├── api-client/          # typed client over the contract; all network calls here
-│   ├── contract/            # consumes @rakuxon-path/contract (BE source of truth)
+│   ├── contract/            # consumes @rakuxon/contract (BE source of truth)
 │   ├── auth/                # session, refresh, guards, tokenized-entry helper
 │   ├── uploads/             # Cloudinary signed-upload helper (uploadDocument)
 │   ├── config/              # env validation (NEXT_PUBLIC_* only)
@@ -51,7 +51,7 @@ Never touches an API secret; only `cloud_name` + per-upload signature. Document 
 
 ## `packages/contract`
 
-Re-exports the BE-published `@rakuxon-path/contract` (DTOs + enums). Every app + `api-client` imports types from here. A version bump is a deliberate FE PR (see `07-api-contract-consumer.md`).
+Re-exports the BE-published `@rakuxon/contract` (DTOs + enums). Every app + `api-client` imports types from here. A version bump is a deliberate FE PR (see `07-api-contract-consumer.md`).
 
 ## Env (public-safe only)
 

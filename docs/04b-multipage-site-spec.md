@@ -1,5 +1,5 @@
-# Rakuxon Path — Multi-Page Marketing Site Design Spec
-**Repo:** `rakuxon-path-FE` → `apps/base-site` · Companion to `04a-landing-and-design-system.md` (tokens) and `04-design-system.md` (architecture). **Date:** August 2026
+# Rakuxon — Multi-Page Marketing Site Design Spec
+**Repo:** `rakuxon-FE` → `apps/base-site` · Companion to `04a-landing-and-design-system.md` (tokens) and `04-design-system.md` (architecture). **Date:** August 2026
 
 > A **multi-page marketing site**, framed on how **Edvoy** and **ApplyBoard** structure their sites (both researched directly), with the **Home page following the ScholarPath reference** near-1:1 on structure (see §3 and the reference mapping in §14). Every image slot names a **real, hotlink-permitted Unsplash/Pexels URL** with alt text — no placeholders, no reuse. Direction stays calm/trust-forward per `04a` — the **Modern Campus** palette: deep forest green primary, sage-grey surfaces, electric sky-blue accent. The amber-orange `--tint-urgent` is used only as an urgency/deadline accent.
 >
@@ -32,7 +32,7 @@ Both references converge on this: a home page plus dedicated audience pages (stu
 ## 2. Global shell (every page)
 
 ### Header (sticky, translucent-on-scroll)
-- Left: **Rakuxon Path** wordmark (Rakuxon forest green + Path sky-blue accent), beside the doorway mark.
+- Left: **Rakuxon** wordmark (Rakuxon forest green + Path sky-blue accent), beside the doorway mark.
 - Nav: *Students · Agencies · Institutions · Universities · Destinations · About*.
 - Right: **Log in** (ghost) + **Get started** (primary).
 

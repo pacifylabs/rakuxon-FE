@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   // packages/ui ships TypeScript source (Turborepo just-in-time package).
-  transpilePackages: ['@rakuxon-path/ui', '@rakuxon-path/config'],
+  transpilePackages: ['@rakuxon/ui', '@rakuxon/config'],
   images: {
     // Marketing photography is hotlinked from Unsplash/Pexels per
     // docs/04b-multipage-site-spec.md § 12. Narrowed to the exact image CDN

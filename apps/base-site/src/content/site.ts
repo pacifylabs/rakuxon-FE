@@ -1,4 +1,4 @@
-import type { FooterColumn, NavLink } from '@rakuxon-path/ui';
+import type { FooterColumn, NavLink } from '@rakuxon/ui';
 
 import { LOG_IN, ROUTES, SIGN_UP, countryRoute } from './routes';
 
@@ -17,7 +17,7 @@ export const NAV_LINKS: readonly NavLink[] = [
 export const LOG_IN_LINK: NavLink = { label: 'Log in', href: LOG_IN };
 export const GET_STARTED_LINK: NavLink = { label: 'Get started', href: SIGN_UP };
 
-export const CONTACT_EMAIL = 'hello@rakuxonpath.com';
+export const CONTACT_EMAIL = 'hello@rakuxon.com';
 
 export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
@@ -75,4 +75,4 @@ export const SOCIALS: readonly NavLink[] = [
 
 /** Falls back to the brand token; kept explicit so copy edits live in one file. */
 export const FOOTER_TAGLINE = 'From ambition to admission.';
-export const FOOTER_DOMAIN = 'rakuxonpath.com';
+export const FOOTER_DOMAIN = 'rakuxon.com';

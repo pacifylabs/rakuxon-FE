@@ -1,4 +1,4 @@
-import { SectionBand, TestimonialMarquee } from '@rakuxon-path/ui';
+import { SectionBand, TestimonialMarquee } from '@rakuxon/ui';
 
 import { TESTIMONIALS } from '@/content/home';
 

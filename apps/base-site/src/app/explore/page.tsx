@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import { CtaBand, PageHeader, SectionBand, StatChip } from '@rakuxon-path/ui';
+import { CtaBand, PageHeader, SectionBand, StatChip } from '@rakuxon/ui';
 import { Building2 } from 'lucide-react';
 
 import { fetchArticles, fetchCourses } from '@/lib/catalogue/edvoy';

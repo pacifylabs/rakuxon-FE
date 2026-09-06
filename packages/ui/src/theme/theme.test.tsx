@@ -153,7 +153,7 @@ describe('tokensToCssVars', () => {
   });
 
   it('quotes the brand name so it is usable from CSS', () => {
-    expect(tokensToCssVars(baseTokens)['--brand-name']).toBe('"Rakuxon Path"');
+    expect(tokensToCssVars(baseTokens)['--brand-name']).toBe('"Rakuxon"');
     expect(tokensToCssVars(baseTokens)['--brand-tagline']).toBe('"From ambition to admission."');
   });
 });
@@ -249,7 +249,7 @@ describe('<ThemeProvider/>', () => {
       </ThemeProvider>,
     );
     expect(screen.getByTestId('primary')).toHaveTextContent('#143D28');
-    expect(screen.getByTestId('brand')).toHaveTextContent('Rakuxon Path');
+    expect(screen.getByTestId('brand')).toHaveTextContent('Rakuxon');
   });
 
   it('applies a tenant brand override to consumers and to the emitted CSS', () => {

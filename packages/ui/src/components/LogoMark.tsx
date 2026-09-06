@@ -1,16 +1,17 @@
 export interface LogoMarkProps {
-  /** Rendered height in px. The lockup is drawn on a 210x52 grid. */
+  /** Rendered height in px. The lockup is drawn on a 150x52 grid. */
   height?: number;
   className?: string;
   /** Accessible name. The wordmark is the logo, so it carries the brand name. */
   title: string;
-  /** Splits the name: everything before the accent slice, then the slice. */
+  /** Everything before the accent slice. The whole name when there is none. */
   lead: string;
-  accent: string;
+  /** Trailing slice painted in the muted tone. Empty for a one-word name. */
+  accent?: string;
 }
 
 /**
- * The Rakuxon Path lockup: the wordmark with a path line running beneath it
+ * The Rakuxon lockup: the wordmark with a path line running beneath it
  * that steps down where the name divides and terminates in a node.
  *
  * Type is real text in the heading font rather than traced outlines, so the
@@ -19,12 +20,12 @@ export interface LogoMarkProps {
  * such counter to sit in, and overlaying it read as a mistake, so the line and
  * node carry the path idea instead.
  */
-export function LogoMark({ height = 32, className, title, lead, accent }: LogoMarkProps) {
+export function LogoMark({ height = 32, className, title, lead, accent = '' }: LogoMarkProps) {
   return (
     <svg
-      viewBox="0 0 210 52"
+      viewBox="0 0 150 52"
       height={height}
-      width={(height * 210) / 52}
+      width={(height * 150) / 52}
       role="img"
       aria-label={title}
       className={className}
@@ -39,7 +40,8 @@ export function LogoMark({ height = 32, className, title, lead, accent }: LogoMa
         fill="var(--color-primary)"
       >
         {lead}
-        <tspan fill="var(--color-text-muted)">-{accent}</tspan>
+        {/* No hyphen for a one-word name — "Rakuxon-" would be a dangling glyph. */}
+        {accent && <tspan fill="var(--color-text-muted)">-{accent}</tspan>}
       </text>
 
       {/*
@@ -47,7 +49,7 @@ export function LogoMark({ height = 32, className, title, lead, accent }: LogoMa
         ends on a node — the journey the product is named for.
       */}
       <path
-        d="M5 43h108l7 6h9"
+        d="M5 43h70l7 6h9"
         fill="none"
         stroke="var(--color-primary)"
         strokeWidth="2.6"
@@ -55,14 +57,14 @@ export function LogoMark({ height = 32, className, title, lead, accent }: LogoMa
         strokeLinejoin="round"
       />
       <path
-        d="M129 49h9l7-6h53"
+        d="M91 49h9l7-6h29"
         fill="none"
         stroke="var(--color-accent)"
         strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="202" cy="43" r="4.2" fill="none" stroke="var(--color-accent)" strokeWidth="2.6" />
+      <circle cx="142" cy="43" r="4.2" fill="none" stroke="var(--color-accent)" strokeWidth="2.6" />
     </svg>
   );
 }

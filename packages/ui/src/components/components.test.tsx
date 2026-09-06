@@ -29,19 +29,28 @@ const PHOTO = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=80
 describe('<Wordmark/>', () => {
   it('renders the brand name from tokens', () => {
     render(<Wordmark />);
-    expect(screen.getByRole('link', { name: 'Rakuxon Path' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Rakuxon' })).toBeInTheDocument();
   });
 
-  it('splits the accent suffix so it can be styled separately', () => {
+  it('renders a one-word name undivided, with no dangling hyphen', () => {
     const { container } = render(<Wordmark />);
-    const text = container.querySelector('text');
-    expect(text?.textContent).toBe('Rakuxon-path');
-    expect(container.querySelector('tspan')?.textContent).toBe('-path');
+    expect(container.querySelector('text')?.textContent).toBe('Rakuxon');
+    expect(container.querySelector('tspan')).not.toBeInTheDocument();
+  });
+
+  it('still paints an accent slice when a tenant name has one', () => {
+    const { container } = render(
+      <ThemeProvider tokens={{ brand: { name: 'Acme Study', nameAccentSuffix: 'Study' } }}>
+        <Wordmark />
+      </ThemeProvider>,
+    );
+    expect(container.querySelector('text')?.textContent).toBe('Acme-study');
+    expect(container.querySelector('tspan')?.textContent).toBe('-study');
   });
 
   it('draws the lockup as an SVG that names the brand', () => {
     render(<Wordmark />);
-    expect(screen.getByRole('img', { name: 'Rakuxon Path' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Rakuxon' })).toBeInTheDocument();
   });
 
   it('can render the strapline for the full lockup', () => {
@@ -423,7 +432,7 @@ describe('<Header/>', () => {
   it('renders the wordmark, nav and both CTAs', () => {
     render(<Header {...props} />);
     const banner = screen.getByRole('banner');
-    expect(within(banner).getByRole('link', { name: 'Rakuxon Path' })).toBeInTheDocument();
+    expect(within(banner).getByRole('link', { name: 'Rakuxon' })).toBeInTheDocument();
     expect(within(banner).getByRole('navigation', { name: 'Primary' })).toBeInTheDocument();
     expect(within(banner).getByRole('link', { name: 'Get started' })).toBeInTheDocument();
   });
@@ -469,7 +478,7 @@ describe('<Header/>', () => {
 describe('<Footer/>', () => {
   const props = {
     tagline: 'Your study abroad journey, simplified.',
-    domain: 'rakuxonpath.com',
+    domain: 'rakuxon.com',
     columns: [
       { heading: 'Get to know us', links: [{ label: 'About', href: '/about' }] },
       { heading: 'Legal', links: [{ label: 'Privacy policy', href: '/privacy' }] },

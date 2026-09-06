@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ThemeProvider } from '@rakuxon-path/ui';
+import { ThemeProvider } from '@rakuxon/ui';
 
 import {
   AUDIENCES,
@@ -60,7 +60,7 @@ describe('home page structure', () => {
       // Search now lives inside the hero, so the first h2 is the course paths.
       'Where do you want to start?',
       'Your study abroad journey, simplified.',
-      'Rakuxon Path by the numbers',
+      'Rakuxon by the numbers',
       'How it works',
       'Popular destinations',
       'Explore leading institutions',

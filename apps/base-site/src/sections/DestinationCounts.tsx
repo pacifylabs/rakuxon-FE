@@ -1,4 +1,4 @@
-import { CountryFlag, CountUp, Reveal, SectionBand } from '@rakuxon-path/ui';
+import { CountryFlag, CountUp, Reveal, SectionBand } from '@rakuxon/ui';
 
 import { fetchCountryCounts } from '@/lib/catalogue/institutions';
 import { ROUTES } from '@/content/routes';

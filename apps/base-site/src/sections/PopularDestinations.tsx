@@ -1,4 +1,4 @@
-import { DestinationCard, Reveal, SectionBand } from '@rakuxon-path/ui';
+import { DestinationCard, Reveal, SectionBand } from '@rakuxon/ui';
 
 import { DESTINATIONS } from '@/content/home';
 

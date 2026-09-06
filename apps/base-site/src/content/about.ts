@@ -19,7 +19,7 @@ export const ABOUT_HERO = {
 
 export const ABOUT_STORY = {
   heading: 'Our story',
-  body: 'Rakuxon Path started from a simple observation: the same three problems came up in every failed application. Documents that were not checked, deadlines nobody tracked, and a student and their counsellor working from different versions of the truth. None of those are hard problems. They are just nobody’s job.',
+  body: 'Rakuxon started from a simple observation: the same three problems came up in every failed application. Documents that were not checked, deadlines nobody tracked, and a student and their counsellor working from different versions of the truth. None of those are hard problems. They are just nobody’s job.',
   points: [
     'Built around the application, not around the marketing funnel',
     'The student and the counsellor see the same record',

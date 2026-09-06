@@ -1,5 +1,5 @@
-# Design System — Rakuxon Path Web
-**Repo:** `rakuxon-path-FE` · Lives in `packages/ui`. Built for **white-label**: every visual value is a token a tenant can override.
+# Design System — Rakuxon Web
+**Repo:** `rakuxon-FE` · Lives in `packages/ui`. Built for **white-label**: every visual value is a token a tenant can override.
 
 > This is the single visual source of truth for all five apps. The core principle: **nothing hard-codes a color, font, or spacing value** — everything reads from tokens, so a tenant's branding is a token swap, not a code change.
 
@@ -89,7 +89,7 @@ Each component: token-styled, a11y-complete, and shipped with a component test (
 ## 6. White-label theming flow
 
 ```
-request on agency.rakuxonpath.com
+request on agency.rakuxon.com
  → Next middleware reads subdomain → resolves tenant
  → fetch tenant branding tokens from API (cached)
  → ThemeProvider merges base + tenant tokens → sets CSS variables on :root

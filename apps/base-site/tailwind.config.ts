@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 
-import preset from '@rakuxon-path/ui/tailwind-preset';
+import preset from '@rakuxon/ui/tailwind-preset';
 
 const config: Config = {
   presets: [preset as Config],

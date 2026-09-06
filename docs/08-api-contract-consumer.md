@@ -1,15 +1,15 @@
-# API Contract (Consumer Side) — Rakuxon Path Web
-**Repo:** `rakuxon-path-FE` · The BE owns the contract; this repo consumes it. See the BE's `07-api-contract.md` for the authoritative version.
+# API Contract (Consumer Side) — Rakuxon Web
+**Repo:** `rakuxon-FE` · The BE owns the contract; this repo consumes it. See the BE's `07-api-contract.md` for the authoritative version.
 
 ## How the FE consumes the contract
 
-> **Cross-repo dependency.** The FE renamed its scope to `@rakuxon-path/*` with the
-> Rakuxon Path rebrand. The contract package is published by `rakuxon-edu-BE`, so
-> `@rakuxon-path/contract` only exists once the BE renames in step. Until then the
+> **Cross-repo dependency.** The FE renamed its scope to `@rakuxon/*` with the
+> Rakuxon rebrand. The contract package is published by `rakuxon-edu-BE`, so
+> `@rakuxon/contract` only exists once the BE renames in step. Until then the
 > pinned dependency is still `@rakuxon-edu/contract` — treat this as a tracked
 > migration, not a completed one, and update `CONTEXT.md` when the BE follows.
 
-The BE publishes `@rakuxon-path/contract` (DTOs + enums) to a private registry. The FE:
+The BE publishes `@rakuxon/contract` (DTOs + enums) to a private registry. The FE:
 
 1. Adds it as a dependency and **pins a version**.
 2. Re-exports it through `packages/contract` so all apps import from one place.
@@ -17,7 +17,7 @@ The BE publishes `@rakuxon-path/contract` (DTOs + enums) to a private registry. 
 
 ```
 apps/* ─┐
-        ├─ import types from packages/contract  ─→ @rakuxon-path/contract (pinned)
+        ├─ import types from packages/contract  ─→ @rakuxon/contract (pinned)
 api-client ┘
 ```
 

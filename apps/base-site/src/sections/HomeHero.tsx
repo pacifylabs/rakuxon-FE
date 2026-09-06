@@ -9,7 +9,7 @@ import {
   HeroFloatingCard,
   IconBubble,
   ProgressRing,
-} from '@rakuxon-path/ui';
+} from '@rakuxon/ui';
 
 import {
   HERO,

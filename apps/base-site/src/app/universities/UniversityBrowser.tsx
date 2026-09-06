@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { FilterBar, UniversityCard } from '@rakuxon-path/ui';
+import { FilterBar, UniversityCard } from '@rakuxon/ui';
 
 import { UNIVERSITIES, UNIVERSITY_FILTERS } from '@/content/universities';
 

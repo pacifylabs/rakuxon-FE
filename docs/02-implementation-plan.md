@@ -1,5 +1,5 @@
-# Frontend Implementation Plan — Rakuxon Path Web
-**Repo:** `rakuxon-path-FE` · TDD (Vitest + React Testing Library) · Follows BE stage gates.
+# Frontend Implementation Plan — Rakuxon Web
+**Repo:** `rakuxon-FE` · TDD (Vitest + React Testing Library) · Follows BE stage gates.
 
 > The FE advances in lockstep with the BE by stage. Each stage is a branch (`06-branch-strategy.md`), TDD throughout, and ends in a gate. Build against the BE contract; mock the API in component tests, hit the real BE in a thin e2e smoke.
 

@@ -1,5 +1,5 @@
 # Frontend Deploy Guide — Vercel
-**Repo:** `rakuxon-path-FE` · Turborepo monorepo → multiple Vercel projects.
+**Repo:** `rakuxon-FE` · Turborepo monorepo → multiple Vercel projects.
 
 ## Model: one Vercel project per app
 
@@ -7,15 +7,15 @@ Each app in `apps/*` is its own Vercel project, all pointing at the same repo wi
 
 | App | Suggested domain |
 |---|---|
-| base-site | `rakuxonpath.com` / `www` |
-| partner-app | `app.rakuxonpath.com` + wildcard `*.rakuxonpath.com` (white-label subdomains) |
-| student-app | `apply.rakuxonpath.com` |
-| institution-portal | `schools.rakuxonpath.com` |
-| admin | `admin.rakuxonpath.com` |
+| base-site | `rakuxon.com` / `www` |
+| partner-app | `app.rakuxon.com` + wildcard `*.rakuxon.com` (white-label subdomains) |
+| student-app | `apply.rakuxon.com` |
+| institution-portal | `schools.rakuxon.com` |
+| admin | `admin.rakuxon.com` |
 
 ## Per-project setup (each app)
 
-1. New Vercel project → import `rakuxon-path-FE`.
+1. New Vercel project → import `rakuxon-FE`.
 2. **Root Directory** = `apps/<app>`.
 3. Framework preset: Next.js. Turbo handles the build; set the build command to the app's build (Vercel detects Turborepo).
 4. **Environment variables:**
@@ -28,7 +28,7 @@ Each app in `apps/*` is its own Vercel project, all pointing at the same repo wi
 
 ## White-label wildcard (partner-app)
 
-- Add `*.rakuxonpath.com` as a wildcard domain on the partner-app project.
+- Add `*.rakuxon.com` as a wildcard domain on the partner-app project.
 - Next middleware reads the subdomain → resolves the tenant → applies branding tokens.
 - Verify two subdomains render distinct branding after deploy.
 

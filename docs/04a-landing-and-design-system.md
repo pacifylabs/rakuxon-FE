@@ -1,5 +1,5 @@
-# Rakuxon Path — Landing Page & Design System Foundation
-**Repo:** `rakuxon-path-FE` · Supersedes the color placeholders in `docs/04-design-system.md` and becomes the visual source of truth. **Date:** August 2026
+# Rakuxon — Landing Page & Design System Foundation
+**Repo:** `rakuxon-FE` · Supersedes the color placeholders in `docs/04-design-system.md` and becomes the visual source of truth. **Date:** August 2026
 
 > This document does two jobs at once:
 > 1. **Landing page spec** — the concrete sections, layout, copy direction, and components for the first thing we build.
@@ -9,7 +9,7 @@
 
 ## 0. Brand
 
-- **Name:** **Rakuxon Path** — wordmark: **Rakuxon** (primary forest green) + **Path** (accent sky blue), beside the doorway mark. "Path" names what the product actually is: the route from a first idea to an offer.
+- **Name:** **Rakuxon** — wordmark: **Rakuxon** (primary forest green) + **Path** (accent sky blue), beside the doorway mark. "Path" names what the product actually is: the route from a first idea to an offer.
 - **Tagline:** *From ambition to admission.* Held in `brand.tagline`, so the footer and the logo lockup read it from one place.
 - **Tagline:** *Your study abroad journey, simplified.*
 - **Voice:** calm, credible, encouraging. We reassure, we don't hype. Short sentences. Plain language a 17-year-old and their parent both understand.
@@ -126,7 +126,7 @@ Rounded and soft throughout (radius-md/lg on cards and buttons); shadows are dif
 A single scrolling page, `apps/base-site`, SSG/ISR for SEO + speed. Sections top to bottom:
 
 ### 4.1 Header (sticky, translucent on scroll)
-- Left: **Rakuxon Path** wordmark + doorway mark.
+- Left: **Rakuxon** wordmark + doorway mark.
 - Center/right: nav — *How it works · Features · For Agencies · About*.
 - Right: **Log in** (ghost) + **Get started** (primary).
 - Small pill top-right optional: *"Built for students, guided by experts."*

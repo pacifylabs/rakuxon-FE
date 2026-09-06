@@ -8,7 +8,7 @@ import {
   ImageHero,
   SectionBand,
   UniversityCard,
-} from '@rakuxon-path/ui';
+} from '@rakuxon/ui';
 
 import { COUNTRY_BY_SLUG, COUNTRIES, DESTINATIONS_CTA } from '@/content/destinations';
 import { ROUTES, SIGN_UP } from '@/content/routes';
@@ -129,7 +129,7 @@ export default async function CountryPage({ params }: Params) {
           id="country-help-heading"
           className="font-heading text-2xl font-bold text-text md:text-3xl"
         >
-          How Rakuxon Path helps with {country.shortName} applications
+          How Rakuxon helps with {country.shortName} applications
         </h2>
         <ol className="mt-10 grid items-stretch gap-6 md:grid-cols-3">
           {country.helpPoints.map((point, index) => (

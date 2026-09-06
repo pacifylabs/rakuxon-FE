@@ -1,5 +1,5 @@
 {
-  "extends": "@rakuxon-path/tsconfig/nextjs.json",
+  "extends": "@rakuxon/tsconfig/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

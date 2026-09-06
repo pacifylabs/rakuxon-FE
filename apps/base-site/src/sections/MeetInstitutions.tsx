@@ -1,4 +1,4 @@
-import { Reveal, SectionBand, UniversityCard } from '@rakuxon-path/ui';
+import { Reveal, SectionBand, UniversityCard } from '@rakuxon/ui';
 
 import { INSTITUTIONS } from '@/content/home';
 

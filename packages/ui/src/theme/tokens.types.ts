@@ -11,9 +11,9 @@ export type BrandTokens = {
   /** Product name. Rendered by <Wordmark/>; swap here and nothing else changes. */
   name: string;
   /**
-   * Trailing slice of `name` painted in the accent colour ("Path" of
-   * "Rakuxon Path"). When it is not a suffix of `name`, the wordmark renders
-   * undivided.
+   * Trailing slice of `name` painted in the accent colour. Empty, or not a
+   * suffix of `name`, renders the wordmark undivided — which is the case for
+   * a one-word name.
    */
   nameAccentSuffix: string;
   /** Strapline in the logo lockup and the footer. */

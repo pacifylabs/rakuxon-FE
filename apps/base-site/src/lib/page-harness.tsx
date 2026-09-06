@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 
-import { Footer, Header, ThemeProvider } from '@rakuxon-path/ui';
+import { Footer, Header, ThemeProvider } from '@rakuxon/ui';
 
 import {
   CONTACT_ADDRESS,

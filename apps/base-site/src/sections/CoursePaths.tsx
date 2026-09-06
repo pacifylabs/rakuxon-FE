@@ -1,4 +1,4 @@
-import { ImageCard, Reveal, SectionBand } from '@rakuxon-path/ui';
+import { ImageCard, Reveal, SectionBand } from '@rakuxon/ui';
 
 import { COURSE_PATHS } from '@/content/home';
 import { ROUTES } from '@/content/routes';

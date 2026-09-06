@@ -1,5 +1,5 @@
 {
-  "name": "@rakuxon-path/ui",
+  "name": "@rakuxon/ui",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -21,7 +21,7 @@
     "next": "^15.0.0"
   },
   "devDependencies": {
-    "@rakuxon-path/tsconfig": "workspace:*",
+    "@rakuxon/tsconfig": "workspace:*",
     "next": "^15.1.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

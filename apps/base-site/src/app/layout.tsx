@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
-import { Footer, Header, ThemeProvider, baseTokens, themeScript } from '@rakuxon-path/ui';
+import { Footer, Header, ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
 import {
   CONTACT_ADDRESS,

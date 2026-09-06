@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { CtaBand, DestinationCard, PageHeader, SectionBand } from '@rakuxon-path/ui';
+import { CtaBand, DestinationCard, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { COUNTRIES, DESTINATIONS_CTA, DESTINATIONS_INDEX } from '@/content/destinations';
 import { countryRoute } from '@/content/routes';

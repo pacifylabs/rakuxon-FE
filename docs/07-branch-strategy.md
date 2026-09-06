@@ -1,5 +1,5 @@
-# Branch Strategy — Rakuxon Path (FE)
-**Applies to `rakuxon-path-FE`. Mirrors the BE strategy independently.**
+# Branch Strategy — Rakuxon (FE)
+**Applies to `rakuxon-FE`. Mirrors the BE strategy independently.**
 
 ## Branches
 
@@ -25,7 +25,7 @@ main
 2. TDD: commit on green, never on red.
 3. Short-lived stage branches; rebase on `main` before the merge PR.
 4. Each `stage/*` branch gets Vercel previews per app — smoke-test there.
-5. Keep the contract version pinned; upgrading `@rakuxon-path/contract` is its own PR.
+5. Keep the contract version pinned; upgrading `@rakuxon/contract` is its own PR.
 
 ## PR checklist
 

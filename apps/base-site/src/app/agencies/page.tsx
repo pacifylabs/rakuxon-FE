@@ -1,13 +1,6 @@
 import type { Metadata } from 'next';
 
-import {
-  CtaBand,
-  FactGrid,
-  ImageHero,
-  MediaSection,
-  SectionBand,
-  ValueProps,
-} from '@rakuxon-path/ui';
+import { CtaBand, FactGrid, ImageHero, MediaSection, SectionBand, ValueProps } from '@rakuxon/ui';
 
 import {
   AGENCIES_CTA,

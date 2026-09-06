@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { CtaBand, PageHeader, SectionBand } from '@rakuxon-path/ui';
+import { CtaBand, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { UNIVERSITIES_CTA, UNIVERSITIES_HEADER } from '@/content/universities';
 
