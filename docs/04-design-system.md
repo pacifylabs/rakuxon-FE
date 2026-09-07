@@ -54,7 +54,7 @@ motion:     --ease-standard, --duration-fast/-base
 
 ## 3. Foundations (base theme defaults)
 
-- **Color:** a calm, professional base — a trustworthy primary (deep forest green), sage-grey neutral surfaces, a sky-blue accent, clear state colors. Exact hex values live in `tokens.base.ts` and are specified in `04a` § 3.1; they are defaults, not law, since tenants reskin.
+- **Color:** a calm, professional base sampled from the logo — a cobalt primary, cool blue-grey neutral surfaces, a cyan accent, clear state colors. Exact hex values live in `tokens.base.ts` and are specified in `04a` § 3.1; they are defaults, not law, since tenants reskin.
 - **Typography:** one clean sans for body + UI, one for headings (can be the same family with weight contrast). System-font fallback stack for performance.
 - **Spacing:** 4px base scale (`--space-1` = 4px). Consistent rhythm across lists and forms.
 - **Radius/shadow:** soft, modest — credibility over flamboyance.

@@ -77,12 +77,12 @@ describe('tokensToCssVars', () => {
 
   it('emits the exact Modern Campus palette from the design system spec', () => {
     const vars = tokensToCssVars(baseTokens);
-    expect(vars['--color-primary']).toBe('#143D28');
-    expect(vars['--color-primary-hover']).toBe('#1C5537');
-    expect(vars['--color-accent']).toBe('#1572FE');
-    expect(vars['--color-accent-soft']).toBe('#E7F0FE');
+    expect(vars['--color-primary']).toBe('#0038B8');
+    expect(vars['--color-primary-hover']).toBe('#0D42C8');
+    expect(vars['--color-accent']).toBe('#0068B4');
+    expect(vars['--color-accent-soft']).toBe('#E3F0FD');
     expect(vars['--color-surface-muted']).toBe('#E2E6EE');
-    expect(vars['--color-text']).toBe('#0E1F16');
+    expect(vars['--color-text']).toBe('#0B1729');
     expect(vars['--color-border']).toBe('#CFD6E0');
     expect(vars['--radius-lg']).toBe('20px');
     expect(vars['--space-16']).toBe('64px');
@@ -90,8 +90,8 @@ describe('tokensToCssVars', () => {
 
   it('emits the decorative tints under slot names', () => {
     const vars = tokensToCssVars(baseTokens);
-    expect(vars['--tint-tone1']).toBe('#175C3A');
-    expect(vars['--tint-tone2']).toBe('#1258C4');
+    expect(vars['--tint-tone1']).toBe('#1746C4');
+    expect(vars['--tint-tone2']).toBe('#0068B4');
     expect(vars['--tint-tone3']).toBe('#0E6E62');
     expect(vars['--tint-tone4']).toBe('#3F4C7A');
     expect(vars['--tint-urgent']).toBe('#A8480B');
@@ -239,7 +239,7 @@ describe('<ThemeProvider/>', () => {
       </ThemeProvider>,
     );
     const style = container.querySelector('style[data-rakuxon-theme]');
-    expect(style?.textContent).toContain('--color-primary:#143D28');
+    expect(style?.textContent).toContain('--color-primary:#0038B8');
   });
 
   it('supplies the base theme to consumers', () => {
@@ -248,7 +248,7 @@ describe('<ThemeProvider/>', () => {
         <ThemeProbe />
       </ThemeProvider>,
     );
-    expect(screen.getByTestId('primary')).toHaveTextContent('#143D28');
+    expect(screen.getByTestId('primary')).toHaveTextContent('#0038B8');
     expect(screen.getByTestId('brand')).toHaveTextContent('Rakuxon');
   });
 
@@ -277,7 +277,7 @@ describe('<ThemeProvider/>', () => {
 
   it('falls back to the base theme outside a provider', () => {
     render(<ThemeProbe />);
-    expect(screen.getByTestId('primary')).toHaveTextContent('#143D28');
+    expect(screen.getByTestId('primary')).toHaveTextContent('#0038B8');
   });
 });
 

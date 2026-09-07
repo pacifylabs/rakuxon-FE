@@ -69,6 +69,7 @@ export type { TestimonialMarqueeProps } from './TestimonialMarquee';
 export { TestimonialSlider } from './TestimonialSlider';
 export type { SliderTestimonial, TestimonialSliderProps } from './TestimonialSlider';
 export { ThemeToggle } from './ThemeToggle';
+export { BrandLogo } from './BrandLogo';
 export { SocialIcon } from './SocialIcon';
 export { TestimonialCard, initialsOf } from './TestimonialCard';
 export type { TestimonialCardProps } from './TestimonialCard';

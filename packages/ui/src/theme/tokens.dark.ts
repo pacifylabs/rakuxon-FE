@@ -17,24 +17,24 @@ export const darkTokens: ThemeTokens = {
   ...baseTokens,
 
   color: {
-    /* Brand */
-    primary: '#5BC08C',
-    primaryHover: '#77CDA1',
-    onPrimary: '#08130E',
-    accent: '#6FA8FF',
-    accentSoft: '#16243A',
+    /* Brand — the logo cobalt lifted until it reads on a dark ground. */
+    primary: '#7FAAFF',
+    primaryHover: '#9CBEFF',
+    onPrimary: '#0B1220',
+    accent: '#6FC5FF',
+    accentSoft: '#152238',
 
-    /* Neutrals */
-    bg: '#0C1512',
-    surface: '#121E19',
-    surfaceMuted: '#1B2C24',
-    text: '#E9F1EB',
-    textMuted: '#A7BCAF',
-    textInverse: '#0C1512',
-    border: '#2A3B33',
+    /* Neutrals, blue-undertoned to match */
+    bg: '#0B1220',
+    surface: '#111A2B',
+    surfaceMuted: '#1A2537',
+    text: '#E8EDF7',
+    textMuted: '#A5B2C9',
+    textInverse: '#0B1220',
+    border: '#2A3648',
 
     /* Deliberately identical to light: a photograph does not invert. */
-    scrim: '#0E1F16',
+    scrim: '#0B1729',
     onScrim: '#FFFFFF',
 
     /* State */
@@ -42,14 +42,16 @@ export const darkTokens: ThemeTokens = {
     warning: '#F0B45C',
     danger: '#FF7B80',
     info: '#4FBEDC',
-    focusRing: '#6FA8FF',
+    focusRing: '#6FC5FF',
   },
 
   tint: {
-    tone1: '#6FCB99',
-    tone1Soft: '#16281F',
-    tone2: '#7FB2FF',
-    tone2Soft: '#17243A',
+    tone1: '#8FB4FF',
+    tone1Soft: '#151F33',
+    tone2: '#6FC5FF',
+    tone2Soft: '#152238',
+    /* Already light enough to read here, so display and text share a value. */
+    tone2Display: '#6FC5FF',
     tone3: '#5CC8BC',
     tone3Soft: '#12292B',
     tone4: '#9AA6E0',

@@ -18,6 +18,25 @@ export type BrandTokens = {
   nameAccentSuffix: string;
   /** Strapline in the logo lockup and the footer. */
   tagline: string;
+  /**
+   * The brand image, when the tenant has one.
+   *
+   * Two files, because a wordmark drawn in a dark brand colour disappears on a
+   * dark ground — `logoDark` is the knockout used when the dark scheme is
+   * active. Leave both unset and <Wordmark/> falls back to the drawn LogoMark,
+   * which is token-coloured and therefore works in either scheme. That is also
+   * what a white-label tenant gets until it uploads its own (stage 8).
+   */
+  logo?: string;
+  logoDark?: string;
+  /**
+   * Intrinsic pixel size of `logo`, so next/image can reserve the box.
+   *
+   * Strings, not numbers: every token serialises into a CSS custom property,
+   * and the serialiser's whole contract is that a token value is a string.
+   */
+  logoWidth?: string;
+  logoHeight?: string;
 };
 
 export type ColorTokens = {
@@ -119,6 +138,13 @@ export type TintTokens = {
   tone1Soft: string;
   tone2: string;
   tone2Soft: string;
+  /**
+   * The literal logo cyan, kept for display type and icon fills.
+   *
+   * It sits below 4.5:1 on white, so it is deliberately NOT interchangeable
+   * with tone2 — anything carrying normal-size text uses tone2 instead.
+   */
+  tone2Display: string;
   tone3: string;
   tone3Soft: string;
   tone4: string;
@@ -151,7 +177,10 @@ export interface ThemeTokens {
  * when a tenant override is merged — see `mergeTokens`.
  */
 export const OVERRIDABLE_TOKENS = {
-  brand: ['name', 'nameAccentSuffix', 'tagline'],
+  /* A tenant's own artwork is the most visible white-label override there is
+     (docs/02-implementation-plan stage 8 asks for two tenants to render
+     distinctly by colour AND logo), so the image tokens are overridable. */
+  brand: ['name', 'nameAccentSuffix', 'tagline', 'logo', 'logoDark', 'logoWidth', 'logoHeight'],
   color: ['primary', 'primaryHover', 'onPrimary', 'accent', 'accentSoft'],
   font: ['heading'],
 } as const satisfies Partial<Record<keyof ThemeTokens, readonly string[]>>;

@@ -32,7 +32,41 @@ describe('<Wordmark/>', () => {
     expect(screen.getByRole('link', { name: 'Rakuxon' })).toBeInTheDocument();
   });
 
-  it('renders a one-word name undivided, with no dangling hyphen', () => {
+  const WITH_LOGO = {
+    brand: { logo: '/logo.png', logoDark: '/logo-light.png', logoWidth: '2172', logoHeight: '724' },
+  };
+
+  it('uses the brand image when a tenant supplies one', () => {
+    render(
+      <ThemeProvider tokens={WITH_LOGO}>
+        <Wordmark />
+      </ThemeProvider>,
+    );
+    /*
+     * Both files are in the DOM, but only one reaches the accessibility tree:
+     * the scheme rules hide the other with display:none, and jsdom applies
+     * them. So this asserts the swap actually works — a screen reader hears
+     * the logo once, not twice.
+     */
+    const marks = screen.getAllByRole('img', { name: 'Rakuxon' });
+    expect(marks).toHaveLength(1);
+    expect(marks[0]?.getAttribute('src')).toContain('logo.png');
+  });
+
+  it('ships a dark variant, because a cobalt wordmark vanishes on a dark ground', () => {
+    const { container } = render(
+      <ThemeProvider tokens={WITH_LOGO}>
+        <Wordmark />
+      </ThemeProvider>,
+    );
+    expect(container.querySelector('[data-rk-logo="light"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-rk-logo="dark"]')).toBeInTheDocument();
+  });
+
+  it('falls back to the drawn mark when no logo is supplied', () => {
+    // packages/ui ships no logo path of its own: only the app holding the file
+    // can serve it, so four of the five apps would 404 on a shared default.
+    // The drawn mark is token-coloured and therefore always available.
     const { container } = render(<Wordmark />);
     expect(container.querySelector('text')?.textContent).toBe('Rakuxon');
     expect(container.querySelector('tspan')).not.toBeInTheDocument();
@@ -46,11 +80,6 @@ describe('<Wordmark/>', () => {
     );
     expect(container.querySelector('text')?.textContent).toBe('Acme-study');
     expect(container.querySelector('tspan')?.textContent).toBe('-study');
-  });
-
-  it('draws the lockup as an SVG that names the brand', () => {
-    render(<Wordmark />);
-    expect(screen.getByRole('img', { name: 'Rakuxon' })).toBeInTheDocument();
   });
 
   it('can render the strapline for the full lockup', () => {

@@ -9,7 +9,7 @@
 
 ## 0. Brand
 
-- **Name:** **Rakuxon** — wordmark: **Rakuxon** (primary forest green) + **Path** (accent sky blue), beside the doorway mark. "Path" names what the product actually is: the route from a first idea to an offer.
+- **Name:** **Rakuxon**, one word. The wordmark is the real logo asset (cobalt with a cyan road-arrow through the R), supplied per app as a `brand.logo` token with a white knockout for the dark scheme. Apps without the file fall back to the drawn `LogoMark`, which is token-coloured and works in both schemes.
 - **Tagline:** *From ambition to admission.* Held in `brand.tagline`, so the footer and the logo lockup read it from one place.
 - **Tagline:** *Your study abroad journey, simplified.*
 - **Voice:** calm, credible, encouraging. We reassure, we don't hype. Short sentences. Plain language a 17-year-old and their parent both understand.
@@ -19,11 +19,20 @@
 
 ## 1. Direction & rationale
 
-**Chosen direction: The Modern Campus — deep forest green, sage, electric sky blue.** Calm and trust-forward, deliberately **not** the red high-energy route.
+**Chosen direction: sampled from the logo — cobalt, cool grey, cyan.**
 
-Why, tied to purpose: this platform handles minors' academic documents, admissions outcomes, and money. It is a **trust and stewardship** product. Deep forest green reads as focused, grounded and calm, and green is associated with growth and lowered anxiety — which matters during an intense application cycle. A soft sage-grey carries the long reading passages without eye strain. A single electric sky blue keeps the platform feeling modern, youthful and interactive rather than institutional and dusty.
+> **Superseded (plan revision).** The palette was previously "The Modern Campus"
+> — deep forest green with a sky-blue accent. It is now taken from the actual
+> brand asset (`apps/base-site/public/logo.png`): a cobalt wordmark with a cyan
+> road-arrow. A design system that disagrees with the logo in the header is not
+> a design system. The reasoning below still holds — calm, trust-forward,
+> deliberately not the red high-energy route — only the hue changed.
 
-The 60 / 30 / 10 split: forest green as the primary, sage-grey for surfaces and bands, sky blue reserved for accents and interaction. An amber-orange sits outside that split and is reserved strictly for deadlines and time pressure.
+Why, tied to purpose: this platform handles minors' academic documents, admissions outcomes, and money. It is a **trust and stewardship** product. Deep cobalt reads as institutional in the good sense — settled, credible, the colour of a document you would sign. A cool blue-grey carries long reading passages without eye strain. The cyan keeps it modern and interactive rather than dusty.
+
+A side effect worth naming: with the brand no longer green, `--color-success` is the only green on the page, so it reads as a **signal** rather than as decoration. Under the old palette the brand green and the success green sat in the same family, which blunted it.
+
+The 60 / 30 / 10 split: cobalt as the primary, cool grey for surfaces and bands, cyan reserved for accents and interaction. An amber-orange sits outside that split and is reserved strictly for deadlines and time pressure.
 
 **Borrowed structural ideas (from the strong reference):** floating feature/product cards around a focused hero, a horizontal "one platform, many capabilities" strip, social-proof stat block, and a warm closing CTA band. These quickly communicate *multi-feature platform* without clutter.
 
@@ -47,10 +56,11 @@ These are the **base tokens** in `packages/ui/src/theme/tokens.base.ts`. The lan
 
 ```
 /* Brand */
---color-primary:        #143D28   /* deep forest green — primary actions, wordmark "Rakuxon" */
+--color-primary:        #0038B8   /* logo cobalt, 9.30:1 on white — primary actions, wordmark */
 --color-primary-hover:  #1C5537   /* lighter on hover: the base is already near-black */
 --color-on-primary:     #FFFFFF
---color-accent:         #1572FE   /* electric sky blue — "Ed", highlights, interaction */
+--color-accent:         #0068B4   /* logo cyan darkened to 5.77:1 — highlights, interaction */
+--tint-tone2-display:   #0090F8   /* the literal logo cyan: 3.31:1, so DISPLAY AND ICONS ONLY */
 --color-accent-soft:    #E7F0FE   /* pale blue tint — card/section backgrounds */
 
 /* Neutrals */
@@ -67,7 +77,7 @@ These are the **base tokens** in `packages/ui/src/theme/tokens.base.ts`. The lan
 --color-warning:        #E6A23C
 --color-danger:         #E5484D
 --color-info:           #0B5F73
---color-focus-ring:     #1572FE
+--color-focus-ring:     #0068B4
 
 /* Decorative tints — categorical only, never state (see below) */
 --tint-tone1:  #175C3A   --tint-tone1-soft:  #E6F1EB

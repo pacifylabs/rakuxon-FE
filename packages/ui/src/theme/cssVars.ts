@@ -104,5 +104,24 @@ export function serializeScheme(light: ThemeTokens, dark: ThemeTokens, selector 
     serializeCssVars(light, selector),
     `${selector}[data-theme="dark"]{${darkVars}}`,
     `@media (prefers-color-scheme:dark){${selector}:not([data-theme="light"]){${darkVars}}}`,
+    LOGO_SWAP_RULES(selector),
   ].join('');
 }
+
+/**
+ * Which logo file shows, in the same three states as the colours.
+ *
+ * A brand image cannot be recoloured by a CSS variable, so the light and dark
+ * artwork are both rendered and one is hidden. The rules live here, beside the
+ * token rules, because they encode the *same* explicit-choice-wins logic — kept
+ * apart they would drift, and the failure mode is an invisible logo.
+ */
+const LOGO_SWAP_RULES = (selector: string): string =>
+  [
+    `[data-rk-logo="dark"]{display:none}`,
+    `${selector}[data-theme="dark"] [data-rk-logo="light"]{display:none}`,
+    `${selector}[data-theme="dark"] [data-rk-logo="dark"]{display:block}`,
+    `@media (prefers-color-scheme:dark){`,
+    `${selector}:not([data-theme="light"]) [data-rk-logo="light"]{display:none}`,
+    `${selector}:not([data-theme="light"]) [data-rk-logo="dark"]{display:block}}`,
+  ].join('');

@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { Footer, Header, ThemeProvider } from '@rakuxon/ui';
 
 import {
+  BRAND_LOGO,
   CONTACT_ADDRESSES,
   CONTACT_PHONES,
   FOOTER_BLURB,
@@ -24,7 +25,7 @@ import {
  */
 export function renderPage(page: ReactElement) {
   return render(
-    <ThemeProvider>
+    <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
       <Header navLinks={NAV_LINKS} logIn={LOG_IN_LINK} getStarted={GET_STARTED_LINK} />
       <main id="main">{page}</main>
       <Footer

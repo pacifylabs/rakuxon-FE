@@ -10,36 +10,54 @@ export const baseTokens: ThemeTokens = {
     /* One word, so no slice is painted in the accent tone. */
     nameAccentSuffix: '',
     tagline: 'Where Minds Meet Maps.',
+    /*
+     * No logo here on purpose. These tokens are shared by five apps, and only
+     * the app that ships the file in its own public/ can serve it — pointing
+     * at /logo.png from packages/ui would 404 in the four that do not. Each app
+     * supplies its own through ThemeProvider, exactly as a white-label tenant
+     * does, and anything without one falls back to the drawn LogoMark.
+     */
   },
 
   color: {
-    /* Brand — the Modern Campus direction */
-    primary: '#143D28', // deep forest green, 12.15:1 on white
-    primaryHover: '#1C5537', // lighter on hover: the base is already near-black
+    /*
+     * Brand — sampled from the logo (apps/base-site/public/logo.png).
+     *
+     * The wordmark is cobalt with a cyan road-arrow. Cobalt carries the brand
+     * at 9.30:1 on white, so it works for text, buttons and icons alike.
+     *
+     * The logo's raw cyan (#0090F8) is only 3.31:1 on white — below 4.5:1, so
+     * it cannot legally carry normal-size text. `accent` is that cyan darkened
+     * to the point where it clears 4.5:1 on white AND on surface-muted; the
+     * literal logo cyan survives as `tint.tone2Display` for large display and
+     * icon fills only.
+     */
+    primary: '#0038B8', // logo cobalt, 9.30:1 on white
+    primaryHover: '#0D42C8', // lighter on hover, still 7.98:1
     onPrimary: '#FFFFFF',
-    accent: '#1572FE', // electric sky blue, 4.31:1 on white
-    accentSoft: '#E7F0FE',
+    accent: '#0068B4', // logo cyan, darkened to 5.77:1 white / 4.61:1 muted
+    accentSoft: '#E3F0FD',
 
     /* Neutrals */
     bg: '#FFFFFF',
     surface: '#FFFFFF',
     surfaceMuted: '#E2E6EE', // soft sage-grey, easy on the eyes over long reads
-    text: '#0E1F16', // near-black with a green undertone
-    textMuted: '#4A5A52',
+    text: '#0B1729', // near-black with a blue undertone
+    textMuted: '#46536B',
     textInverse: '#FFFFFF',
     border: '#CFD6E0',
 
     /* Scheme-invariant: see TintTokens' sibling note in tokens.types.ts. */
-    scrim: '#0E1F16',
+    scrim: '#0B1729',
     onScrim: '#FFFFFF',
 
     /*
      * State — not tenant-overridable.
      *
-     * success and info were retuned away from the 04a values: the old info
-     * (#4A7DE1) was visually the same blue as the new accent, and the old
-     * success (#2FA36B) sat in the primary's green family. Both now clear
-     * 4.5:1 on white AND on --color-surface-muted.
+     * success and info were retuned away from the 04a values, and the move to
+     * a cobalt brand improves one of them: with the primary no longer green,
+     * `success` is the only green on the page, so it reads as a signal instead
+     * of as brand decoration. Both clear 4.5:1 on white AND surface-muted.
      *
      * warning and danger keep their 04a values. Both are fill/icon colours:
      * warning is 2.19:1 and danger 3.91:1 on white, so neither may be used
@@ -49,7 +67,7 @@ export const baseTokens: ThemeTokens = {
     warning: '#E6A23C',
     danger: '#E5484D',
     info: '#0B5F73',
-    focusRing: '#1572FE',
+    focusRing: '#0068B4',
   },
 
   font: {
@@ -122,10 +140,13 @@ export const baseTokens: ThemeTokens = {
    * Every foreground clears 4.5:1 on white and on --color-surface-muted.
    */
   tint: {
-    tone1: '#175C3A', // forest, 7.99:1
-    tone1Soft: '#E6F1EB',
-    tone2: '#1258C4', // sky, 6.52:1
-    tone2Soft: '#E7F0FE',
+    tone1: '#1746C4', // cobalt, 7.75:1
+    tone1Soft: '#E5EBFA',
+    tone2: '#0068B4', // sky, 5.77:1
+    tone2Soft: '#E1EFFB',
+    /* The literal logo cyan. Display sizes and icon fills only — 3.31:1 on
+       white is below the 4.5:1 that normal-size text needs. */
+    tone2Display: '#0090F8',
     tone3: '#0E6E62', // teal, 6.13:1
     tone3Soft: '#E4F1EF',
     tone4: '#3F4C7A', // slate, 8.31:1

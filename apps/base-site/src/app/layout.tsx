@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { Footer, Header, ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
 import {
+  BRAND_LOGO,
   CONTACT_ADDRESSES,
   CONTACT_PHONES,
   FOOTER_BLURB,
@@ -62,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {/* No tenant overrides on the public site — always the base theme. */}
-        <ThemeProvider>
+        <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
           <a className="skip-link" href="#main">
             Skip to main content
           </a>

@@ -97,6 +97,19 @@ export const SOCIALS: readonly NavLink[] = [
 ];
 
 /** Falls back to the brand token; kept explicit so copy edits live in one file. */
+/**
+ * The real logo, supplied to ThemeProvider the same way a tenant's would be.
+ *
+ * logo-light.png is the same artwork knocked out to white: the cobalt original
+ * is near-invisible on the dark scheme's #0B1220 ground.
+ */
+export const BRAND_LOGO = {
+  logo: '/logo.png',
+  logoDark: '/logo-light.png',
+  logoWidth: '2172',
+  logoHeight: '724',
+} as const;
+
 export const FOOTER_TAGLINE = 'Where Minds Meet Maps.';
 
 /** rakuxon.com's own footer blurb. */

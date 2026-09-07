@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 
 import { useBrand } from '../theme/useTheme';
+import { BrandLogo } from './BrandLogo';
 import { LogoMark } from './LogoMark';
 
 export interface WordmarkProps {
@@ -26,7 +27,7 @@ export function Wordmark({
   showTagline = false,
   size = 'md',
 }: WordmarkProps) {
-  const { name, nameAccentSuffix, tagline } = useBrand();
+  const { name, nameAccentSuffix, tagline, logo } = useBrand();
 
   const hasAccent =
     nameAccentSuffix.length > 0 &&
@@ -38,7 +39,13 @@ export function Wordmark({
 
   const content = (
     <>
-      <LogoMark height={MARK_HEIGHT[size]} title={name} lead={lead} accent={accent} />
+      {/* The real asset when the brand has one; the drawn mark otherwise, so a
+          white-label tenant without a logo is never left with a gap. */}
+      {logo ? (
+        <BrandLogo height={MARK_HEIGHT[size]} />
+      ) : (
+        <LogoMark height={MARK_HEIGHT[size]} title={name} lead={lead} accent={accent} />
+      )}
       {showTagline && <span className="text-sm text-text-muted">{tagline}</span>}
     </>
   );

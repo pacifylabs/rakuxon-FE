@@ -10,7 +10,7 @@
 > additions: `/services` and `/success-stories` (§16, §17), and a live typeahead
 > search feeding university/course detail pages (§18).
 >
-> A **multi-page marketing site**, framed on how **Edvoy** and **ApplyBoard** structure their sites (both researched directly), with the **Home page following the ScholarPath reference** near-1:1 on structure (see §3 and the reference mapping in §14). Every image slot names a **real, hotlink-permitted Unsplash/Pexels URL** with alt text — no placeholders, no reuse. Direction stays calm/trust-forward per `04a` — the **Modern Campus** palette: deep forest green primary, sage-grey surfaces, electric sky-blue accent. The amber-orange `--tint-urgent` is used only as an urgency/deadline accent.
+> A **multi-page marketing site**, framed on how **Edvoy** and **ApplyBoard** structure their sites (both researched directly), with the **Home page following the ScholarPath reference** near-1:1 on structure (see §3 and the reference mapping in §14). Every image slot names a **real, hotlink-permitted Unsplash/Pexels URL** with alt text — no placeholders, no reuse. Direction stays calm/trust-forward per `04a` — the palette is now sampled from the logo: cobalt primary, cool-grey surfaces, cyan accent. The amber-orange `--tint-urgent` is used only as an urgency/deadline accent.
 >
 > **Image note:** URLs use Unsplash's stable `images.unsplash.com/photo-{id}` hotlink form (hotlinking permitted under the Unsplash license). I could not fetch them from the build sandbox (egress blocks image domains), so **verify each on first load and swap any that 403** — the search term is given beside each so a replacement takes seconds. For production, consider pulling these into your own Cloudinary once (you already run it) so they never depend on an external host.
 
@@ -125,7 +125,7 @@ Both references converge on this: a home page plus dedicated audience pages (stu
 ## 2. Global shell (every page)
 
 ### Header (sticky, translucent-on-scroll)
-- Left: **Rakuxon** wordmark (Rakuxon forest green + Path sky-blue accent), beside the doorway mark.
+- Left: the **Rakuxon** logo asset (cobalt; white knockout on the dark scheme).
 - Nav: *Services · Students · Agencies · Institutions · Universities · Destinations · About*.
 - **Centre: the live search field** (§18) — present on every page, not just Home. It is the primary way into the catalogue.
 - Right: **Log in** (ghost) + **Get started** (primary).
@@ -235,7 +235,7 @@ Three cards (Edvoy's exact pattern), each a real image + CTA:
   `https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80` alt: "University lecture hall with students" *(search: "university lecture hall")*
 
 ### 3.10 Closing CTA band  *(reference: bold deep-colour block)*
-Full-width **deep forest green** block (`--color-primary`), rounded, with a graduation-cap icon bubble on the left, headline *"Ready to start your journey?"* + subline *"Join thousands of students turning their dream into an offer."*, and a **white** CTA button *"Create free account"* on the right. Reassurance line beneath the button: *"No credit card required."* High contrast, white text on forest green (12.2:1) — the one bold moment on an otherwise calm page.
+Full-width **deep cobalt** block (`--color-primary`), rounded, with a graduation-cap icon bubble on the left, headline *"Ready to start your journey?"* + subline *"Join thousands of students turning their dream into an offer."*, and a **white** CTA button *"Create free account"* on the right. Reassurance line beneath the button: *"No credit card required."* High contrast, white text on cobalt (9.3:1) — the one bold moment on an otherwise calm page.
 
 ---
 
@@ -410,7 +410,8 @@ We **kept** from our own spec (not in ScholarPath) the destinations grid, campus
 - **v1 single page → v2 multi-page** site map (Home + Students + Agencies + Institutions + Universities + Destinations + About + Contact), framed on Edvoy/ApplyBoard.
 - **v2 → v3 (this):** Home page restructured to the **ScholarPath blueprint** (hero with live-data floating cards, trust logo bar, 4-card capability grid, stat bar, bold primary-colour CTA band); added the reference-derived components; kept our domain sections below.
 - **Real, per-slot images** with URLs + alt text, no reuse (unchanged).
-- **v3 → v4 (this):** real **Rakuxon Ltd** brand and content (§0) replacing placeholder stats, invented testimonials and the retired tagline; new `/services` (§16) and `/success-stories` (§17); **live typeahead search → university/course info pages** (§18); footer rebuilt as a grid with both offices; contact form routed to the BE instead of WhatsApp.
+- **v4 → v5:** palette re-sampled from the logo asset — cobalt primary, cyan accent — replacing the Modern Campus greens; the logo itself now renders from `brand.logo` with a dark-scheme knockout.
+- **v3 → v4:** real **Rakuxon Ltd** brand and content (§0) replacing placeholder stats, invented testimonials and the retired tagline; new `/services` (§16) and `/success-stories` (§17); **live typeahead search → university/course info pages** (§18); footer rebuilt as a grid with both offices; contact form routed to the BE instead of WhatsApp.
 - **v3 → v4:** palette retuned to the **Modern Campus** direction (deep forest green / sage / electric sky blue) in `04a` § 3.1. Structure, sections and imagery are unchanged; only colour tokens moved. The categorical tint set gained slot-based names (`tone1`–`tone4`) plus a semantic `urgent`, and `--color-success` / `--color-info` were retuned to stay distinct from the new primary and accent.
 
 ---
