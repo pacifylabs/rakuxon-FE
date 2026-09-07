@@ -74,5 +74,5 @@ export const SOCIALS: readonly NavLink[] = [
 ];
 
 /** Falls back to the brand token; kept explicit so copy edits live in one file. */
-export const FOOTER_TAGLINE = 'From ambition to admission.';
+export const FOOTER_TAGLINE = 'Where Minds Meet Maps.';
 export const FOOTER_DOMAIN = 'rakuxon.com';

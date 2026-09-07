@@ -47,7 +47,9 @@ describe('home page structure', () => {
 
   it('leads with the two-line hero headline', () => {
     renderHome();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Study abroad.Simplified.');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Your degree abroad,guided end to end.',
+    );
   });
 
   it('renders the 04b section headings in spec order', () => {
@@ -72,11 +74,6 @@ describe('home page structure', () => {
 });
 
 describe('§3.1 hero', () => {
-  it('renders the eyebrow pill', () => {
-    renderHome();
-    expect(screen.getByText('Your journey starts here')).toBeInTheDocument();
-  });
-
   it('renders both CTAs as real links', () => {
     renderHome();
     expect(screen.getByRole('link', { name: /Get started/ })).toHaveAttribute(
@@ -92,41 +89,52 @@ describe('§3.1 hero', () => {
   it('renders the avatar social proof', () => {
     renderHome();
     expect(screen.getAllByRole('img', { name: 'Student' })).toHaveLength(3);
-    expect(screen.getByText('Join 100,000+ students who found their path.')).toBeInTheDocument();
-  });
-
-  it('gives the hero figure the alt text from the spec', () => {
-    renderHome();
     expect(
-      screen.getByRole('img', { name: 'Smiling student ready to study abroad' }),
+      screen.getByText("Join 2,500+ students and travellers we've guided."),
     ).toBeInTheDocument();
   });
 
-  it('renders the match score as an accessible progressbar, not just a drawing', () => {
+  it('carries the real Rakuxon Ltd tagline as the eyebrow', () => {
     renderHome();
-    expect(screen.getByRole('progressbar', { name: 'Match score' })).toHaveAttribute(
-      'aria-valuenow',
-      '92',
-    );
+    expect(screen.getByText('Where Minds Meet Maps')).toBeInTheDocument();
   });
 
-  it('renders the deadline card', () => {
-    renderHome();
-    expect(screen.getByText('18 Days Left')).toBeInTheDocument();
-    expect(screen.getByText('University of Toronto')).toBeInTheDocument();
-  });
-
-  it('marks both floating cards as sample data', () => {
+  it('draws the backdrop as an SVG, not a photograph', () => {
+    // The hero no longer sits on a photo: text contrast used to depend on
+    // which slide happened to be showing, which is not a thing you can hold
+    // to AA. An inline SVG is theme-aware, weightless, and needs no JS.
     const { container } = renderHome();
-    const cards = container.querySelectorAll('article[data-sample="true"]');
-    expect(cards).toHaveLength(2);
+    const hero = container.querySelector('[aria-labelledby="hero-heading"]');
+
+    expect(hero?.querySelector('svg')).toBeInTheDocument();
+    expect(hero?.querySelectorAll('img')).toHaveLength(3); // the avatar stack only
   });
 
-  it('keeps the floating cards out of the heading outline', () => {
-    renderHome();
-    // They sit beside the h1; a heading here would skip the outline to h3.
-    expect(screen.queryByRole('heading', { name: /Match Score/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('article', { name: /Match Score/ })).toBeInTheDocument();
+  it('keeps the backdrop out of the accessibility tree', () => {
+    const { container } = renderHome();
+    const backdrop = container.querySelector(
+      '[aria-labelledby="hero-heading"] [data-testid="hero-backdrop"]',
+    );
+
+    expect(backdrop).toHaveAttribute('aria-hidden', 'true');
+    expect(backdrop?.querySelector('svg')).toHaveAttribute('focusable', 'false');
+  });
+
+  it('animates only when motion is welcome', () => {
+    // The arcs travel; a vestibular-sensitive visitor should get them still.
+    // Guarding inside the SVG's own <style> means it works with no client JS.
+    const { container } = renderHome();
+    const style = container.querySelector('[data-testid="hero-backdrop"] style');
+
+    expect(style?.textContent).toContain('prefers-reduced-motion: no-preference');
+  });
+
+  it('paints the backdrop from tokens, never a hard-coded hex', () => {
+    const { container } = renderHome();
+    const backdrop = container.querySelector('[data-testid="hero-backdrop"]');
+
+    expect(backdrop?.innerHTML).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(backdrop?.innerHTML).toContain('var(--color-');
   });
 });
 
@@ -142,10 +150,11 @@ describe('landing page search', () => {
 
   it('labels every control and names the fields the explore page reads', () => {
     renderHome();
-    expect(screen.getByLabelText('Search courses, universities and guidance')).toHaveAttribute(
-      'name',
-      'q',
-    );
+    const query = screen.getByLabelText('Search courses, universities and guidance');
+    expect(query).toHaveAttribute('name', 'q');
+    expect(query).toHaveAttribute('role', 'combobox');
+    expect(query).toHaveAttribute('aria-expanded', 'false');
+    expect(query).toHaveAttribute('aria-controls');
     expect(screen.getByLabelText('Type')).toHaveAttribute('name', 'tab');
     expect(screen.getByLabelText('Destination')).toHaveAttribute('name', 'country');
   });
@@ -218,8 +227,8 @@ describe('§3.4 stat bar', () => {
   it('marks every figure as sample data so no invented number reads as measured', () => {
     const { container } = renderHome();
     const marked = container.querySelectorAll('[data-sample="true"]');
-    // 4 stat chips + 2 hero cards + institutions list + testimonials list
-    expect(marked.length).toBe(STATS.length + 4);
+    // 4 stat chips + institutions list + testimonials list
+    expect(marked.length).toBe(STATS.length + 2);
   });
 
   it('reserves the urgent tint for time pressure, not decoration', () => {
@@ -346,21 +355,16 @@ describe('images', () => {
   it('repeats a photo only in the two places 04b itself assigns it twice', () => {
     /*
      * 04b § 12 says no image may be reused across different meanings, but the
-     * spec's own slot table breaks that rule twice:
-     *   photo-1523240795612 → § 3.1 hero figure AND § 3.9 Students card
+     * spec's own slot table still collides once after the hero figure was
+     * dropped:
      *   photo-1494790108377 → § 3.1 avatar 1  AND § 3.8 first testimonial
-     * We ship the URLs as specified, and this test pins the collisions so a
-     * third one cannot creep in unnoticed. See the image checklist.
+     * We ship the URLs as specified, and this test pins the collision so a
+     * second one cannot creep in unnoticed. See the image checklist.
      */
     const bare = HOME_IMAGE_SLOTS.map((image) => image.src.split('?')[0]);
     const duplicated = [...new Set(bare.filter((src, i) => bare.indexOf(src) !== i))].sort();
 
-    expect(duplicated).toEqual(
-      [
-        'https://images.unsplash.com/photo-1523240795612-9a054b0db644',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-      ].sort(),
-    );
+    expect(duplicated).toEqual(['https://images.unsplash.com/photo-1494790108377-be9c29b29330']);
   });
 
   it('records a search term for every slot, so a 403 can be swapped fast', () => {

@@ -31,7 +31,7 @@ import TermsPage from './terms/page';
 import UniversitiesPage from './universities/page';
 
 const PAGES = [
-  ['/', <HomePage key="home" />, 'Study abroad.'],
+  ['/', <HomePage key="home" />, 'Your degree abroad,'],
   ['/students', <StudentsPage key="students" />, 'Find your perfect program'],
   ['/agencies', <AgenciesPage key="agencies" />, 'Grow your recruitment business'],
   ['/institutions', <InstitutionsPage key="institutions" />, 'Reach qualified students'],

@@ -9,7 +9,7 @@ export const baseTokens: ThemeTokens = {
     name: 'Rakuxon',
     /* One word, so no slice is painted in the accent tone. */
     nameAccentSuffix: '',
-    tagline: 'From ambition to admission.',
+    tagline: 'Where Minds Meet Maps.',
   },
 
   color: {

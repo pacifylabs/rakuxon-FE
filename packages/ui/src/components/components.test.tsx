@@ -55,7 +55,7 @@ describe('<Wordmark/>', () => {
 
   it('can render the strapline for the full lockup', () => {
     render(<Wordmark showTagline />);
-    expect(screen.getByText('From ambition to admission.')).toBeInTheDocument();
+    expect(screen.getByText('Where Minds Meet Maps.')).toBeInTheDocument();
   });
 
   it('follows a tenant brand-name override without any code change', () => {

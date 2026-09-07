@@ -34,14 +34,20 @@ export interface ImageSlot {
 /* ---------------------------------------------------------------- § 3.1 hero */
 
 export const HERO = {
-  eyebrow: 'Your journey starts here',
-  headlineLine1: 'Study abroad.',
-  headlineLine2: 'Simplified.',
+  /* The real Rakuxon Ltd tagline (docs/04b § 0). The headline stays concrete
+     underneath it: on its own the tagline is evocative but does not say what
+     the company does, and the h1 is the line search engines read. */
+  eyebrow: 'Where Minds Meet Maps',
+  headlineLine1: 'Your degree abroad,',
+  headlineLine2: 'guided end to end.',
   subcopy:
-    'Research, plan, apply, and track your international education — all in one place. Apply with confidence and turn your goals into offers.',
+    'Eleven years guiding students from Lagos, Accra, Nairobi and Doha to universities worldwide — now with the platform to match. Search courses, apply, and track every step.',
   primaryCta: { label: 'Get started', href: SIGN_UP },
   secondaryCta: { label: 'How it works', href: '#how-it-works' },
-  socialProof: 'Join 100,000+ students who found their path.',
+  /* Real figure (§ 0: 2,500+ students & travellers), not the invented 100,000+. */
+  socialProof: "Join 2,500+ students and travellers we've guided.",
+  /* The consultancy's own span, echoing the six services in § 0. */
+  journey: ['Free consultancy', 'Application & visa', 'Arrival support'],
 } as const;
 
 export const HERO_FIGURE: ImageSlot = {
@@ -443,7 +449,6 @@ export const COURSE_PATHS: readonly CoursePath[] = [
 
 /** Every image slot on the page, for the load-verification checklist. */
 export const HOME_IMAGE_SLOTS: readonly (ImageSlot & { slot: string })[] = [
-  { slot: '§3.1 hero figure', ...HERO_FIGURE },
   ...HERO_AVATARS.map((image, index) => ({ slot: `§3.1 avatar ${index + 1}`, ...image })),
   ...DESTINATIONS.map((d) => ({ slot: `§3.6 ${d.country}`, ...d })),
   ...INSTITUTIONS.map((i) => ({ slot: `§3.7 ${i.name}`, ...i })),

@@ -154,7 +154,7 @@ describe('tokensToCssVars', () => {
 
   it('quotes the brand name so it is usable from CSS', () => {
     expect(tokensToCssVars(baseTokens)['--brand-name']).toBe('"Rakuxon"');
-    expect(tokensToCssVars(baseTokens)['--brand-tagline']).toBe('"From ambition to admission."');
+    expect(tokensToCssVars(baseTokens)['--brand-tagline']).toBe('"Where Minds Meet Maps."');
   });
 });
 
