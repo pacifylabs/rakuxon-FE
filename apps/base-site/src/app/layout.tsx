@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 
 import { Footer, Header, ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
+import { PageBackdrop } from '@/sections/PageBackdrop';
+
 import {
   BRAND_LOGO,
   CONTACT_ADDRESSES,
@@ -68,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Skip to main content
           </a>
 
+          <PageBackdrop />
           <Header navLinks={NAV_LINKS} logIn={LOG_IN_LINK} getStarted={GET_STARTED_LINK} />
 
           <main id="main">{children}</main>

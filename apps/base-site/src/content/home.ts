@@ -96,13 +96,15 @@ export const HERO_DEADLINE_CARD = {
  */
 export const TRUST_BAR = {
   label: 'Trusted by students and partners worldwide',
+  /* Example institutions, not real partners — see InstitutionLogo. The bar
+     carries data-sample so it is greppable before launch. */
   logos: [
-    { name: 'Northfield', emblem: 'shield' },
-    { name: 'Westbrook', emblem: 'book' },
-    { name: 'Lakeside', emblem: 'leaf' },
-    { name: 'Kingsbridge', emblem: 'tower' },
-    { name: 'Ardenmoor', emblem: 'arch' },
-    { name: 'Fairhaven', emblem: 'compass' },
+    { name: 'Northfield', emblem: 'shield', kind: 'University', founded: 1894 },
+    { name: 'Westbrook', emblem: 'book', kind: 'College', founded: 1921 },
+    { name: 'Lakeside', emblem: 'leaf', kind: 'Institute', founded: 1968 },
+    { name: 'Kingsbridge', emblem: 'tower', kind: 'University', founded: 1855 },
+    { name: 'Ardenmoor', emblem: 'arch', kind: 'University', founded: 1902 },
+    { name: 'Fairhaven', emblem: 'compass', kind: 'Academy', founded: 1977 },
   ],
 } as const;
 

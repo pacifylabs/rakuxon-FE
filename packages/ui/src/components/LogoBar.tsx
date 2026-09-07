@@ -6,6 +6,8 @@ import type { InstitutionEmblem } from './InstitutionLogo';
 export interface PartnerLogo {
   name: string;
   emblem: InstitutionEmblem;
+  kind?: string;
+  founded?: number;
 }
 
 export interface LogoBarProps {
@@ -28,10 +30,15 @@ export function LogoBar({ label, logos, className }: LogoBarProps) {
         {label}
       </p>
 
-      <ul className="mt-6 grid grid-cols-2 items-center justify-items-center gap-6 sm:grid-cols-3 lg:grid-cols-6">
+      <ul className="mt-6 grid grid-cols-1 items-center justify-items-start gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:justify-items-center">
         {logos.map((logo) => (
           <li key={logo.name}>
-            <InstitutionLogo name={logo.name} emblem={logo.emblem} />
+            <InstitutionLogo
+              name={logo.name}
+              emblem={logo.emblem}
+              kind={logo.kind}
+              founded={logo.founded}
+            />
           </li>
         ))}
       </ul>

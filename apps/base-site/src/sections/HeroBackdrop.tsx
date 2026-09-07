@@ -24,12 +24,25 @@
  * half a word on the next. The graticule, contours, arcs and pins already read
  * as a map, and the destinations appear as real links in § 3.6 below.
  */
-export function HeroBackdrop() {
+export function HeroBackdrop({
+  variant = 'hero',
+  className,
+}: {
+  /**
+   * 'hero' is the full drawing. 'page' is the same map at a fraction of the
+   * opacity, for the long scrolling pages where it should register as texture
+   * and never compete with a paragraph.
+   */
+  variant?: 'hero' | 'page';
+  className?: string;
+} = {}) {
   return (
     <div
       data-testid="hero-backdrop"
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      className={`pointer-events-none absolute inset-0 -z-10 overflow-hidden ${
+        variant === 'page' ? 'opacity-40' : ''
+      } ${className ?? ''}`}
     >
       <svg
         viewBox="0 0 1440 900"

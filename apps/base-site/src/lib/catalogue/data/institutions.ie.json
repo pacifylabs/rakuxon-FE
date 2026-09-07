@@ -1,0 +1,674 @@
+[
+  {
+    "id": "https://ror.org/0379ysz10",
+    "slug": "cct-college-dublin",
+    "name": "CCT College Dublin",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.cct.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/0379ysz10",
+      "sourceUrl": "https://ror.org/0379ysz10",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/02vtemz45",
+    "slug": "discovery-programme",
+    "name": "Discovery Programme",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://discoveryprogramme.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/02vtemz45",
+      "sourceUrl": "https://ror.org/02vtemz45",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/051dggm19",
+    "slug": "dublin-business-school",
+    "name": "Dublin Business School",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://www.dbs.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/051dggm19",
+      "sourceUrl": "https://ror.org/051dggm19",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/04a1a1e81",
+    "slug": "dublin-city-university",
+    "name": "Dublin City University",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.dcu.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/04a1a1e81",
+      "sourceUrl": "https://ror.org/04a1a1e81",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/02dk7c653",
+    "slug": "dun-laoghaire-institute-of-art-design-and-technology",
+    "name": "Dún Laoghaire Institute of Art, Design and Technology",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://iadt.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/02dk7c653",
+      "sourceUrl": "https://ror.org/02dk7c653",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/01800zd49",
+    "slug": "dundalk-institute-of-technology",
+    "name": "Dundalk Institute of Technology",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dundalk",
+    "website": "https://www.dkit.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/01800zd49",
+      "sourceUrl": "https://ror.org/01800zd49",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/02r11sv96",
+    "slug": "free-university-of-ireland",
+    "name": "Free University of Ireland",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://www.saor-ollscoil.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/02r11sv96",
+      "sourceUrl": "https://ror.org/02r11sv96",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/01rwv5z20",
+    "slug": "garda-siochana-college",
+    "name": "Garda Síochána College",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Templemore",
+    "website": "http://gardacollegelms.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/01rwv5z20",
+      "sourceUrl": "https://ror.org/01rwv5z20",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/0006cvt76",
+    "slug": "griffith-college",
+    "name": "Griffith College",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.griffith.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/0006cvt76",
+      "sourceUrl": "https://ror.org/0006cvt76",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/032nfpx77",
+    "slug": "griffith-college-cork",
+    "name": "Griffith College Cork",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Cork",
+    "website": "https://www.griffith.ie/locations/cork",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/032nfpx77",
+      "sourceUrl": "https://ror.org/032nfpx77",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/052wj6v68",
+    "slug": "griffith-college-limerick",
+    "name": "Griffith College Limerick",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Limerick",
+    "website": "https://www.griffith.ie/locations/limerick",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/052wj6v68",
+      "sourceUrl": "https://ror.org/052wj6v68",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05p2jnd10",
+    "slug": "hibernia-college",
+    "name": "Hibernia College",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://hiberniacollege.com",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05p2jnd10",
+      "sourceUrl": "https://ror.org/05p2jnd10",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/0520whs57",
+    "slug": "ibat-college",
+    "name": "IBAT College",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.ibat.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/0520whs57",
+      "sourceUrl": "https://ror.org/0520whs57",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/024esq841",
+    "slug": "innopharma-education",
+    "name": "Innopharma Education",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.innopharmaeducation.com/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/024esq841",
+      "sourceUrl": "https://ror.org/024esq841",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05bga9v72",
+    "slug": "institute-of-child-education-and-psychology-europe",
+    "name": "Institute of Child Education and Psychology Europe",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Maynooth",
+    "website": "https://icepe.eu",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05bga9v72",
+      "sourceUrl": "https://ror.org/05bga9v72",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/04wvj5008",
+    "slug": "institute-of-public-administration",
+    "name": "Institute of Public Administration",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.ipa.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/04wvj5008",
+      "sourceUrl": "https://ror.org/04wvj5008",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05nh9ky12",
+    "slug": "irish-archaeology-field-school",
+    "name": "Irish Archaeology Field School",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Monkstown",
+    "website": "http://iafs.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05nh9ky12",
+      "sourceUrl": "https://ror.org/05nh9ky12",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/009k2vc47",
+    "slug": "irish-college-of-general-practitioners",
+    "name": "Irish College of General Practitioners",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.irishcollegeofgps.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/009k2vc47",
+      "sourceUrl": "https://ror.org/009k2vc47",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/011hy5f81",
+    "slug": "irish-management-institute",
+    "name": "Irish Management Institute",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.imi.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/011hy5f81",
+      "sourceUrl": "https://ror.org/011hy5f81",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/057cchs06",
+    "slug": "isles-international-university",
+    "name": "Isles International University",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://www.iiu-edu.eu/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/057cchs06",
+      "sourceUrl": "https://ror.org/057cchs06",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/01et03p29",
+    "slug": "kerry-education-and-training-board",
+    "name": "Kerry Education and Training Board",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Tralee",
+    "website": "http://www.kerryetb.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/01et03p29",
+      "sourceUrl": "https://ror.org/01et03p29",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05ga7sz51",
+    "slug": "king-s-inns",
+    "name": "King's Inns",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.kingsinns.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05ga7sz51",
+      "sourceUrl": "https://ror.org/05ga7sz51",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/009q3yg92",
+    "slug": "mary-immaculate-college",
+    "name": "Mary Immaculate College",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Limerick",
+    "website": "https://www.mic.ul.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/009q3yg92",
+      "sourceUrl": "https://ror.org/009q3yg92",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/0040bha74",
+    "slug": "milltown-institute-of-theology-and-philosophy",
+    "name": "Milltown Institute of Theology and Philosophy",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://milltown-institute.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/0040bha74",
+      "sourceUrl": "https://ror.org/0040bha74",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05ydb9v85",
+    "slug": "national-college-of-art-and-design",
+    "name": "National College of Art and Design",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.ncad.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05ydb9v85",
+      "sourceUrl": "https://ror.org/05ydb9v85",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/02qzs9336",
+    "slug": "national-college-of-ireland",
+    "name": "National College of Ireland",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.ncirl.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/02qzs9336",
+      "sourceUrl": "https://ror.org/02qzs9336",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/00shsf120",
+    "slug": "national-university-of-ireland",
+    "name": "National University of Ireland",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://www.nui.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/00shsf120",
+      "sourceUrl": "https://ror.org/00shsf120",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/048nfjm95",
+    "slug": "national-university-of-ireland-maynooth",
+    "name": "National University of Ireland, Maynooth",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Maynooth",
+    "website": "https://www.maynoothuniversity.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/048nfjm95",
+      "sourceUrl": "https://ror.org/048nfjm95",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05mdmem94",
+    "slug": "newpark-music-centre",
+    "name": "Newpark Music Centre",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://newparkmusic.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05mdmem94",
+      "sourceUrl": "https://ror.org/05mdmem94",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/03bea9k73",
+    "slug": "ollscoil-na-gaillimhe-university-of-galway",
+    "name": "Ollscoil na Gaillimhe – University of Galway",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Galway",
+    "website": "https://www.universityofgalway.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/03bea9k73",
+      "sourceUrl": "https://ror.org/03bea9k73",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/014yvnw28",
+    "slug": "project-arts-centre",
+    "name": "Project Arts Centre",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://projectartscentre.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/014yvnw28",
+      "sourceUrl": "https://ror.org/014yvnw28",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/0265sk121",
+    "slug": "royal-college-of-physicians-of-ireland",
+    "name": "Royal College of Physicians of Ireland",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.rcpi.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/0265sk121",
+      "sourceUrl": "https://ror.org/0265sk121",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/01hxy9878",
+    "slug": "royal-college-of-surgeons-in-ireland",
+    "name": "Royal College of Surgeons in Ireland",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.rcsi.com",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/01hxy9878",
+      "sourceUrl": "https://ror.org/01hxy9878",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/03fgx6868",
+    "slug": "south-east-technological-university",
+    "name": "South East Technological University",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Waterford",
+    "website": "https://www.setu.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/03fgx6868",
+      "sourceUrl": "https://ror.org/03fgx6868",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/04t0qbt32",
+    "slug": "technological-university-dublin",
+    "name": "Technological University Dublin",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.tudublin.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/04t0qbt32",
+      "sourceUrl": "https://ror.org/04t0qbt32",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/04efm0253",
+    "slug": "technological-university-of-the-shannon-midlands-midwest",
+    "name": "Technological University of the Shannon: Midlands Midwest",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Athlone",
+    "website": "https://tus.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/04efm0253",
+      "sourceUrl": "https://ror.org/04efm0253",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/01k3cb610",
+    "slug": "the-american-college",
+    "name": "The American College",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://www.amcd.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/01k3cb610",
+      "sourceUrl": "https://ror.org/01k3cb610",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/054tsxk98",
+    "slug": "transport-infrastructure-ireland",
+    "name": "Transport Infrastructure Ireland",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "http://www.tii.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/054tsxk98",
+      "sourceUrl": "https://ror.org/054tsxk98",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/02tyrky19",
+    "slug": "trinity-college-dublin",
+    "name": "Trinity College Dublin",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.tcd.ie/",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/02tyrky19",
+      "sourceUrl": "https://ror.org/02tyrky19",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/03265fv13",
+    "slug": "university-college-cork",
+    "name": "University College Cork",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Cork",
+    "website": "https://www.ucc.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/03265fv13",
+      "sourceUrl": "https://ror.org/03265fv13",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/05m7pjf47",
+    "slug": "university-college-dublin",
+    "name": "University College Dublin",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Dublin",
+    "website": "https://www.ucd.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/05m7pjf47",
+      "sourceUrl": "https://ror.org/05m7pjf47",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  },
+  {
+    "id": "https://ror.org/00a0n9e72",
+    "slug": "university-of-limerick",
+    "name": "University of Limerick",
+    "country": "Ireland",
+    "countryCode": "IE",
+    "city": "Limerick",
+    "website": "https://www.ul.ie",
+    "provenance": {
+      "sourceId": "ror",
+      "sourceRecordId": "https://ror.org/00a0n9e72",
+      "sourceUrl": "https://ror.org/00a0n9e72",
+      "licence": "CC0 1.0 Universal (ROR data is dedicated to the public domain)",
+      "retrievedAt": "2026-09-07"
+    }
+  }
+]

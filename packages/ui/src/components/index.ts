@@ -70,6 +70,8 @@ export { TestimonialSlider } from './TestimonialSlider';
 export type { SliderTestimonial, TestimonialSliderProps } from './TestimonialSlider';
 export { ThemeToggle } from './ThemeToggle';
 export { BrandLogo } from './BrandLogo';
+export { AppLink } from './AppLink';
+export type { AppLinkProps } from './AppLink';
 export { CourseCard } from './CourseCard';
 export type { CourseCardFact, CourseCardProps } from './CourseCard';
 export { InstitutionCard } from './InstitutionCard';

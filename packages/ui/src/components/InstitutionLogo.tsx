@@ -6,16 +6,26 @@ export type InstitutionEmblem = 'shield' | 'book' | 'tower' | 'leaf' | 'arch' | 
 export interface InstitutionLogoProps {
   name: string;
   emblem: InstitutionEmblem;
+  /** "University", "Institute" — the second line of the lockup. */
+  kind?: string;
+  /** Founding year, as institutional marks almost always carry one. */
+  founded?: number;
   className?: string;
 }
 
 /**
- * A partner lockup: emblem + wordmark, drawn as SVG so it sits at the same
- * optical weight as its neighbours in the trust bar.
+ * A partner lockup: a crest beside a two-line wordmark.
  *
- * These are marks for our own example institutions. Real university logos are
- * trademarks and are not reproduced here without permission — swap these for
- * licensed artwork once partnerships are signed.
+ * It was an icon and a word in caps, which read as a toolbar button rather
+ * than an institutional mark. Real university identities share a few traits
+ * this now borrows — a bounded crest with a monogram, a name set in a serif,
+ * a smaller qualifier beneath it, and a founding year — so the row reads as
+ * six institutions instead of six icons.
+ *
+ * These are marks for our own EXAMPLE institutions. Real university logos are
+ * trademarks and are not reproduced without permission; the bar is flagged
+ * `data-sample` so it is greppable before launch, and the artwork here should
+ * be swapped for licensed lockups once partnerships are signed.
  */
 const EMBLEMS: Record<InstitutionEmblem, ReactElement> = {
   shield: <path d="M12 2.5 20.5 6v6.5c0 5-3.6 8.2-8.5 9.5-4.9-1.3-8.5-4.5-8.5-9.5V6Z" />,
@@ -32,23 +42,42 @@ const EMBLEMS: Record<InstitutionEmblem, ReactElement> = {
   ),
 };
 
-export function InstitutionLogo({ name, emblem, className }: InstitutionLogoProps) {
+export function InstitutionLogo({
+  name,
+  emblem,
+  kind = 'University',
+  founded,
+  className,
+}: InstitutionLogoProps) {
   return (
-    <span
-      className={clsx('inline-flex items-center gap-2 text-text-muted', className)}
-      /* One element, one accessible name: the emblem is decorative. */
-    >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="currentColor"
+    <span className={clsx('inline-flex items-center gap-3 text-text-muted', className)}>
+      {/* The crest: ring, monogram, emblem — decorative, the name is beside it. */}
+      <span
         aria-hidden="true"
-        focusable="false"
+        className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-current opacity-80"
       >
-        {EMBLEMS[emblem]}
-      </svg>
-      <span className="font-heading text-base font-bold uppercase tracking-tight">{name}</span>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {EMBLEMS[emblem]}
+        </svg>
+      </span>
+
+      <span className="flex min-w-0 flex-col leading-tight">
+        {/* Serif: institutional marks almost never use the interface face. */}
+        <span className="truncate font-serif text-base font-semibold tracking-tight text-text">
+          {name}
+        </span>
+        <span className="text-xs font-medium uppercase tracking-widest">
+          {kind}
+          {founded ? ` · ${founded}` : ''}
+        </span>
+      </span>
     </span>
   );
 }

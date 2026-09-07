@@ -27,6 +27,8 @@
  */
 export interface Provenance {
   sourceId: string;
+  /** The id in that source, which is what a re-run matches on. */
+  sourceRecordId?: string;
   sourceUrl?: string;
   /** The licence in force when the record was ingested, verbatim. */
   licence: string;

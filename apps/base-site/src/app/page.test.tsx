@@ -155,16 +155,19 @@ describe('landing page search', () => {
     expect(query).toHaveAttribute('role', 'combobox');
     expect(query).toHaveAttribute('aria-expanded', 'false');
     expect(query).toHaveAttribute('aria-controls');
-    expect(screen.getByLabelText('Type')).toHaveAttribute('name', 'tab');
-    expect(screen.getByLabelText('Destination')).toHaveAttribute('name', 'country');
   });
 
-  it('offers every explore tab as a search type', () => {
+  it('carries no Type or Destination select', () => {
+    // They narrowed a results page the dropdown had already made unnecessary.
+    // The filters that matter live on /explore, where results are compared.
     renderHome();
-    const options = [...screen.getByLabelText('Type').querySelectorAll('option')].map(
-      (option) => option.value,
-    );
-    expect(options).toEqual(['courses', 'universities', 'articles']);
+    expect(screen.queryByLabelText('Type')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Destination')).not.toBeInTheDocument();
+  });
+
+  it('keeps the submit button, which is the no-JS path to full results', () => {
+    renderHome();
+    expect(screen.getByRole('button', { name: /Search/ })).toHaveAttribute('type', 'submit');
   });
 });
 

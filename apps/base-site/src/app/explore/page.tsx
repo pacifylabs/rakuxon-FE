@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { CtaBand, PageHeader, SectionBand, SignUpPrompt, StatChip } from '@rakuxon/ui';
-import { Building2 } from 'lucide-react';
 
 import { findCourses, listInstitutions } from '@/lib/catalogue/bank';
 import { fetchCountryCounts } from '@/lib/catalogue/institutions';
@@ -81,11 +80,10 @@ async function CountryCounts() {
       </p>
 
       <ul className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {counts.items.map((entry, index) => (
+        {counts.items.map((entry) => (
           <li key={entry.countryCode}>
             <StatChip
-              icon={Building2}
-              tone={(['tone1', 'tone2', 'tone3', 'tone4'] as const)[index % 4]}
+              countryCode={entry.countryCode}
               value={entry.institutions.toLocaleString('en-GB')}
               label={entry.country}
               animate

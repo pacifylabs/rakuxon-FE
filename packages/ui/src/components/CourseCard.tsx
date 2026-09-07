@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 
+import { AppLink } from './AppLink';
 import { CountryFlag } from './CountryFlag';
 
 export interface CourseCardFact {
@@ -56,12 +57,12 @@ export function CourseCard({
             <CountryFlag countryCode={countryCode} className="mt-0.5 shrink-0" />
             <div>
               <h3 className="font-heading text-base font-semibold text-text">
-                <a
+                <AppLink
                   href={href}
                   className="rounded-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
                 >
                   {title}
-                </a>
+                </AppLink>
               </h3>
               <p className="mt-1 text-sm text-text-muted">{institution}</p>
             </div>
@@ -100,18 +101,18 @@ export function CourseCard({
         </dl>
 
         <div className="mt-auto flex flex-wrap gap-2 pt-5">
-          <a
+          <AppLink
             href={href}
             className="inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md border border-border bg-surface px-4 text-sm font-semibold text-text transition-colors duration-fast ease-standard hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             View course
-          </a>
-          <a
+          </AppLink>
+          <AppLink
             href={applyHref}
             className="inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md border border-primary bg-surface px-4 text-sm font-semibold text-primary transition-colors duration-fast ease-standard hover:bg-accent-soft focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             Proceed to apply
-          </a>
+          </AppLink>
         </div>
       </div>
     </article>

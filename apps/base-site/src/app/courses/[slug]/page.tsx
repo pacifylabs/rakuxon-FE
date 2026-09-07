@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { CalendarClock, GraduationCap, MapPin, Wallet } from 'lucide-react';
 
-import { CountryFlag, SectionBand, SignUpPrompt } from '@rakuxon/ui';
+import { AppLink, CountryFlag, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
 import { ROUTES, applyHref, courseRoute, universityRoute } from '@/content/routes';
 import { COURSES, findCourseBySlug, findCourses } from '@/lib/catalogue/bank';
@@ -75,18 +75,18 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         <nav aria-label="Breadcrumb" className="text-sm text-text-muted">
           <ol className="flex flex-wrap items-center gap-2">
             <li>
-              <a href={ROUTES.explore} className="rounded-sm underline-offset-4 hover:underline">
+              <AppLink href={ROUTES.explore} className="rounded-sm underline-offset-4 hover:underline">
                 Explore
-              </a>
+              </AppLink>
             </li>
             <li aria-hidden="true">›</li>
             <li>
-              <a
+              <AppLink
                 href={universityRoute(course.institutionSlug)}
                 className="rounded-sm underline-offset-4 hover:underline"
               >
                 {course.institutionName}
-              </a>
+              </AppLink>
             </li>
             <li aria-hidden="true">›</li>
             <li aria-current="page" className="text-text">
@@ -104,19 +104,19 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
         <p className="mt-3 flex flex-wrap items-center gap-2 text-base text-text-muted">
           <CountryFlag countryCode={course.countryCode} />
-          <a
+          <AppLink
             href={universityRoute(course.institutionSlug)}
             className="rounded-sm font-semibold text-primary underline-offset-4 hover:underline"
           >
             {course.institutionName}
-          </a>
+          </AppLink>
           <span aria-hidden="true">·</span>
           {course.country}
         </p>
       </SectionBand>
 
       <SectionBand labelledBy="course-overview-heading">
-        <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div>
             <h2 id="course-overview-heading" className="font-heading text-2xl font-bold text-text">
               Course overview
@@ -153,7 +153,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                   >
                     {group.label}
                   </h3>
-                  <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <ul className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {group.items.map((item) => (
                       <li
                         key={item.name}
@@ -179,7 +179,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                 >
                   English language
                 </h3>
-                <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                <ul className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {course.englishTests.map((test) => (
                     <li key={test.test} className="rounded-md border border-border bg-surface p-4">
                       <p className="text-sm font-medium text-text">{test.test}</p>
@@ -237,27 +237,6 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               </>
             )}
 
-            <h2 className="mt-12 font-heading text-2xl font-bold text-text">
-              How Rakuxon helps with this application
-            </h2>
-            <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-              {[
-                { icon: GraduationCap, text: 'Free consultancy before you commit to a course' },
-                { icon: Wallet, text: 'A full cost picture: tuition, living, visa and deposit' },
-                { icon: CalendarClock, text: 'Deadline tracking, so an intake never passes quietly' },
-                { icon: MapPin, text: 'Pre-departure and arrival support once the offer lands' },
-              ].map((item) => (
-                <li
-                  key={item.text}
-                  className="flex gap-3 rounded-md border border-border bg-surface p-4"
-                >
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-accent-soft text-primary">
-                    <item.icon size={17} aria-hidden="true" focusable="false" />
-                  </span>
-                  <span className="text-sm text-text-muted">{item.text}</span>
-                </li>
-              ))}
-            </ul>
           </div>
 
           <ApplyPanel
@@ -280,15 +259,73 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         </div>
       </SectionBand>
 
+
+      {/*
+        Out of the narrow column and across the page.
+        
+        Four cards two-up inside a half-width column is what made this stretch
+        look sparse: the sticky panel holds the right side for the whole scroll,
+        so anything that does not need to sit beside it should not.
+      */}
+      <SectionBand tone="muted" labelledBy="course-help-heading">
+        <h2 id="course-help-heading" className="font-heading text-2xl font-bold text-text">
+          How Rakuxon helps with this application
+        </h2>
+        <p className="mt-3 max-w-prose text-base text-text-muted">
+          Eleven years of doing this for students from Lagos, Accra, Nairobi and Doha. The
+          consultancy costs nothing, and it is where almost every application here starts.
+        </p>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              icon: GraduationCap,
+              title: 'Free consultancy',
+              text: 'We talk through your grades, budget and goals before you commit to a course.',
+            },
+            {
+              icon: Wallet,
+              title: 'The real cost',
+              text: 'Tuition, living costs, visa fees and the deposit, in one number you can plan against.',
+            },
+            {
+              icon: CalendarClock,
+              title: 'Deadline tracking',
+              text: 'Every intake and document date tracked, so a deadline never passes quietly.',
+            },
+            {
+              icon: MapPin,
+              title: 'Arrival support',
+              text: 'Accommodation, airport transfer and orientation once the offer lands.',
+            },
+          ].map((item) => (
+            <li key={item.title} className="h-full">
+              <div className="flex h-full flex-col rounded-lg border border-border bg-surface p-5">
+                <span className="grid h-10 w-10 place-items-center rounded-md bg-accent-soft text-primary">
+                  <item.icon size={18} aria-hidden="true" focusable="false" />
+                </span>
+                <h3 className="mt-4 font-heading text-base font-semibold text-text">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm text-text-muted">{item.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </SectionBand>
+
       {related.length > 0 && (
         <SectionBand tone="muted" labelledBy="related-heading">
           <h2 id="related-heading" className="font-heading text-2xl font-bold text-text">
             Other courses at {course.institutionName}
           </h2>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul
+            className={`mt-6 grid gap-4 sm:grid-cols-2 ${
+              related.length > 2 ? 'lg:grid-cols-3' : ''
+            }`}
+          >
             {related.map((entry) => (
               <li key={entry.id}>
-                <a
+                <AppLink
                   href={courseRoute(entry.slug)}
                   className="flex h-full flex-col rounded-lg border border-border bg-surface p-5 shadow-sm transition-colors duration-fast ease-standard hover:bg-accent-soft focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
                 >
@@ -298,7 +335,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                   <span className="mt-1 text-sm text-text-muted">
                     {formatMoney(entry.tuition)} · {formatDuration(entry.durationMonths)}
                   </span>
-                </a>
+                </AppLink>
               </li>
             ))}
           </ul>

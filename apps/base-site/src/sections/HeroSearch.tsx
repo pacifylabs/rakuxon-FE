@@ -1,17 +1,11 @@
 'use client';
 
 import { Search } from 'lucide-react';
+
+import { AppLink } from '@rakuxon/ui';
 import { useEffect, useId, useRef, useState } from 'react';
 
-import { COVERED_COUNTRIES } from '@/lib/catalogue/institutions';
 
-const TYPES = [
-  { value: 'courses', label: 'Courses' },
-  { value: 'universities', label: 'Universities' },
-  { value: 'articles', label: 'Articles' },
-] as const;
-
-type Tab = (typeof TYPES)[number]['value'];
 
 const DEBOUNCE_MS = 280;
 const MIN_QUERY = 2;
@@ -74,8 +68,6 @@ export function HeroSearch() {
   const formRef = useRef<HTMLFormElement>(null);
 
   const [query, setQuery] = useState('');
-  const [tab, setTab] = useState<Tab>('courses');
-  const [country, setCountry] = useState('');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Suggestion[]>([]);
@@ -145,8 +137,8 @@ export function HeroSearch() {
       method="get"
       className="rounded-lg border border-border bg-surface p-4 shadow-md"
     >
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col items-stretch gap-4 sm:items-center">
+        <div className="flex w-full flex-col gap-2">
           <label htmlFor={`${id}-q`} className="text-sm font-medium text-text">
             Search courses, universities and guidance
           </label>
@@ -224,7 +216,7 @@ export function HeroSearch() {
                         const optionIndex = index;
 
                         return (
-                          <a
+                          <AppLink
                             key={result.id}
                             id={`${id}-opt-${optionIndex}`}
                             role="option"
@@ -255,7 +247,7 @@ export function HeroSearch() {
                                 ))}
                               </span>
                             )}
-                          </a>
+                          </AppLink>
                         );
                       })}
                     </div>
@@ -266,56 +258,23 @@ export function HeroSearch() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
-          <div className="flex flex-col gap-2">
-            <label htmlFor={`${id}-tab`} className="text-sm font-medium text-text">
-              Type
-            </label>
-            <select
-              id={`${id}-tab`}
-              name="tab"
-              value={tab}
-              onChange={(event) => setTab(event.target.value as Tab)}
-              className={fieldClasses}
-            >
-              {TYPES.map((entry) => (
-                <option key={entry.value} value={entry.value}>
-                  {entry.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor={`${id}-country`} className="text-sm font-medium text-text">
-              Destination
-            </label>
-            <select
-              id={`${id}-country`}
-              name="country"
-              value={country}
-              onChange={(event) => setCountry(event.target.value)}
-              className={fieldClasses}
-            >
-              <option value="">All countries</option>
-              {COVERED_COUNTRIES.map((entry) => (
-                <option key={entry.code} value={entry.code}>
-                  {entry.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-end">
-            <button
-              type="submit"
-              className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-6 py-3 text-base font-semibold text-on-primary shadow-sm transition-colors duration-fast ease-standard hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
-            >
-              <Search size={18} aria-hidden="true" focusable="false" />
-              Search
-            </button>
-          </div>
-        </div>
+        {/*
+          The Type and Destination selects are gone.
+          
+          They narrowed a results page the dropdown had already made
+          unnecessary — the typeahead searches everything and goes straight to
+          the record, so the selects only slowed the common path down. The
+          filters that matter now live on /explore, where results are actually
+          being compared. The submit button stays: it is the no-JS path, and
+          the way to reach the full results page from a broad query.
+        */}
+        <button
+          type="submit"
+          className="inline-flex w-full items-center justify-center gap-2 self-center whitespace-nowrap rounded-md bg-primary px-8 py-3 text-base font-semibold text-on-primary shadow-sm transition-colors duration-fast ease-standard hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto"
+        >
+          <Search size={18} aria-hidden="true" focusable="false" />
+          Search
+        </button>
       </div>
     </form>
   );

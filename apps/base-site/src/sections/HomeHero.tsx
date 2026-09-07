@@ -14,6 +14,8 @@ export function HomeHero() {
       aria-labelledby="hero-heading"
       className="relative isolate flex min-h-screen w-full flex-col px-5 pb-16 pt-12 md:pb-20 md:pt-16"
     >
+      {/* The hero draws the map at full strength; the layout's page-wide copy
+          sits behind it at 40%. */}
       <HeroBackdrop />
 
       <div className="mx-auto flex w-full max-w-content flex-1 flex-col items-center justify-center text-center">

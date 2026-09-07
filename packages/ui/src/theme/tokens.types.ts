@@ -67,6 +67,13 @@ export type ColorTokens = {
 };
 
 export type FontTokens = {
+  /**
+   * Institutional lockups only.
+   *
+   * University identities almost never use the interface face, so the trust
+   * bar needs a serif to read as a row of institutions rather than a toolbar.
+   */
+  serif: string;
   sans: string;
   heading: string;
 };

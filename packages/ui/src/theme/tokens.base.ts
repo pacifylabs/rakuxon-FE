@@ -71,6 +71,7 @@ export const baseTokens: ThemeTokens = {
   },
 
   font: {
+    serif: 'ui-serif, Georgia, "Times New Roman", serif',
     sans: 'var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif',
     heading: 'var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif',
   },
