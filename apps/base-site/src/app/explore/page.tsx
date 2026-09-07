@@ -1,20 +1,16 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import { CtaBand, PageHeader, SectionBand, StatChip } from '@rakuxon/ui';
+import { CtaBand, PageHeader, SectionBand, SignUpPrompt, StatChip } from '@rakuxon/ui';
 import { Building2 } from 'lucide-react';
 
-import { fetchArticles, fetchCourses } from '@/lib/catalogue/edvoy';
-import {
-  COVERED_COUNTRIES,
-  fetchCountryCounts,
-  fetchInstitutions,
-} from '@/lib/catalogue/institutions';
-import { SIGN_UP } from '@/content/routes';
+import { findCourses } from '@/lib/catalogue/bank';
+import { fetchCountryCounts, fetchInstitutions } from '@/lib/catalogue/institutions';
+import { ROUTES, SIGN_UP } from '@/content/routes';
 
 import { ExploreControls } from './ExploreControls';
 import type { TabKey } from './ExploreControls';
-import { ArticleResults, CourseResults, InstitutionResults } from './ResultList';
+import { CourseResults, InstitutionResults } from './ResultList';
 
 export const metadata: Metadata = {
   title: 'Explore courses and universities',
@@ -39,9 +35,26 @@ async function Results({ tab, country, query }: { tab: TabKey; country: string; 
     );
   }
 
-  const countryName = COVERED_COUNTRIES.find((entry) => entry.code === country)?.name;
-  if (tab === 'articles') return <ArticleResults result={await fetchArticles(countryName)} />;
-  return <CourseResults result={await fetchCourses(countryName)} />;
+  /*
+   * Guidance articles had no source once the competitor proxy was withdrawn,
+   * and an empty tab that says a build variable is unset helps nobody. The tab
+   * now offers the thing an account actually provides.
+   */
+  if (tab === 'articles') {
+    return (
+      <SignUpPrompt
+        heading="Guidance, written for your application"
+        body="Course guides and country guidance are being written with our counsellors. Create an account and we will send them as they land — along with the deadlines that matter for the courses you save."
+        ctaLabel="Create a free account"
+        ctaHref={SIGN_UP}
+        secondaryLabel="Book a free consultation"
+        secondaryHref={ROUTES.contact}
+        reassurance="Free to join. The first consultation costs nothing."
+      />
+    );
+  }
+
+  return <CourseResults result={findCourses({ q: query, countryCode: country })} />;
 }
 
 async function CountryCounts() {

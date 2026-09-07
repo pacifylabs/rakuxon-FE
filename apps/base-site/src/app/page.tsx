@@ -9,7 +9,7 @@ import { MeetInstitutions } from '@/sections/MeetInstitutions';
 import { PopularDestinations } from '@/sections/PopularDestinations';
 import { StatBar } from '@/sections/StatBar';
 import { Testimonials } from '@/sections/Testimonials';
-import { TrustLogoBar } from '@/sections/TrustLogoBar';
+// import { TrustLogoBar } from '@/sections/TrustLogoBar';
 
 /** Statically generated: no data fetching, no product auth, no Cloudinary. */
 export const dynamic = 'force-static';
@@ -19,7 +19,6 @@ export default function HomePage() {
   return (
     <>
       <HomeHero />
-      <TrustLogoBar />
       <CoursePaths />
       <CapabilityGrid />
       <DestinationCounts />

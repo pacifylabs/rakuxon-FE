@@ -1,3 +1,5 @@
+import { COURSES, INSTITUTIONS } from '@/lib/catalogue/bank';
+
 /**
  * Every route this site serves. The single source of truth for links.
  *
@@ -27,6 +29,10 @@ export const ROUTES = {
 
 export const countryRoute = (slug: CountrySlug) => `/destinations/${slug}` as const;
 
+/** Catalogue detail pages. Slugs come from the bank, so these are open-ended. */
+export const courseRoute = (slug: string) => `/courses/${slug}`;
+export const universityRoute = (slug: string) => `/universities/${slug}`;
+
 /**
  * 04b § 1 hands /login and /register to the product apps, which do not exist
  * yet. Rather than ship two dead links, both CTAs land on the contact page
@@ -35,8 +41,16 @@ export const countryRoute = (slug: CountrySlug) => `/destinations/${slug}` as co
 export const SIGN_UP = `${ROUTES.contact}?intent=signup`;
 export const LOG_IN = `${ROUTES.contact}?intent=login`;
 
-/** All valid pathnames, for link verification. */
+/**
+ * All valid pathnames, for link verification.
+ *
+ * Catalogue detail pages are included from the bank rather than hard-coded, so
+ * a course whose slug changes takes its links with it and `page-links` catches
+ * the break instead of shipping a 404.
+ */
 export const ALL_ROUTES: readonly string[] = [
   ...Object.values(ROUTES),
   ...COUNTRY_SLUGS.map(countryRoute),
+  ...COURSES.map((course) => courseRoute(course.slug)),
+  ...INSTITUTIONS.map((institution) => universityRoute(institution.slug)),
 ];

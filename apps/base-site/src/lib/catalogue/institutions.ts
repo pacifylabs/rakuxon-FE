@@ -1,4 +1,5 @@
 import { emptyResult } from './types';
+import { slugify } from './slug';
 import type { CatalogueResult, CountryCount, Institution } from './types';
 
 /**
@@ -47,6 +48,8 @@ function mapOrganization(org: RorOrganization): Institution | null {
 
   return {
     id: org.id,
+    /* ROR ids are opaque URLs, so the route key is derived from the name. */
+    slug: slugify(name),
     name,
     country: location?.country_name ?? 'Unknown',
     countryCode: location?.country_code ?? '',

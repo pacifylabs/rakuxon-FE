@@ -1,8 +1,10 @@
-import { BookOpen, Newspaper } from 'lucide-react';
+import { CountryFlag, CourseCard } from '@rakuxon/ui';
 
-import { CountryFlag, IconBubble } from '@rakuxon/ui';
-
-import type { Article, CatalogueResult, Course, Institution } from '@/lib/catalogue/types';
+import { SIGN_UP } from '@/content/routes';
+import { courseRoute } from '@/content/routes';
+import { formatDuration, formatIntake, formatMoney, nextIntake } from '@/lib/catalogue/format';
+import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
+import type { CatalogueResult, Course, Institution } from '@/lib/catalogue/types';
 
 /**
  * Empty and error states are first-class here: this page depends on upstream
@@ -78,51 +80,33 @@ export function CourseResults({ result }: { result: CatalogueResult<Course> }) {
   return (
     <Shell result={result} noun="Courses">
       <ul className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {result.items.map((course) => (
-          <li key={course.id} className="h-full">
-            <article className="flex h-full flex-col rounded-lg border border-border bg-surface p-5 shadow-sm">
-              <IconBubble icon={BookOpen} tone="tone2" />
-              <h3 className="mt-4 font-heading text-base font-semibold text-text">
-                {course.title}
-              </h3>
-              <p className="mt-1 text-sm text-text-muted">{course.institution}</p>
-              <dl className="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-4 text-sm text-text-muted">
-                {course.level && (
-                  <div className="flex gap-1">
-                    <dt className="sr-only">Level</dt>
-                    <dd>{course.level}</dd>
-                  </div>
-                )}
-                {course.subject && (
-                  <div className="flex gap-1">
-                    <dt className="sr-only">Subject</dt>
-                    <dd>{course.subject}</dd>
-                  </div>
-                )}
-              </dl>
-            </article>
-          </li>
-        ))}
-      </ul>
-    </Shell>
-  );
-}
+        {result.items.map((course) => {
+          const intake = nextIntake(course);
 
-export function ArticleResults({ result }: { result: CatalogueResult<Article> }) {
-  return (
-    <Shell result={result} noun="Articles">
-      <ul className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {result.items.map((article) => (
-          <li key={article.id} className="h-full">
-            <article className="flex h-full flex-col rounded-lg border border-border bg-surface p-5 shadow-sm">
-              <IconBubble icon={Newspaper} tone="tone4" />
-              <h3 className="mt-4 font-heading text-base font-semibold text-text">
-                {article.title}
-              </h3>
-              {article.excerpt && <p className="mt-2 text-sm text-text-muted">{article.excerpt}</p>}
-            </article>
-          </li>
-        ))}
+          return (
+            <li key={course.id} className="h-full">
+              <CourseCard
+                title={course.title}
+                institution={`${course.institutionName} · ${course.country}`}
+                href={courseRoute(course.slug)}
+                /* Applying needs an account, so this is also the conversion
+                   path — the visitor arrives already wanting the thing. */
+                applyHref={`${SIGN_UP}&course=${course.slug}`}
+                badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
+                facts={[
+                  { label: 'Fee', value: formatMoney(course.tuition) },
+                  { label: 'Duration', value: formatDuration(course.durationMonths) },
+                  {
+                    label: 'Next intake',
+                    value: intake ? formatIntake(intake) : 'No open intake',
+                    urgent: intake?.status === 'closing_soon',
+                  },
+                  { label: 'Course level', value: STUDY_LEVEL_LABELS[course.level] },
+                ]}
+              />
+            </li>
+          );
+        })}
       </ul>
     </Shell>
   );

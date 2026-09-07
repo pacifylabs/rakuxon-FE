@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { fetchArticles, fetchCourses } from '@/lib/catalogue/edvoy';
-import {
-  COVERED_COUNTRIES,
-  fetchCountryCounts,
-  fetchInstitutions,
-} from '@/lib/catalogue/institutions';
+import { findCourses, suggest } from '@/lib/catalogue/bank';
+import { fetchCountryCounts, fetchInstitutions } from '@/lib/catalogue/institutions';
 
 /**
  * The catalogue as real HTTP endpoints.
@@ -16,24 +12,23 @@ import {
  * results without a full navigation.
  *
  *   GET /api/catalogue/universities?country=GB&q=oxford
- *   GET /api/catalogue/courses?country=GB
- *   GET /api/catalogue/articles?country=GB
+ *   GET /api/catalogue/courses?country=GB&level=postgraduate&discipline=business
+ *   GET /api/catalogue/suggest?q=nor&limit=8
  *   GET /api/catalogue/country-counts
  *
- * Upstream credentials and origins stay on the server; the browser only ever
- * talks to this origin.
+ * Courses and suggestions come from our own bank rather than a third party, so
+ * nothing here depends on somebody else's uptime or deploy schedule, and an
+ * admin can unpublish a record without asking anyone.
  */
 
 export const revalidate = 3600;
 
-const RESOURCES = ['universities', 'courses', 'articles', 'country-counts'] as const;
+const RESOURCES = ['universities', 'courses', 'suggest', 'country-counts'] as const;
 type Resource = (typeof RESOURCES)[number];
 
 const isResource = (value: string): value is Resource =>
   (RESOURCES as readonly string[]).includes(value);
 
-/** Edvoy filters by country name; ROR by ISO-2 code. Accept the code for both. */
-const countryName = (code: string) => COVERED_COUNTRIES.find((entry) => entry.code === code)?.name;
 
 export async function GET(request: Request, { params }: { params: Promise<{ resource: string }> }) {
   const { resource } = await params;
@@ -54,9 +49,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ reso
       case 'universities':
         return fetchInstitutions({ countryCode: country, search: query });
       case 'courses':
-        return fetchCourses(countryName(country));
-      case 'articles':
-        return fetchArticles(countryName(country));
+        return findCourses({
+          q: query,
+          countryCode: country,
+          level: url.searchParams.get('level') ?? '',
+          discipline: url.searchParams.get('discipline') ?? '',
+        });
+      case 'suggest':
+        return suggest(query, Number(url.searchParams.get('limit') ?? 8));
       case 'country-counts':
         return fetchCountryCounts();
     }
