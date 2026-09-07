@@ -1,0 +1,14 @@
+{
+  "name": "@rakuxon/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": {
+    "@rakuxon/api-client": "workspace:*",
+    "@rakuxon/contract": "workspace:*"
+  },
+  "peerDependencies": { "react": "^19.0.0" },
+  "devDependencies": { "@rakuxon/tsconfig": "workspace:*", "react": "^19.0.0" }
+}

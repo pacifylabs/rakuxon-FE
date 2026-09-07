@@ -1,0 +1,10 @@
+{
+  "name": "@rakuxon/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": { "@rakuxon/contract": "workspace:*" },
+  "devDependencies": { "@rakuxon/tsconfig": "workspace:*" }
+}

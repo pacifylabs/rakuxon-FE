@@ -1,0 +1,12 @@
+{
+  "name": "@rakuxon/contract",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "generate": "openapi-typescript openapi.json -o src/generated.ts"
+  },
+  "devDependencies": { "@rakuxon/tsconfig": "workspace:*" }
+}

@@ -1,0 +1,1 @@
+{ "extends": "@rakuxon/tsconfig/base.json", "include": ["src", "../../types"] }
