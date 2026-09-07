@@ -1,3 +1,6 @@
+export { AuthCard } from './AuthCard';
+export { FormField } from './FormField';
+export type { FormFieldProps } from './FormField';
 export { AudienceCard } from './AudienceCard';
 export type { AudienceCardProps } from './AudienceCard';
 export { AvatarStack } from './AvatarStack';

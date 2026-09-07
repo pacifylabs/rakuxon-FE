@@ -15,6 +15,8 @@
 
 **Gate:** `pnpm dev` boots all apps; health badge green; CI passes.
 
+> **Status: green.** `packages/config`, `packages/contract` (generated from the API's OpenAPI document), `packages/api-client` and `packages/ui`. The health badge lives in every authenticated app and reports three states, not two: healthy, reachable-but-database-down, and unreachable. `student-app` is not built — it is stage 3 work.
+
 ## Stage 1 — Auth & session `branch: stage/1-auth`
 
 **Build:** `packages/auth` (session, refresh, guards), login/register/reset screens, SSO button, route protection.
@@ -26,6 +28,8 @@
 4. Test: SSO button initiates the provider redirect → implement.
 
 **Gate:** auth flows green across partner-app + institution-portal + admin.
+
+> **Status: green.** `packages/auth` holds the session, the rotation timer, `SignInForm`, `RequireAuth` and `GuardedPage`. All three apps sign in, guard their dashboards and gate on role; partner-app also registers an agency. **Not done:** the SSO button (the API endpoint exists) and password-reset screens.
 
 ## Stage 3 — Core student-document slice `branch: stage/3-core-slice`
 

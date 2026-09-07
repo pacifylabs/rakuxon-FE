@@ -1,5 +1,6 @@
-import { Wordmark } from '@rakuxon/ui';
 import type { ReactNode } from 'react';
+
+import { Wordmark } from './Wordmark';
 
 /** The shell both auth screens sit in, so they cannot drift apart. */
 export function AuthCard({

@@ -38,9 +38,9 @@ export default defineWorkspace([
     resolve: { alias: { ...shared, '@': resolvePath('./apps/base-site/src') } },
     test: { ...base, name: 'base-site', include: ['apps/base-site/src/**/*.test.{ts,tsx}'] },
   },
-  {
+  ...['partner-app', 'institution-portal', 'admin'].map((app) => ({
     plugins: [react()],
-    resolve: { alias: { ...shared, '@': resolvePath('./apps/partner-app/src') } },
-    test: { ...base, name: 'partner-app', include: ['apps/partner-app/src/**/*.test.{ts,tsx}'] },
-  },
+    resolve: { alias: { ...shared, '@': resolvePath(`./apps/${app}/src`) } },
+    test: { ...base, name: app, include: [`apps/${app}/src/**/*.test.{ts,tsx}`] },
+  })),
 ]);

@@ -5,10 +5,7 @@ import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useAuth } from '@rakuxon/auth';
-import { Button } from '@rakuxon/ui';
-
-import { AuthCard } from '@/components/AuthCard';
-import { FormField } from '@/components/FormField';
+import { AuthCard, Button, FormField } from '@rakuxon/ui';
 
 /** Mirrors the API's rule, so the same input is rejected in the same terms. */
 const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
