@@ -14,6 +14,10 @@ export interface SignInFormProps {
   onSignedIn: () => void;
   /** Rendered under the card. Registration only makes sense for agencies. */
   footer?: React.ReactNode;
+  /** Rendered above the form — the SSO button, where a provider is configured. */
+  above?: React.ReactNode;
+  /** Where "Forgot your password?" points. Omitted hides the link. */
+  forgotPasswordHref?: string;
 }
 
 interface FieldErrors {
@@ -28,7 +32,13 @@ interface FieldErrors {
  * drift, and the one that drifts is usually the one nobody looks at. Apps
  * supply only the wording and where to go next.
  */
-export function SignInForm({ subtitle, onSignedIn, footer }: SignInFormProps) {
+export function SignInForm({
+  subtitle,
+  onSignedIn,
+  footer,
+  above,
+  forgotPasswordHref,
+}: SignInFormProps) {
   const { signIn } = useAuth();
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -68,6 +78,29 @@ export function SignInForm({ subtitle, onSignedIn, footer }: SignInFormProps) {
 
   return (
     <AuthCard title="Sign in" subtitle={subtitle} footer={footer}>
+      {/* `above` may be an element that itself renders nothing — SsoButton does
+          exactly that when no provider is configured — so callers pass null
+          rather than relying on this, but the separator is grouped with the
+          content so the two cannot appear apart. */}
+      {above && (
+        <div className="mb-6 flex flex-col gap-6">
+          {above}
+          {/* Labelled, not a bare rule: a screen reader should hear that the
+              two routes below and above it are alternatives. */}
+          <div
+            role="separator"
+            aria-label="or sign in with your password"
+            className="flex items-center gap-4"
+          >
+            <span aria-hidden="true" className="h-px flex-1 bg-border" />
+            <span aria-hidden="true" className="text-sm text-text-muted">
+              or
+            </span>
+            <span aria-hidden="true" className="h-px flex-1 bg-border" />
+          </div>
+        </div>
+      )}
+
       <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-5">
         <FormField
           label="Email address"
@@ -95,6 +128,15 @@ export function SignInForm({ subtitle, onSignedIn, footer }: SignInFormProps) {
         <Button type="submit" size="lg" disabled={pending}>
           {pending ? 'Signing in…' : 'Sign in'}
         </Button>
+
+        {forgotPasswordHref && (
+          <a
+            href={forgotPasswordHref}
+            className="self-center rounded-sm text-sm font-semibold text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+          >
+            Forgot your password?
+          </a>
+        )}
       </form>
     </AuthCard>
   );

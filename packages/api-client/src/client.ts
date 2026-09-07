@@ -127,6 +127,28 @@ export class ApiClient {
     return this.request<AuthTokens['user']>('/v1/auth/me', { method: 'POST', auth: true });
   }
 
+  requestPasswordReset(email: string): Promise<void> {
+    return this.request<void>('/v1/auth/password-reset/request', {
+      method: 'POST',
+      body: { email },
+    });
+  }
+
+  confirmPasswordReset(token: string, password: string): Promise<void> {
+    return this.request<void>('/v1/auth/password-reset/confirm', {
+      method: 'POST',
+      body: { token, password },
+    });
+  }
+
+  /** Completes a provider redirect. The code is exchanged server-side. */
+  ssoCallback(provider: string, code: string, redirectUri: string): Promise<AuthTokens> {
+    return this.request<AuthTokens>(`/v1/auth/sso/${provider}/callback`, {
+      method: 'POST',
+      body: { code, redirectUri },
+    });
+  }
+
   issueOnboardingLink(body: IssueOnboardingLinkRequest): Promise<OnboardingLink> {
     return this.request<OnboardingLink>('/v1/onboarding-links', {
       method: 'POST',
