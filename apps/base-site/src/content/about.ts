@@ -6,10 +6,10 @@ import { ROUTES, SIGN_UP } from './routes';
 /** /about — docs/04b § 9. Angle: stewardship, and the model in plain words. */
 
 export const ABOUT_HERO = {
-  eyebrow: 'About us',
-  title: 'Studying abroad should not depend on who you happen to know.',
+  eyebrow: 'About Rakuxon Ltd',
+  title: 'Transforming dreams into global reality.',
   subcopy:
-    'The information that decides an application — which documents matter, when the real deadline is, what a course actually costs — is not secret. It is just scattered, and the people who have it are not always the people who need it.',
+    'A global education consultancy headquartered in London, with operations across Nigeria, Ghana, Kenya and Qatar. Eleven years connecting students with accredited universities in the UK, USA, Canada and Europe — from the first consultation to the visa in hand.',
   image: {
     src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&q=80',
     alt: 'Team working together in an office',
@@ -19,17 +19,43 @@ export const ABOUT_HERO = {
 
 export const ABOUT_STORY = {
   heading: 'Our story',
-  body: 'Rakuxon started from a simple observation: the same three problems came up in every failed application. Documents that were not checked, deadlines nobody tracked, and a student and their counsellor working from different versions of the truth. None of those are hard problems. They are just nobody’s job.',
+  body: 'Rakuxon Ltd is a leading global education consultancy headquartered in London, UK, with established operations across Nigeria, Ghana, Kenya and Qatar. Eleven years in, the approach has not changed: student-centric, end to end, and starting with a consultation that costs nothing. The platform came later, built on the same observation that made the consultancy work — the information that decides an application is not secret, just scattered.',
   points: [
-    'Built around the application, not around the marketing funnel',
-    'The student and the counsellor see the same record',
-    'Nothing is hidden behind a call with a salesperson',
+    'Headquartered in London, operating across four countries',
+    'Student-centric from consultation through to visa',
+    'The consultancy is free, and it is where almost everyone starts',
   ],
   image: {
     src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80',
     alt: 'Colleagues talking around a table in a bright office',
     searchTerm: 'team meeting discussion',
   } satisfies ImageSlot,
+} as const;
+
+/**
+ * Verbatim from rakuxon.com. Quoted rather than paraphrased: these are the
+ * company's own formal statements, and rewording them in our voice would put
+ * words in Rakuxon's mouth that nobody there approved.
+ */
+export const ABOUT_VISION_MISSION = {
+  heading: 'Vision and mission',
+  items: [
+    {
+      icon: Eye,
+      title: 'Our vision',
+      body: 'To become the premier global bridge connecting dreams with destinations, empowering individuals to explore, learn, and achieve without limits.',
+    },
+    {
+      icon: ScrollText,
+      title: 'Our mission',
+      body: 'To deliver trusted, personalized, and innovative educational consultancy and travel services, transforming aspirations into achievements through expert guidance, exceptional service, and unwavering commitment to client success.',
+    },
+    {
+      icon: HeartHandshake,
+      title: 'Brand essence',
+      body: 'Where Minds Meet Maps — we combine deep understanding of client needs with expert knowledge of global opportunities.',
+    },
+  ],
 } as const;
 
 export const ABOUT_MODEL = [
@@ -77,11 +103,12 @@ export const ABOUT_VALUES = [
 ];
 
 /* Figures per 04b § 3.4. Flagged in the markup via `data-sample`, not on screen. */
+/** Rakuxon Ltd's real figures — kept in step with home.ts STATS. */
 export const ABOUT_STATS = [
-  { value: '100,000+', label: 'Students guided' },
-  { value: '1,200+', label: 'Partner agencies' },
-  { value: '1,500+', label: 'Institutions' },
-  { value: '150+', label: 'Countries supported' },
+  { value: '2,500+', label: 'Students & travellers' },
+  { value: '200+', label: 'Partner universities' },
+  { value: '11+', label: 'Years experience' },
+  { value: '95%', label: 'Success rate' },
 ];
 
 export const ABOUT_CAREERS = {

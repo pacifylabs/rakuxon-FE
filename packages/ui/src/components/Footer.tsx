@@ -1,10 +1,11 @@
 'use client';
 
 import clsx from 'clsx';
-import { Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin, Phone } from 'lucide-react';
 
 import { useBrand } from '../theme/useTheme';
 import { BrandName } from './BrandName';
+import { SocialIcon } from './SocialIcon';
 import { Wordmark } from './Wordmark';
 import type { NavLink } from './Header';
 
@@ -18,7 +19,12 @@ export interface FooterProps {
   tagline?: string;
   domain: string;
   email?: string;
-  address?: string;
+  /** One line per office. Rakuxon runs two, and both belong here. */
+  addresses?: readonly string[];
+  /** Rendered as tel: links — on a phone this is the fastest path to a human. */
+  phones?: readonly string[];
+  /** Short paragraph under the tagline. */
+  blurb?: string;
   columns: readonly FooterColumn[];
   socials: readonly NavLink[];
   legalLinks?: readonly NavLink[];
@@ -40,7 +46,9 @@ export function Footer({
   tagline,
   domain,
   email,
-  address,
+  addresses,
+  phones,
+  blurb,
   columns,
   socials,
   legalLinks,
@@ -56,7 +64,10 @@ export function Footer({
           <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10">
             <div className="flex flex-col gap-4">
               <Wordmark href="/" size="sm" />
-              <p className="max-w-prose text-sm text-text-muted">{strapline}</p>
+              <p className="max-w-prose text-sm font-medium italic text-text-muted">
+                {strapline}
+              </p>
+              {blurb && <p className="max-w-prose text-sm text-text-muted">{blurb}</p>}
 
               <ul className="flex flex-col">
                 {email && (
@@ -67,12 +78,24 @@ export function Footer({
                     </a>
                   </li>
                 )}
-                {address && (
-                  <li className="flex items-start gap-2 py-1.5 text-sm text-text-muted">
-                    <MapPin size={14} className="mt-1 shrink-0 text-primary" aria-hidden="true" />
-                    {address}
+                {phones?.map((phone) => (
+                  <li key={phone}>
+                    {/* tel: strips to digits and a leading + — spaces break the dialler. */}
+                    <a href={`tel:${phone.replace(/[^+\d]/g, '')}`} className={clsx(LINK_CLASSES, 'gap-2')}>
+                      <Phone size={14} className="shrink-0 text-primary" aria-hidden="true" />
+                      {phone}
+                    </a>
                   </li>
-                )}
+                ))}
+                {addresses?.map((entry) => (
+                  <li
+                    key={entry}
+                    className="flex items-start gap-2 py-1.5 text-sm text-text-muted"
+                  >
+                    <MapPin size={14} className="mt-1 shrink-0 text-primary" aria-hidden="true" />
+                    {entry}
+                  </li>
+                ))}
                 <li className="py-1.5 text-sm text-text-muted">{domain}</li>
               </ul>
 
@@ -88,7 +111,7 @@ export function Footer({
                           className="grid h-10 w-10 place-items-center rounded-full border border-border text-sm font-semibold text-text-muted transition-colors duration-fast ease-standard hover:bg-accent-soft hover:text-primary focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
                           aria-label={`${brand.name} on ${social.label}`}
                         >
-                          <span aria-hidden="true">{social.label.charAt(0)}</span>
+                          <SocialIcon label={social.label} />
                         </a>
                       </li>
                     ))}

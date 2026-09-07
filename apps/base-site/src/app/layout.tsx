@@ -4,7 +4,9 @@ import { Inter } from 'next/font/google';
 import { Footer, Header, ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
 import {
-  CONTACT_ADDRESS,
+  CONTACT_ADDRESSES,
+  CONTACT_PHONES,
+  FOOTER_BLURB,
   CONTACT_EMAIL,
   FOOTER_COLUMNS,
   FOOTER_DOMAIN,
@@ -73,7 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             tagline={FOOTER_TAGLINE}
             domain={FOOTER_DOMAIN}
             email={CONTACT_EMAIL}
-            address={CONTACT_ADDRESS}
+            addresses={CONTACT_ADDRESSES}
+            phones={CONTACT_PHONES}
+            blurb={FOOTER_BLURB}
             columns={FOOTER_COLUMNS}
             socials={SOCIALS}
             legalLinks={FOOTER_LEGAL_LINKS}

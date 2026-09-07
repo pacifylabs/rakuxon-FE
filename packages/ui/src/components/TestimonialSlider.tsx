@@ -10,8 +10,9 @@ export interface SliderTestimonial {
   quote: string;
   name: string;
   detail: string;
-  src: string;
-  alt: string;
+  /** Optional: a real named client with no photograph renders initials. */
+  src?: string;
+  alt?: string;
 }
 
 export interface TestimonialSliderProps {

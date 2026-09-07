@@ -66,7 +66,7 @@ describe('home page structure', () => {
       'How it works',
       'Popular destinations',
       'Explore leading institutions',
-      'Students who found their path',
+      'Success stories that inspire',
       'Start your journey with us',
       'Ready to start your journey?',
     ]);
@@ -224,11 +224,25 @@ describe('§3.4 stat bar', () => {
     }
   });
 
-  it('marks every figure as sample data so no invented number reads as measured', () => {
-    const { container } = renderHome();
-    const marked = container.querySelectorAll('[data-sample="true"]');
-    // 4 stat chips + institutions list + testimonials list
-    expect(marked.length).toBe(STATS.length + 2);
+  it('carries Rakuxon Ltd’s real figures, no longer flagged as samples', () => {
+    renderHome();
+    // These are attributable now (rakuxon.com), so a sample marker would be
+    // the inaccurate thing. The institutions list is still illustrative.
+    for (const stat of STATS) {
+      // CountUp renders the figure twice on purpose: an sr-only span carrying
+      // the final value, and an aria-hidden span that animates.
+      expect(screen.getAllByText(stat.value).length).toBeGreaterThan(0);
+    }
+    expect(screen.getAllByText('2,500+').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('95%').length).toBeGreaterThan(0);
+  });
+
+  it('does not present the consultancy’s partner count as a catalogue count', () => {
+    renderHome();
+    // 200+ is how many universities Rakuxon Ltd partners with. The platform
+    // catalogue will be far larger; conflating the two would overstate one and
+    // understate the other.
+    expect(screen.getByText('Partner universities')).toBeInTheDocument();
   });
 
   it('reserves the urgent tint for time pressure, not decoration', () => {
@@ -364,7 +378,9 @@ describe('images', () => {
     const bare = HOME_IMAGE_SLOTS.map((image) => image.src.split('?')[0]);
     const duplicated = [...new Set(bare.filter((src, i) => bare.indexOf(src) !== i))].sort();
 
-    expect(duplicated).toEqual(['https://images.unsplash.com/photo-1494790108377-be9c29b29330']);
+    // The collision is gone: the testimonials that shared a portrait with the
+    // hero avatars are real, named people now, and carry initials instead.
+    expect(duplicated).toEqual([]);
   });
 
   it('records a search term for every slot, so a 403 can be swapped fast', () => {

@@ -10,6 +10,7 @@ import {
   ABOUT_MODEL,
   ABOUT_STATS,
   ABOUT_STORY,
+  ABOUT_VISION_MISSION,
   ABOUT_VALUES,
 } from '@/content/about';
 
@@ -43,6 +44,32 @@ export default function AboutPage() {
         image={ABOUT_STORY.image}
         imageSide="left"
       />
+
+      <SectionBand labelledBy="about-vision-heading">
+        <h2
+          id="about-vision-heading"
+          className="text-center font-heading text-2xl font-bold text-text md:text-3xl"
+        >
+          {ABOUT_VISION_MISSION.heading}
+        </h2>
+
+        <ul className="mt-12 grid gap-6 md:grid-cols-3">
+          {ABOUT_VISION_MISSION.items.map((item) => (
+            <li key={item.title} className="h-full">
+              <div className="flex h-full flex-col rounded-lg border border-border bg-surface p-6 shadow-sm">
+                <span className="grid h-12 w-12 place-items-center rounded-md bg-accent-soft text-primary">
+                  <item.icon size={20} aria-hidden="true" focusable="false" />
+                </span>
+                <h3 className="mt-5 font-heading text-lg font-semibold text-text">{item.title}</h3>
+                {/* Quoted, because these are Rakuxon's own formal words. */}
+                <blockquote className="mt-3 text-base text-text-muted">
+                  <p>“{item.body}”</p>
+                </blockquote>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </SectionBand>
 
       <SectionBand tone="muted" id="how-we-work" labelledBy="about-model-heading">
         <h2

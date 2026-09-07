@@ -1,9 +1,7 @@
 import {
-  Building2,
   CalendarCheck,
   ClipboardList,
   FileCheck2,
-  Globe2,
   GraduationCap,
   Search,
   Send,
@@ -160,15 +158,23 @@ export interface StatContent {
 }
 
 export const STATS: readonly StatContent[] = [
-  { icon: Users, tone: 'tone1', value: '100,000+', label: 'Students guided' },
-  { icon: GraduationCap, tone: 'tone2', value: '1,500+', label: 'Universities' },
   /*
-   * 04b § 3.4 asks for orange here, but the urgent tint is reserved for
-   * deadlines and time pressure. Partner agencies is neither, so it takes a
-   * neutral categorical tone and `urgent` keeps its signal value.
+   * Rakuxon Ltd's real figures (rakuxon.com). These replace invented
+   * placeholders — 100,000+ students, 1,500+ universities — which were flagged
+   * as sample data precisely because nobody had measured them.
+   *
+   * "Partner universities" is the consultancy's own partnership count. It is
+   * NOT the size of the platform catalogue, which will be far larger; the two
+   * must never be presented as the same number.
    */
-  { icon: Building2, tone: 'tone3', value: '1,200+', label: 'Partner agencies' },
-  { icon: Globe2, tone: 'tone4', value: '150+', label: 'Countries supported' },
+  { icon: Users, tone: 'tone1', value: '2,500+', label: 'Students & travellers' },
+  { icon: GraduationCap, tone: 'tone2', value: '200+', label: 'Partner universities' },
+  { icon: CalendarCheck, tone: 'tone3', value: '11+', label: 'Years experience' },
+  /*
+   * 04b § 3.4 asks for orange somewhere in this bar, but the urgent tint is
+   * reserved for deadlines and time pressure. A success rate is neither.
+   */
+  { icon: Trophy, tone: 'tone4', value: '95%', label: 'Success rate' },
 ];
 
 /* ------------------------------------------------------ § 3.5 how it works */
@@ -288,7 +294,12 @@ export const INSTITUTIONS: readonly InstitutionContent[] = [
 
 /* ---------------------------------------------------- § 3.8 testimonials */
 
-export interface TestimonialContent extends ImageSlot {
+/**
+ * A real, named client. No `src`: rakuxon.com shows these six as initials, and
+ * putting a stock portrait beside a real person's name and university
+ * misrepresents them. TestimonialCard renders initials when there is no photo.
+ */
+export interface TestimonialContent {
   quote: string;
   name: string;
   detail: string;
@@ -297,57 +308,39 @@ export interface TestimonialContent extends ImageSlot {
 export const TESTIMONIALS: readonly TestimonialContent[] = [
   {
     quote:
-      'I had no idea where to start. Having every deadline and document in one place meant I could actually focus on my application instead of chasing paperwork.',
-    name: 'Amara O.',
-    detail: 'Nigeria → Canada',
-    src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80',
-    alt: 'Portrait of a smiling student',
-    searchTerm: 'student portrait woman',
+      'Rakuxon Ltd made my dream of studying at Oxford University come true. Their guidance through the application process was invaluable, and their support never wavered. Truly where minds meet maps!',
+    name: 'Sarah Adebayo',
+    detail: 'Oxford University, UK',
   },
   {
     quote:
-      'The document checks caught two problems before I submitted. My counsellor and I could see exactly the same thing, which made the whole process far less stressful.',
-    name: 'Daniel K.',
-    detail: 'Kenya → United Kingdom',
-    src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
-    alt: 'Portrait of a smiling student',
-    searchTerm: 'student portrait man',
+      "From university admission to travel arrangements, Rakuxon Ltd handled everything perfectly. I'm now studying at MIT and had amazing travel experiences during breaks, all thanks to their comprehensive services.",
+    name: 'Michael Okafor',
+    detail: 'MIT, USA',
   },
   {
     quote:
-      'I was applying from a different timezone to every university on my list. Getting one reminder that actually reached me, instead of an email at 3am I would never see, is the reason I made two of those deadlines.',
-    name: 'Priya S.',
-    detail: 'India → Australia',
-    src: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80',
-    alt: 'Portrait of a smiling student in a striped top',
-    searchTerm: 'student portrait woman smiling',
+      "Rakuxon Ltd didn't just help me get into the University of Toronto, they also arranged my pre-departure travel and arrival support. Their travel services are exceptional — truly professional in every way.",
+    name: 'Fatima Kone',
+    detail: 'University of Toronto, Canada',
   },
   {
     quote:
-      'The budget breakdown was the part I did not expect. Seeing tuition, rent, visa and the deposit in one number told me which of my three choices was actually affordable.',
-    name: 'Lucas M.',
-    detail: 'Brazil → Ireland',
-    src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80',
-    alt: 'Portrait of a student against a dark background',
-    searchTerm: 'student portrait man',
+      'The free consultation at Rakuxon Ltd was incredibly detailed and helpful. They took time to understand my goals and provided personalized recommendations. Their expertise made all the difference in my successful application to Cambridge.',
+    name: 'David Adamu',
+    detail: 'Cambridge University, UK',
   },
   {
     quote:
-      'My counsellor and I stopped emailing each other attachments entirely. She could see what I had uploaded the moment I uploaded it, and I could see what she still needed.',
-    name: 'Chen W.',
-    detail: 'China → United Kingdom',
-    src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&q=80',
-    alt: 'Portrait of a smiling student in a denim jacket',
-    searchTerm: 'student portrait woman',
+      "Rakuxon Ltd planned our honeymoon to Dubai, and it was beyond perfect. From airport pickup to luxury hotel bookings and desert tours, everything was seamless. We'll definitely book with them again!",
+    name: 'Amaka & Chinedu Eze',
+    detail: 'Dubai, UAE',
   },
   {
     quote:
-      'I got rejected from my first choice and genuinely did not know what to do next. Having the other four applications already moving meant it was a setback, not the end of it.',
-    name: 'Yusuf B.',
-    detail: 'Turkey → Germany',
-    src: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400&q=80',
-    alt: 'Portrait of a student wearing sunglasses',
-    searchTerm: 'young man portrait',
+      'As a solo traveller, I was nervous about exploring Europe. But Rakuxon Ltd arranged my itinerary across Paris, Rome, and Barcelona — with every hotel, flight, and activity perfectly planned. I felt safe and stress-free the entire time.',
+    name: 'Tomiwa Adedeji',
+    detail: 'Europe Tour',
   },
 ];
 
@@ -452,7 +445,6 @@ export const HOME_IMAGE_SLOTS: readonly (ImageSlot & { slot: string })[] = [
   ...HERO_AVATARS.map((image, index) => ({ slot: `§3.1 avatar ${index + 1}`, ...image })),
   ...DESTINATIONS.map((d) => ({ slot: `§3.6 ${d.country}`, ...d })),
   ...INSTITUTIONS.map((i) => ({ slot: `§3.7 ${i.name}`, ...i })),
-  ...TESTIMONIALS.map((t) => ({ slot: `§3.8 ${t.name}`, ...t })),
   ...AUDIENCES.map((a) => ({ slot: `§3.9 ${a.title}`, ...a })),
   ...COURSE_PATHS.map((p) => ({ slot: `course path ${p.title}`, ...p })),
 ];
