@@ -3,17 +3,29 @@
 
 ## How the FE consumes the contract
 
-> **Cross-repo dependency.** The FE renamed its scope to `@rakuxon/*` with the
-> Rakuxon rebrand. The contract package is published by `rakuxon-edu-BE`, so
-> `@rakuxon/contract` only exists once the BE renames in step. Until then the
-> pinned dependency is still `@rakuxon-edu/contract` — treat this as a tracked
-> migration, not a completed one, and update `CONTEXT.md` when the BE follows.
+> **Resolved.** The rebrand is complete: both repos are `@rakuxon/*` and the
+> backend repo is `rakuxon-BE`. The stale `@rakuxon-edu/contract` pin is gone.
+>
+> **Mechanism decided (BE stage 1): OpenAPI generation, not a published package.**
+> The BE serves its document at `/docs-json`; FE CI generates `packages/contract`
+> from it. One artefact, produced by the running API, so it cannot drift. The
+> published-package option below is retained only as the rejected alternative.
 
-The BE publishes `@rakuxon/contract` (DTOs + enums) to a private registry. The FE:
+**How it actually works:**
 
-1. Adds it as a dependency and **pins a version**.
-2. Re-exports it through `packages/contract` so all apps import from one place.
-3. `packages/api-client` uses those types for every request/response.
+1. The BE serves OpenAPI at `/docs-json` (and Swagger UI at `/docs`).
+2. FE CI runs `openapi-typescript` into `packages/contract`.
+3. `packages/api-client` uses those generated types for every request/response.
+4. Apps import types from `packages/contract` — never from an app-local file.
+
+**Public endpoints matter to generation too.** `GET /v1/catalogue/suggest`,
+`/catalogue/search`, the two detail endpoints and `POST /v1/contact` are
+unauthenticated but still in the contract; base-site consumes them through
+`api-client` like anything else.
+
+### Rejected alternative — a published package
+
+The BE could publish `@rakuxon/contract` (DTOs + enums) to a private registry, with the FE pinning a version:
 
 ```
 apps/* ─┐
