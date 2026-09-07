@@ -79,10 +79,10 @@ export const FOOTER_LEGAL_LINKS: readonly NavLink[] = [
   { label: 'Terms of service', href: ROUTES.terms },
 ];
 
-/** Both real offices. The site previously claimed "Remote-first". */
-export const CONTACT_ADDRESSES: readonly string[] = [
-  'UK: Flat 15, St. Matthews House, Phelp Street, London SE17 2PJ',
-  'Nigeria: 11 Akinsemoyin Street, Surulere, Lagos',
+/** Both real offices, labelled so each reads as a block rather than a run-on. */
+export const CONTACT_ADDRESSES: readonly { label: string; lines: readonly string[] }[] = [
+  { label: 'UK office', lines: ['Flat 15, St. Matthews House', 'Phelp Street, London SE17 2PJ'] },
+  { label: 'Nigeria office', lines: ['11 Akinsemoyin Street', 'Surulere, Lagos'] },
 ];
 
 /* Real profiles, in rakuxon.com's own order. WhatsApp is first because it is
@@ -104,10 +104,14 @@ export const SOCIALS: readonly NavLink[] = [
  * is near-invisible on the dark scheme's #0B1220 ground.
  */
 export const BRAND_LOGO = {
-  logo: '/logo.png',
-  logoDark: '/logo-light.png',
-  logoWidth: '2172',
-  logoHeight: '724',
+  /* -light is the artwork FOR light surfaces (cobalt ink); -dark is for dark
+     surfaces (white ink). Both shipped as opaque rectangles and were keyed to
+     transparency, or they paint a hard-edged box on anything that is not
+     exactly their own backdrop. */
+  logo: '/logo-light.png',
+  logoDark: '/logo-dark.png',
+  logoWidth: '1200',
+  logoHeight: '400',
 } as const;
 
 export const FOOTER_TAGLINE = 'Where Minds Meet Maps.';

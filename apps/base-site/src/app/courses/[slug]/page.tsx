@@ -5,7 +5,7 @@ import { CalendarClock, GraduationCap, MapPin, Wallet } from 'lucide-react';
 
 import { CountryFlag, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
-import { ROUTES, SIGN_UP, courseRoute, universityRoute } from '@/content/routes';
+import { ROUTES, applyHref, courseRoute, universityRoute } from '@/content/routes';
 import { COURSES, findCourseBySlug, findCourses } from '@/lib/catalogue/bank';
 import {
   formatDate,
@@ -261,7 +261,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           </div>
 
           <ApplyPanel
-            applyHref={`${SIGN_UP}&course=${course.slug}`}
+            applyHref={applyHref({ course: course.slug })}
             tuition={formatMoney(course.tuition)}
             tuitionPer={course.tuition.per === 'year' ? 'per year' : 'total'}
             deadline={
@@ -310,7 +310,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           heading="Apply with someone who has done this before"
           body="Create a free account to save this course, track its deadline, and have your documents checked before they reach the university."
           ctaLabel="Proceed to apply"
-          ctaHref={`${SIGN_UP}&course=${course.slug}`}
+          ctaHref={applyHref({ course: course.slug })}
           secondaryLabel="Book a free consultation"
           secondaryHref={ROUTES.contact}
           reassurance="Free to join. The first consultation costs nothing."

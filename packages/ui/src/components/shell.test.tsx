@@ -670,14 +670,17 @@ describe('<CountryFlag/>', () => {
     expect(container.firstElementChild).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('falls back to the building icon when the registry has no country', () => {
+  it('renders nothing when the registry has no country', () => {
+    // It used to draw a generic building icon here. That was worse than empty:
+    // the same glyph repeated down a grid says nothing the heading has not
+    // already said, and it reads as a real mark rather than as missing data.
     const { container } = render(<CountryFlag countryCode="" />);
-    expect(container.querySelector('svg')).toBeInTheDocument();
-    expect(container.textContent).toBe('');
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('falls back for a malformed code rather than rendering nonsense', () => {
+  it('shows a malformed code as text rather than inventing a flag', () => {
     const { container } = render(<CountryFlag countryCode="ZZZ" />);
-    expect(container.querySelector('svg')).toBeInTheDocument();
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
+    expect(container.textContent).toBe('ZZZ');
   });
 });

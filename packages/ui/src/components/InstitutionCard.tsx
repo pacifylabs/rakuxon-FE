@@ -2,47 +2,48 @@ import clsx from 'clsx';
 
 import { CountryFlag } from './CountryFlag';
 
-export interface CourseCardFact {
+export interface InstitutionCardFact {
   label: string;
   value: string;
-  /** Deadlines and time pressure only — the amber tint's whole job. */
-  urgent?: boolean;
 }
 
-export interface CourseCardProps {
-  title: string;
-  institution: string;
-  /** ISO-2. Renders the real flag, never a stand-in icon. */
+export interface InstitutionCardProps {
+  name: string;
+  location: string;
   countryCode?: string;
   href: string;
   applyHref: string;
-  facts: readonly CourseCardFact[];
+  facts?: readonly InstitutionCardFact[];
   badge?: string;
   className?: string;
 }
 
 /**
- * A course in a list: title, the four facts that decide whether to read on,
- * and both actions.
+ * A university in the catalogue listing.
  *
- * The facts sit in a bordered 2×2 grid because they are compared *across*
- * cards — a visitor scans the fee column down the page, and prose would make
- * that impossible.
+ * Distinct from UniversityCard, which is the campus-photo card in the
+ * marketing rows: this one carries facts and both actions, and is
+ * structurally the twin of CourseCard so a page mixing the two reads as one
+ * system rather than two.
  *
- * Two buttons, deliberately. "View course" is the safe one and comes first;
- * "Proceed to apply" is the commitment and is visually stronger. Offering only
- * the second forces a decision before anyone has the facts to make it.
+ * The country is a real flag, never a generic building glyph. The same icon
+ * repeated down a grid says nothing the heading has not already said.
+ *
+ * The second action is "Proceed to apply", not "Visit website". Sending a
+ * visitor to the university's own site is the one link on the page that ends
+ * the journey we exist to run — and the university does not know Rakuxon sent
+ * them.
  */
-export function CourseCard({
-  title,
-  institution,
+export function InstitutionCard({
+  name,
+  location,
   countryCode,
   href,
   applyHref,
-  facts,
+  facts = [],
   badge,
   className,
-}: CourseCardProps) {
+}: InstitutionCardProps) {
   return (
     <article
       className={clsx(
@@ -53,17 +54,17 @@ export function CourseCard({
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <CountryFlag countryCode={countryCode} className="mt-0.5 shrink-0" />
+            <CountryFlag countryCode={countryCode} className="mt-0.5" />
             <div>
               <h3 className="font-heading text-base font-semibold text-text">
                 <a
                   href={href}
                   className="rounded-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
                 >
-                  {title}
+                  {name}
                 </a>
               </h3>
-              <p className="mt-1 text-sm text-text-muted">{institution}</p>
+              <p className="mt-1 text-sm text-text-muted">{location}</p>
             </div>
           </div>
 
@@ -74,37 +75,30 @@ export function CourseCard({
           )}
         </div>
 
-        <dl className="mt-4 grid grid-cols-2 overflow-hidden rounded-md border border-border">
-          {facts.map((fact, index) => (
-            <div
-              key={fact.label}
-              className={clsx(
-                'p-3',
-                /* Interior rules only: a border on every cell would double up
-                   against the container's own. */
-                index % 2 === 0 && 'border-r border-border',
-                index >= 2 && 'border-t border-border',
-              )}
-            >
-              <dd
+        {facts.length > 0 && (
+          <dl className="mt-4 grid grid-cols-2 overflow-hidden rounded-md border border-border">
+            {facts.map((fact, index) => (
+              <div
+                key={fact.label}
                 className={clsx(
-                  'text-sm font-semibold',
-                  fact.urgent ? 'text-tint-urgent' : 'text-text',
+                  'p-3',
+                  index % 2 === 0 && 'border-r border-border',
+                  index >= 2 && 'border-t border-border',
                 )}
               >
-                {fact.value}
-              </dd>
-              <dt className="mt-0.5 text-xs text-text-muted">{fact.label}</dt>
-            </div>
-          ))}
-        </dl>
+                <dd className="text-sm font-semibold text-text">{fact.value}</dd>
+                <dt className="mt-0.5 text-xs text-text-muted">{fact.label}</dt>
+              </div>
+            ))}
+          </dl>
+        )}
 
         <div className="mt-auto flex flex-wrap gap-2 pt-5">
           <a
             href={href}
             className="inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md border border-border bg-surface px-4 text-sm font-semibold text-text transition-colors duration-fast ease-standard hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
-            View course
+            View details
           </a>
           <a
             href={applyHref}

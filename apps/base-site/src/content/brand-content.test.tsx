@@ -35,10 +35,14 @@ describe('contact details', () => {
   });
 
   it('names both real offices rather than claiming remote-first', () => {
+    const flat = CONTACT_ADDRESSES.map(
+      (office) => `${office.label} ${office.lines.join(' ')}`,
+    ).join(' ');
+
     expect(CONTACT_ADDRESSES).toHaveLength(2);
-    expect(CONTACT_ADDRESSES.join(' ')).toContain('London SE17 2PJ');
-    expect(CONTACT_ADDRESSES.join(' ')).toContain('Surulere, Lagos');
-    expect(CONTACT_ADDRESSES.join(' ')).not.toMatch(/remote-first/i);
+    expect(flat).toContain('London SE17 2PJ');
+    expect(flat).toContain('Surulere, Lagos');
+    expect(flat).not.toMatch(/remote-first/i);
   });
 
   it('points every social at a real Rakuxon profile', () => {

@@ -8,6 +8,16 @@ export interface ContactFormProps {
   defaultRole?: string;
   /** Shown in the fallback notice, since nothing is wired to a backend yet. */
   fallbackEmail: string;
+  /**
+   * What the visitor was looking at when they pressed apply.
+   *
+   * Rendered as a visible summary and carried in a hidden field, so the
+   * selection survives the step rather than being something they have to
+   * describe again from memory.
+   */
+  selection?: { label: string; href: string; value: string } | null;
+  /** Seeds the message box, e.g. with the course being applied for. */
+  defaultMessage?: string;
   className?: string;
 }
 
@@ -30,6 +40,8 @@ type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
 export function ContactForm({
   defaultRole = 'student',
   fallbackEmail,
+  selection = null,
+  defaultMessage,
   className,
 }: ContactFormProps) {
   const id = useId();
@@ -64,6 +76,29 @@ export function ContactForm({
 
   return (
     <form noValidate onSubmit={handleSubmit} className={clsx('flex flex-col gap-5', className)}>
+      {selection && (
+        <>
+          {/* Visible, so the visitor can see their choice survived the step —
+              and correctable, because arriving on the wrong course with no way
+              back is worse than not carrying it at all. */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-accent-soft px-4 py-3">
+            <p className="text-sm text-text">
+              <span className="font-semibold">Applying for:</span>{' '}
+              <a href={selection.href} className="rounded-sm text-primary underline">
+                {selection.label}
+              </a>
+            </p>
+            <a
+              href="/contact?intent=signup"
+              className="rounded-sm text-sm text-text-muted underline underline-offset-4 hover:text-primary"
+            >
+              Change
+            </a>
+          </div>
+          <input type="hidden" name="selection" value={selection.value} />
+        </>
+      )}
+
       <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-name`} className="text-sm font-medium text-text">
           Your name
@@ -125,6 +160,8 @@ export function ContactForm({
           id={`${id}-message`}
           name="message"
           rows={5}
+          /* defaultValue, not value: seeded once, then it is the visitor's. */
+          defaultValue={defaultMessage}
           aria-invalid={errors.message ? true : undefined}
           aria-describedby={errors.message ? `${id}-message-error` : undefined}
           className={fieldClasses}

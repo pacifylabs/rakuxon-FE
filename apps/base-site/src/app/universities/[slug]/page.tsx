@@ -5,7 +5,7 @@ import { Award, Building2, GraduationCap, Wallet } from 'lucide-react';
 
 import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
-import { ROUTES, SIGN_UP, courseRoute, universityRoute } from '@/content/routes';
+import { ROUTES, applyHref, courseRoute, universityRoute } from '@/content/routes';
 import { INSTITUTIONS, findCourses, findInstitutionBySlug } from '@/lib/catalogue/bank';
 import { formatDuration, formatIntake, formatMoney, nextIntake } from '@/lib/catalogue/format';
 import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
@@ -77,7 +77,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           </div>
 
           <a
-            href={`${SIGN_UP}&university=${institution.slug}`}
+            href={applyHref({ university: institution.slug })}
             className="inline-flex min-h-12 items-center justify-center rounded-md bg-primary px-6 text-base font-semibold text-on-primary transition-colors duration-fast ease-standard hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             Proceed to apply
@@ -174,8 +174,9 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
                   <CourseCard
                     title={course.title}
                     institution={course.institutionName}
+                    countryCode={course.countryCode}
                     href={courseRoute(course.slug)}
-                    applyHref={`${SIGN_UP}&course=${course.slug}`}
+                    applyHref={applyHref({ course: course.slug })}
                     badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
                     facts={[
                       { label: 'Fee', value: formatMoney(course.tuition) },
@@ -253,7 +254,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           heading={`Applying to ${institution.name}?`}
           body="Create a free account to save courses here, track their deadlines, and have your documents checked before they reach the admissions office."
           ctaLabel="Proceed to apply"
-          ctaHref={`${SIGN_UP}&university=${institution.slug}`}
+          ctaHref={applyHref({ university: institution.slug })}
           secondaryLabel="Book a free consultation"
           secondaryHref={ROUTES.contact}
           reassurance="Free to join. The first consultation costs nothing."

@@ -1,14 +1,8 @@
 import clsx from 'clsx';
-import { Building2 } from 'lucide-react';
-
-import { IconBubble } from './IconBubble';
-import type { IconBubbleTone } from './IconBubble';
 
 export interface CountryFlagProps {
-  /** ISO 3166-1 alpha-2, e.g. "IN". Anything else falls back to the icon. */
+  /** ISO 3166-1 alpha-2, e.g. "IN". Anything else renders the code itself. */
   countryCode?: string;
-  /** Tone for the fallback bubble, so it matches its neighbours. */
-  fallbackTone?: IconBubbleTone;
   size?: 'md' | 'lg';
   className?: string;
 }
@@ -39,26 +33,25 @@ const SIZE_CLASSES = {
 } as const;
 
 /**
- * The country flag for an institution, in the same slot its icon occupied.
+ * The country flag for an institution or course.
  *
- * Decorative: every card already names the country in text beside it, so
- * announcing it twice would only slow a screen reader down.
+ * Decorative: every card names the country in text beside it, so announcing it
+ * twice would only slow a screen reader down.
  *
- * Platforms without flag glyphs — Windows Chrome, most notably — render the
- * two regional-indicator letters instead. That degrades to the country code,
- * which is still meaningful, so no detection is attempted.
+ * Platforms without flag glyphs — Windows Chrome, most notably — render the two
+ * regional-indicator letters instead. That degrades to the country code, which
+ * is still meaningful, so no detection is attempted.
+ *
+ * With no resolvable country it shows the raw code, or nothing. It used to fall
+ * back to a generic building icon, which was worse than empty: the same glyph
+ * repeated down a grid says nothing the heading has not already said, and it
+ * reads as a real mark rather than as missing data.
  */
-export function CountryFlag({
-  countryCode,
-  fallbackTone = 'tone1',
-  size = 'md',
-  className,
-}: CountryFlagProps) {
+export function CountryFlag({ countryCode, size = 'md', className }: CountryFlagProps) {
   const flag = flagEmoji(countryCode);
+  const code = countryCode?.trim().toUpperCase();
 
-  if (!flag) {
-    return <IconBubble icon={Building2} tone={fallbackTone} size={size} className={className} />;
-  }
+  if (!flag && !code) return null;
 
   return (
     <span
@@ -66,10 +59,11 @@ export function CountryFlag({
       className={clsx(
         'grid shrink-0 place-items-center rounded-full border border-border bg-surface leading-none',
         SIZE_CLASSES[size],
+        flag ? '' : 'text-xs font-semibold tracking-tight text-text-muted',
         className,
       )}
     >
-      {flag}
+      {flag ?? code}
     </span>
   );
 }

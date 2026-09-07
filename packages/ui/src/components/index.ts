@@ -72,6 +72,8 @@ export { ThemeToggle } from './ThemeToggle';
 export { BrandLogo } from './BrandLogo';
 export { CourseCard } from './CourseCard';
 export type { CourseCardFact, CourseCardProps } from './CourseCard';
+export { InstitutionCard } from './InstitutionCard';
+export type { InstitutionCardFact, InstitutionCardProps } from './InstitutionCard';
 export { SignUpPrompt } from './SignUpPrompt';
 export type { SignUpPromptProps } from './SignUpPrompt';
 export { SocialIcon } from './SocialIcon';

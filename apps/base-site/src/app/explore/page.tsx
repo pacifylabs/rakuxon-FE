@@ -4,8 +4,8 @@ import { Suspense } from 'react';
 import { CtaBand, PageHeader, SectionBand, SignUpPrompt, StatChip } from '@rakuxon/ui';
 import { Building2 } from 'lucide-react';
 
-import { findCourses } from '@/lib/catalogue/bank';
-import { fetchCountryCounts, fetchInstitutions } from '@/lib/catalogue/institutions';
+import { findCourses, listInstitutions } from '@/lib/catalogue/bank';
+import { fetchCountryCounts } from '@/lib/catalogue/institutions';
 import { ROUTES, SIGN_UP } from '@/content/routes';
 
 import { ExploreControls } from './ExploreControls';
@@ -28,11 +28,17 @@ const asString = (value: string | string[] | undefined) =>
 
 async function Results({ tab, country, query }: { tab: TabKey; country: string; query: string }) {
   if (tab === 'universities') {
-    return (
-      <InstitutionResults
-        result={await fetchInstitutions({ countryCode: country, search: query })}
-      />
-    );
+    /*
+     * Our own catalogue, not the open registry.
+     *
+     * The registry lists every education organisation on earth, which looked
+     * generous and behaved badly: most cards had no page to open and no course
+     * to apply to, so the only action left was a link off to the university's
+     * own site. A listing where half the cards are dead ends is worse than a
+     * shorter one where every card works. The registry still powers the
+     * per-country counts below, which is a real signal.
+     */
+    return <InstitutionResults result={listInstitutions()} />;
   }
 
   /*

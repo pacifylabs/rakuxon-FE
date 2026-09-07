@@ -39,6 +39,21 @@ export const universityRoute = (slug: string) => `/universities/${slug}`;
  * with the role pre-selected. Swap these two values when auth goes live.
  */
 export const SIGN_UP = `${ROUTES.contact}?intent=signup`;
+
+/**
+ * Apply, carrying what the visitor was looking at.
+ *
+ * The choice travels in the query string so registration opens already knowing
+ * the course or university. Asking someone to find it a second time, on the
+ * step where they are most likely to leave, is how an application is lost.
+ * One helper, so every button spells the parameters the same way.
+ */
+export const applyHref = (selection: { course?: string; university?: string }) => {
+  const params = new URLSearchParams({ intent: 'signup' });
+  if (selection.course) params.set('course', selection.course);
+  if (selection.university) params.set('university', selection.university);
+  return `${ROUTES.contact}?${params.toString()}`;
+};
 export const LOG_IN = `${ROUTES.contact}?intent=login`;
 
 /**
