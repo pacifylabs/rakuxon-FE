@@ -1,6 +1,7 @@
 import { InstitutionCard, SignUpPrompt } from '@rakuxon/ui';
 
 import { ROUTES, applyHref, universityRoute } from '@/content/routes';
+import { formatLocation } from '@/lib/catalogue/format';
 import type { ApiCountry, ApiInstitution } from '@/lib/catalogue/api';
 import type { CatalogueResult } from '@/lib/catalogue/types';
 
@@ -120,7 +121,7 @@ export function UniversityBrowser({ countries, result, country, query }: Props) 
               <li key={institution.id} className="h-full">
                 <InstitutionCard
                   name={institution.name}
-                  location={[institution.city, institution.country].filter(Boolean).join(', ')}
+                  location={formatLocation(institution.city, institution.country)}
                   countryCode={institution.countryCode}
                   href={universityRoute(institution.slug)}
                   applyHref={applyHref({ university: institution.slug })}

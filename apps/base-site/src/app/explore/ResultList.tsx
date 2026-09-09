@@ -1,7 +1,7 @@
 import { CourseCard, InstitutionCard } from '@rakuxon/ui';
 
 import { applyHref, courseRoute, universityRoute } from '@/content/routes';
-import { formatDuration, formatIntake, formatMoney, nextIntake } from '@/lib/catalogue/format';
+import { formatDuration, formatIntake, formatMoney, nextIntake, formatLocation } from '@/lib/catalogue/format';
 import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
 import type { CatalogueResult, Course, InstitutionDetail } from '@/lib/catalogue/types';
 
@@ -54,7 +54,7 @@ export function InstitutionResults({
           <li key={institution.id} className="h-full">
             <InstitutionCard
               name={institution.name}
-              location={[institution.city, institution.country].filter(Boolean).join(', ')}
+              location={formatLocation(institution.city, institution.country)}
               countryCode={institution.countryCode}
               href={universityRoute(institution.slug)}
               applyHref={applyHref({ university: institution.slug })}

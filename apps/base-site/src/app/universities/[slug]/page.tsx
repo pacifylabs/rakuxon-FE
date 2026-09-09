@@ -7,7 +7,13 @@ import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui'
 
 import { ROUTES, applyHref, courseRoute, universityRoute } from '@/content/routes';
 import { INSTITUTIONS, findCourses, findInstitutionBySlug } from '@/lib/catalogue/bank';
-import { formatDuration, formatIntake, formatMoney, nextIntake } from '@/lib/catalogue/format';
+import {
+  formatDuration,
+  formatIntake,
+  formatLocation,
+  formatMoney,
+  nextIntake,
+} from '@/lib/catalogue/format';
 import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
 
 export const dynamic = 'force-static';
@@ -67,7 +73,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
             </h1>
             <p className="mt-3 flex flex-wrap items-center gap-2 text-base text-text-muted">
               <CountryFlag countryCode={institution.countryCode} />
-              {[institution.city, institution.country].filter(Boolean).join(', ')}
+              {formatLocation(institution.city, institution.country)}
               {institution.fastTrackOffer && (
                 <span className="rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-primary">
                   Fast-track offer

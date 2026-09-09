@@ -41,3 +41,16 @@ export function formatDate(iso: string): string {
 /** Weeks until a deadline; negative once it has passed. */
 export const weeksUntil = (iso: string, now = Date.now()) =>
   Math.round((new Date(iso).getTime() - now) / 604_800_000);
+
+/**
+ * "Manchester, United Kingdom" — but never "Ireland, Ireland".
+ *
+ * The registry's location name is sometimes the country rather than a city,
+ * for institutions with no single campus. Joining blindly then prints the same
+ * word twice, which reads as a bug because it is one.
+ */
+export function formatLocation(city: string | null | undefined, country: string): string {
+  const trimmed = city?.trim();
+  if (!trimmed || trimmed.toLowerCase() === country.trim().toLowerCase()) return country;
+  return `${trimmed}, ${country}`;
+}
