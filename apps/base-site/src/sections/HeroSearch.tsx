@@ -2,7 +2,7 @@
 
 import { Search } from 'lucide-react';
 
-import { AppLink } from '@rakuxon/ui';
+import { AppLink, CountryFlag } from '@rakuxon/ui';
 import { useEffect, useId, useRef, useState } from 'react';
 
 
@@ -16,19 +16,33 @@ const MAX_RESULTS = 8;
  * page. Sending every pick to /explore?q=<title> — as this did — makes the
  * visitor search twice for something they had already found.
  */
+/**
+ * Mirrors the API's search result exactly.
+ *
+ * It previously declared `title`, while the API sends `name` — so every row
+ * rendered with a blank heading and the dropdown looked like an unlabelled
+ * list. Keeping the field names identical to the response removes the class of
+ * bug rather than the instance.
+ */
 interface Suggestion {
-  type: 'institution' | 'course';
+  type: 'institution' | 'course' | 'article';
   id: string;
   slug: string;
-  title: string;
+  name: string;
   subtitle?: string;
-  badges?: readonly string[];
+  countryCode?: string;
+  /** The matched runs of the name, so the dropdown can show why a row matched. */
+  highlight?: readonly { text: string; match: boolean }[];
 }
 
+const HREF_BY_TYPE: Record<Suggestion['type'], (slug: string) => string> = {
+  institution: (slug) => `/universities/${slug}`,
+  course: (slug) => `/courses/${slug}`,
+  article: (slug) => `/resources/${slug}`,
+};
+
 function suggestionHref(suggestion: Suggestion) {
-  return suggestion.type === 'institution'
-    ? `/universities/${suggestion.slug}`
-    : `/courses/${suggestion.slug}`;
+  return HREF_BY_TYPE[suggestion.type](suggestion.slug);
 }
 
 /**
@@ -52,7 +66,36 @@ function groupSuggestions(items: readonly Suggestion[]) {
   return [
     { label: 'Universities', items: items.filter((item) => item.type === 'institution') },
     { label: 'Courses', items: items.filter((item) => item.type === 'course') },
+    { label: 'Guidance', items: items.filter((item) => item.type === 'article') },
   ].filter((group) => group.items.length > 0);
+}
+
+/**
+ * The name with the matched run emphasised.
+ *
+ * The API returns segments rather than marked-up HTML precisely so this can be
+ * rendered as elements — a name containing a tag cannot execute here. Falls
+ * back to the plain name if the field is missing.
+ */
+function HighlightedName({ result }: { result: Suggestion }) {
+  if (!result.highlight?.length) return <>{result.name}</>;
+
+  return (
+    <>
+      {result.highlight.map((segment, index) =>
+        segment.match ? (
+          <mark
+            key={`${segment.text}-${index}`}
+            className="bg-transparent font-semibold text-primary"
+          >
+            {segment.text}
+          </mark>
+        ) : (
+          <span key={`${segment.text}-${index}`}>{segment.text}</span>
+        ),
+      )}
+    </>
+  );
 }
 
 /**
@@ -229,22 +272,17 @@ export function HeroSearch() {
                             }`}
                             onMouseEnter={() => setActiveIndex(optionIndex)}
                           >
-                            <span className="block font-medium">{result.title}</span>
-                            {result.subtitle && (
-                              <span className="mt-0.5 block text-xs text-text-muted">
-                                {result.subtitle}
+                            <span className="flex items-center gap-2">
+                              {result.countryCode && (
+                                <CountryFlag countryCode={result.countryCode} size="sm" />
+                              )}
+                              <span className="block font-medium">
+                                <HighlightedName result={result} />
                               </span>
-                            )}
-                            {result.badges && result.badges.length > 0 && (
-                              <span className="mt-2 flex flex-wrap gap-1.5">
-                                {result.badges.map((badge) => (
-                                  <span
-                                    key={badge}
-                                    className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-text-muted"
-                                  >
-                                    {badge}
-                                  </span>
-                                ))}
+                            </span>
+                            {result.subtitle && (
+                              <span className="mt-0.5 block pl-8 text-xs text-text-muted">
+                                {result.subtitle}
                               </span>
                             )}
                           </AppLink>

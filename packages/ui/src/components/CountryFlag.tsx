@@ -3,7 +3,7 @@ import clsx from 'clsx';
 export interface CountryFlagProps {
   /** ISO 3166-1 alpha-2, e.g. "IN". Anything else renders the code itself. */
   countryCode?: string;
-  size?: 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
@@ -28,6 +28,8 @@ export function flagEmoji(countryCode?: string): string | null {
 }
 
 const SIZE_CLASSES = {
+  /* Dropdown rows: a 40px flag would outweigh the name beside it. */
+  sm: 'h-6 w-6 text-sm',
   md: 'h-10 w-10 text-xl',
   lg: 'h-12 w-12 text-2xl',
 } as const;
