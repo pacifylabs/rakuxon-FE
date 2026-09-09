@@ -54,6 +54,18 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
 
   const courses = findCourses({ institutionSlug: institution.slug }).items;
 
+  /*
+   * Wikidata descriptions are lowercase sentence fragments — "public research
+   * university in Cardiff, United Kingdom" — written to sit after a label, not
+   * to stand alone. Dropped straight into a paragraph under a heading they read
+   * as a truncation. Restoring the subject makes the same fact a sentence.
+   */
+  const about = institution.about?.trim()
+    ? /^[a-z]/.test(institution.about.trim())
+      ? `${institution.name} is a ${institution.about.trim()}.`
+      : institution.about.trim()
+    : null;
+
   return (
     <>
       <script
@@ -63,7 +75,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
             '@context': 'https://schema.org',
             '@type': 'EducationalOrganization',
             name: institution.name,
-            description: institution.about,
+            description: about,
             address: {
               '@type': 'PostalAddress',
               addressLocality: institution.city,
@@ -167,7 +179,10 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
         <h2 id="university-about-heading" className="font-heading text-2xl font-bold text-text">
           About {institution.name}
         </h2>
-        <p className="mt-4 max-w-prose text-base text-text-muted">{institution.about}</p>
+        <p className="mt-4 max-w-prose text-base text-text-muted">
+          {about ??
+            `We are still writing up ${institution.name}. Our advisors know it — ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
+        </p>
 
         {(institution.qualityRatings ?? []).length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-3">
