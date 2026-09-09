@@ -28,14 +28,12 @@ import InstitutionsPage from './institutions/page';
 import PrivacyPage from './privacy/page';
 import StudentsPage from './students/page';
 import TermsPage from './terms/page';
-import UniversitiesPage from './universities/page';
 
 const PAGES = [
   ['/', <HomePage key="home" />, 'Your degree abroad,'],
   ['/students', <StudentsPage key="students" />, 'Find your perfect program'],
   ['/agencies', <AgenciesPage key="agencies" />, 'Grow your recruitment business'],
   ['/institutions', <InstitutionsPage key="institutions" />, 'Reach qualified students'],
-  ['/universities', <UniversitiesPage key="universities" />, 'Browse before you commit'],
   ['/destinations', <DestinationsPage key="destinations" />, 'Six countries'],
   ['/about', <AboutPage key="about" />, 'Transform'],
   ['/contact', <ContactPage key="contact" />, 'Tell us which side you are on'],
