@@ -74,7 +74,7 @@ export const ABOUT_MODEL = [
   {
     title: 'Institutions',
     description: 'Receive complete, checked applications from partners who have been vetted first.',
-    href: ROUTES.institutions,
+    href: ROUTES.agencies,
   },
 ];
 

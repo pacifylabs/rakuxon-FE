@@ -374,7 +374,7 @@ export const AUDIENCES: readonly AudienceContent[] = [
   {
     title: 'Institutions',
     description: 'Reach qualified students worldwide through a vetted partner network.',
-    cta: { label: 'Partner with us', href: ROUTES.institutions },
+    cta: { label: 'Partner with us', href: ROUTES.agencies },
     src: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80',
     /* 04b § 3.9 called this a lecture hall; it is a commencement ceremony. */
     alt: 'Graduates throwing their caps at a commencement ceremony',

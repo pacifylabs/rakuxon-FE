@@ -16,7 +16,6 @@ export const ROUTES = {
   home: '/',
   students: '/students',
   agencies: '/agencies',
-  institutions: '/institutions',
   services: '/services',
   universities: '/universities',
   explore: '/explore',

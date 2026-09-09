@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { HOME_IMAGE_SLOTS } from '@/content/home';
 import { UNIVERSITIES_IMAGE_SLOTS } from '@/content/universities';
 import { ALL_ROUTES, COUNTRY_SLUGS } from '@/content/routes';
+import { NAV_LINKS } from '@/content/site';
 import { internalPaths, renderPage } from '@/lib/page-harness';
 
 import HomePage from './page';
@@ -23,8 +24,6 @@ import NotFound from './not-found';
 import AboutPage from './about/page';
 import AgenciesPage from './agencies/page';
 import ContactPage from './contact/page';
-import DestinationsPage from './destinations/page';
-import InstitutionsPage from './institutions/page';
 import PrivacyPage from './privacy/page';
 import StudentsPage from './students/page';
 import TermsPage from './terms/page';
@@ -33,8 +32,6 @@ const PAGES = [
   ['/', <HomePage key="home" />, 'Your degree abroad,'],
   ['/students', <StudentsPage key="students" />, 'Find your perfect program'],
   ['/agencies', <AgenciesPage key="agencies" />, 'Grow your recruitment business'],
-  ['/institutions', <InstitutionsPage key="institutions" />, 'Reach qualified students'],
-  ['/destinations', <DestinationsPage key="destinations" />, 'Six countries'],
   ['/about', <AboutPage key="about" />, 'Transform'],
   ['/contact', <ContactPage key="contact" />, 'Tell us which side you are on'],
   ['/privacy', <PrivacyPage key="privacy" />, 'Privacy policy'],
@@ -85,15 +82,14 @@ describe.each(PAGES)('%s', (route, element, expectedHeading) => {
   it('reaches every nav destination from the shared header', () => {
     renderPage(element);
     const banner = screen.getByRole('banner');
-    for (const label of [
-      'Students',
-      'Agencies',
-      'Institutions',
-      'Explore',
-      'Universities',
-      'Destinations',
-    ]) {
-      expect(within(banner).getAllByRole('link', { name: label }).length).toBeGreaterThan(0);
+
+    /*
+     * Driven by NAV_LINKS rather than a copy of it. The list used to be
+     * duplicated here, so removing a page failed nine tests for the same
+     * reason instead of one.
+     */
+    for (const link of NAV_LINKS) {
+      expect(within(banner).getAllByRole('link', { name: link.label }).length).toBeGreaterThan(0);
     }
   });
 
@@ -149,7 +145,6 @@ describe('route coverage', () => {
     for (const route of [
       '/students',
       '/agencies',
-      '/institutions',
       '/universities',
       '/destinations',
       '/about',

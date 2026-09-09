@@ -5,12 +5,13 @@ import { LOG_IN, ROUTES, SIGN_UP, countryRoute } from './routes';
 /** Global shell content (docs/04b § 2), shared by every page. */
 
 export const NAV_LINKS: readonly NavLink[] = [
-  { label: 'Students', href: ROUTES.students },
-  { label: 'Agencies', href: ROUTES.agencies },
-  { label: 'Institutions', href: ROUTES.institutions },
-  { label: 'Explore', href: ROUTES.explore },
+  /* Universities is the catalogue listing; Destinations is the same catalogue
+     grouped by country; Explore searches across both. Three separate entries
+     that all opened a list of universities was two too many. */
   { label: 'Universities', href: ROUTES.universities },
   { label: 'Destinations', href: ROUTES.destinations },
+  { label: 'Explore', href: ROUTES.explore },
+  { label: 'Agencies', href: ROUTES.agencies },
   { label: 'Services', href: ROUTES.services },
   { label: 'About', href: ROUTES.about },
 ];
@@ -67,7 +68,6 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     links: [
       { label: 'Students', href: ROUTES.students },
       { label: 'Agencies', href: ROUTES.agencies },
-      { label: 'Institutions', href: ROUTES.institutions },
       { label: 'Explore courses', href: ROUTES.explore },
     ],
   },
