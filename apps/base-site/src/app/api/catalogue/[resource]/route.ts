@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { findCourses, suggest } from '@/lib/catalogue/bank';
-import { fetchCountryCounts, fetchInstitutions } from '@/lib/catalogue/institutions';
+import { findCourses } from '@/lib/catalogue/bank';
+import { fetchCountries, fetchInstitutions, searchCatalogue } from '@/lib/catalogue/api';
 
 /**
  * The catalogue as real HTTP endpoints.
@@ -16,12 +16,18 @@ import { fetchCountryCounts, fetchInstitutions } from '@/lib/catalogue/instituti
  *   GET /api/catalogue/suggest?q=nor&limit=8
  *   GET /api/catalogue/country-counts
  *
- * Courses and suggestions come from our own bank rather than a third party, so
- * nothing here depends on somebody else's uptime or deploy schedule, and an
- * admin can unpublish a record without asking anyone.
+ * Universities and suggestions come from our own backend, so an admin can
+ * unpublish a record and it disappears everywhere without a redeploy. Courses
+ * are still the local seed until the course importer lands.
+ *
+ * These stay server-side proxies rather than letting the browser call the API
+ * directly: it keeps the backend origin out of the client bundle, and means a
+ * CORS rule is not load-bearing for the search box working.
  */
 
-export const revalidate = 3600;
+/* Matches the windows in api.ts. An hour meant a publish took an hour to
+   show, which is not a toggle. */
+export const revalidate = 300;
 
 const RESOURCES = ['universities', 'courses', 'suggest', 'country-counts'] as const;
 type Resource = (typeof RESOURCES)[number];
@@ -47,7 +53,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ reso
   const result = await (async () => {
     switch (resource) {
       case 'universities':
-        return fetchInstitutions({ countryCode: country, search: query });
+        return fetchInstitutions({ country, q: query, limit: 24 });
       case 'courses':
         return findCourses({
           q: query,
@@ -56,9 +62,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ reso
           discipline: url.searchParams.get('discipline') ?? '',
         });
       case 'suggest':
-        return suggest(query, Number(url.searchParams.get('limit') ?? 8));
+        return searchCatalogue(query, Number(url.searchParams.get('limit') ?? 8));
       case 'country-counts':
-        return fetchCountryCounts();
+        return { items: await fetchCountries() };
     }
   })();
 

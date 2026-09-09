@@ -45,6 +45,16 @@ interface Paged<T> {
   pageCount: number;
 }
 
+/**
+ * Failures are swallowed so a page still renders, which makes them invisible.
+ * They are logged first — a silently empty catalogue is far harder to diagnose
+ * than a noisy one, and this cost an hour proving the endpoint was fine.
+ */
+function reportFailure(path: string, error: unknown): void {
+  const reason = error instanceof Error ? error.message : String(error);
+  console.error(`[catalogue] ${path} failed: ${reason}`);
+}
+
 async function getJson<T>(path: string, revalidate: number): Promise<T> {
   /*
    * An explicit timeout, because fetch has none by default: a hung upstream
@@ -71,9 +81,18 @@ async function getJson<T>(path: string, revalidate: number): Promise<T> {
 /** Destinations for the country menu, with the count behind each one. */
 export async function fetchCountries(): Promise<ApiCountry[]> {
   try {
-    /* An hour: the menu changes when an admin publishes a country, not often. */
-    return await getJson<ApiCountry[]>('/countries', 3600);
-  } catch {
+    /*
+     * Five minutes, not an hour.
+     *
+     * An hour cached an empty menu from before the first records were
+     * published, and kept serving it long after — which made the claim that an
+     * admin can publish and see it everywhere plainly false. Publish latency is
+     * a product decision, and five minutes is the longest that still feels
+     * like the toggle did something.
+     */
+    return await getJson<ApiCountry[]>('/countries', 300);
+  } catch (error) {
+    reportFailure('/countries', error);
     /* The header must still render. An empty menu is a degraded page; a thrown
        error is no page at all. */
     return [];
@@ -110,6 +129,7 @@ export async function fetchInstitutions(
       source: 'bank',
     };
   } catch (error) {
+    reportFailure('/institutions', error);
     return {
       ...emptyResult<ApiInstitution>(
         'unavailable',
@@ -126,8 +146,46 @@ export async function fetchInstitutions(
 /** One university. Null rather than throwing, so a page can render notFound(). */
 export async function fetchInstitution(slug: string): Promise<ApiInstitution | null> {
   try {
-    return await getJson<ApiInstitution>(`/institutions/${encodeURIComponent(slug)}`, 3600);
-  } catch {
+    return await getJson<ApiInstitution>(`/institutions/${encodeURIComponent(slug)}`, 300);
+  } catch (error) {
+    reportFailure(`/institutions/${slug}`, error);
     return null;
+  }
+}
+
+export interface ApiSuggestion {
+  type: 'institution' | 'course' | 'article';
+  id: string;
+  slug: string;
+  name: string;
+  subtitle?: string;
+  countryCode?: string;
+  highlight: { text: string; match: boolean }[];
+}
+
+/**
+ * The ranked typeahead, across universities, courses and guidance.
+ *
+ * Ranking happens in the database, not here: comparing candidates only means
+ * something when they are compared against each other, and the backend already
+ * does that in one query.
+ */
+export async function searchCatalogue(
+  query: string,
+  limit = 8,
+): Promise<{ items: ApiSuggestion[]; total: number }> {
+  const params = new URLSearchParams({ query, limit: String(limit) });
+
+  try {
+    return await getJson<{ items: ApiSuggestion[]; total: number }>(
+      `/search?${params.toString()}`,
+      60,
+    );
+  } catch (error) {
+    reportFailure('/search', error);
+    /* A search box that errors is worse than one that finds nothing: the
+       visitor cannot tell the difference between "no match" and "broken", but
+       an empty dropdown at least lets them keep typing. */
+    return { items: [], total: 0 };
   }
 }
