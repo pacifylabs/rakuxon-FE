@@ -6,7 +6,8 @@ import { Award, Building2, GraduationCap, Wallet } from 'lucide-react';
 import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
 import { ROUTES, applyHref, courseRoute, universityRoute } from '@/content/routes';
-import { INSTITUTIONS, findCourses, findInstitutionBySlug } from '@/lib/catalogue/bank';
+import { fetchInstitution } from '@/lib/catalogue/api';
+import { findCourses } from '@/lib/catalogue/bank';
 import {
   formatDuration,
   formatIntake,
@@ -16,29 +17,39 @@ import {
 } from '@/lib/catalogue/format';
 import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
 
-export const dynamic = 'force-static';
-
-export function generateStaticParams() {
-  return INSTITUTIONS.map((institution) => ({ slug: institution.slug }));
-}
+/*
+ * Rendered on demand and then cached, not prebuilt.
+ *
+ * generateStaticParams used to enumerate the local seed, which is why every
+ * real university 404'd: the catalogue holds thousands of records and the seed
+ * held two, so any slug outside that pair had no page. Prebuilding thousands
+ * would also make every deploy wait on the whole catalogue.
+ */
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const institution = findInstitutionBySlug((await params).slug);
+  const institution = await fetchInstitution((await params).slug);
   if (!institution) return { title: 'University not found' };
+
+  const where = formatLocation(institution.city, institution.country);
 
   return {
     title: `${institution.name} — courses, fees and entry requirements`,
-    description: institution.about.slice(0, 155),
+    /* about is empty for imported records, so the description is built from
+       what every record actually has rather than left blank. */
+    description:
+      institution.about?.slice(0, 155) ??
+      `${institution.name} in ${where}. Courses, entry requirements and fees, with Rakuxon's support through the application.`,
     alternates: { canonical: universityRoute(institution.slug) },
   };
 }
 
 export default async function UniversityPage({ params }: { params: Promise<{ slug: string }> }) {
-  const institution = findInstitutionBySlug((await params).slug);
+  const institution = await fetchInstitution((await params).slug);
   if (!institution) notFound();
 
   const courses = findCourses({ institutionSlug: institution.slug }).items;
@@ -95,12 +106,17 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
             {
               icon: GraduationCap,
               label: 'Upcoming intake',
-              value: institution.upcomingIntake ? formatIntake(institution.upcomingIntake) : '—',
+              value: institution.upcomingIntake ?? 'Ask an advisor',
             },
             {
               icon: Wallet,
               label: 'Tuition from',
-              value: institution.tuitionFrom ? formatMoney(institution.tuitionFrom) : '—',
+              value: institution.tuitionFrom
+                ? formatMoney({
+                    amount: Number(institution.tuitionFrom),
+                    currency: institution.tuitionCurrency ?? 'GBP',
+                  })
+                : 'Ask an advisor',
             },
             {
               icon: Building2,
@@ -110,7 +126,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
             {
               icon: Award,
               label: 'English accepted',
-              value: institution.englishTests.map((test) => test.test).join(', ') || '—',
+              value: (institution.englishTests ?? []).map((test) => test.test).join(', ') || '—',
             },
           ].map((fact) => (
             <div key={fact.label} className="rounded-lg border border-border bg-surface p-4">
@@ -130,9 +146,9 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
         </h2>
         <p className="mt-4 max-w-prose text-base text-text-muted">{institution.about}</p>
 
-        {institution.qualityRatings.length > 0 && (
+        {(institution.qualityRatings ?? []).length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-3">
-            {institution.qualityRatings.map((rating) => (
+            {(institution.qualityRatings ?? []).map((rating) => (
               <li
                 key={`${rating.scheme}-${rating.year}`}
                 className="rounded-md border border-border bg-surface px-4 py-2 text-sm text-text-muted"
@@ -146,11 +162,11 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           </ul>
         )}
 
-        {institution.highlights.length > 0 && (
+        {(institution.highlights ?? []).length > 0 && (
           <>
             <h3 className="mt-10 font-heading text-lg font-semibold text-text">Highlights</h3>
             <ul className="mt-4 flex flex-col gap-3">
-              {institution.highlights.map((highlight) => (
+              {(institution.highlights ?? []).map((highlight) => (
                 <li key={highlight} className="flex gap-3 text-base text-text-muted">
                   <span
                     aria-hidden="true"
@@ -207,7 +223,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           Required documents
         </h2>
         <div className="mt-6 flex flex-col gap-6">
-          {institution.requiredDocuments.map((group) => (
+          {(institution.requiredDocuments ?? []).map((group) => (
             <section key={group.id} aria-labelledby={`doc-${group.id}`}>
               <h3
                 id={`doc-${group.id}`}
@@ -238,13 +254,13 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           </>
         )}
 
-        {institution.faqs.length > 0 && (
+        {(institution.faqs ?? []).length > 0 && (
           <>
             <h2 className="mt-12 font-heading text-2xl font-bold text-text">
               Frequently asked questions
             </h2>
             <dl className="mt-6 flex flex-col gap-4">
-              {institution.faqs.map((faq) => (
+              {(institution.faqs ?? []).map((faq) => (
                 <div key={faq.question} className="rounded-lg border border-border bg-surface p-5">
                   <dt className="font-heading text-base font-semibold text-text">{faq.question}</dt>
                   <dd className="mt-2 text-base text-text-muted">{faq.answer}</dd>

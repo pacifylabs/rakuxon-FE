@@ -32,6 +32,35 @@ export interface ApiInstitution {
   courseCount: number;
 }
 
+/**
+ * The full record from /institutions/:slug.
+ *
+ * Separate from the summary the listing returns: the detail endpoint carries
+ * the fields a page needs and a card does not, and typing them as one shape
+ * would let a card silently depend on data the listing never sends.
+ *
+ * Most of the optional fields are empty for imported records — the registry
+ * has names, locations and acronyms, not fee tables — so every consumer has to
+ * treat them as absent rather than assume.
+ */
+export interface ApiInstitutionDetail extends ApiInstitution {
+  about?: string | null;
+  highlights?: string[];
+  campuses?: { name: string; city: string; countryCode: string }[];
+  requiredDocuments?: {
+    id: string;
+    label: string;
+    items: { name: string; minPercentage?: number; note?: string }[];
+  }[];
+  englishTests?: { test: string; minScore: string }[];
+  faqs?: { question: string; answer: string }[];
+  qualityRatings?: { scheme: string; level: string; year: number }[];
+  employability?: string | null;
+  tuitionFrom?: string | null;
+  tuitionCurrency?: string | null;
+  upcomingIntake?: string | null;
+}
+
 export interface ApiCountry {
   countryCode: string;
   country: string;
@@ -144,9 +173,9 @@ export async function fetchInstitutions(
 }
 
 /** One university. Null rather than throwing, so a page can render notFound(). */
-export async function fetchInstitution(slug: string): Promise<ApiInstitution | null> {
+export async function fetchInstitution(slug: string): Promise<ApiInstitutionDetail | null> {
   try {
-    return await getJson<ApiInstitution>(`/institutions/${encodeURIComponent(slug)}`, 300);
+    return await getJson<ApiInstitutionDetail>(`/institutions/${encodeURIComponent(slug)}`, 300);
   } catch (error) {
     reportFailure(`/institutions/${slug}`, error);
     return null;
