@@ -424,9 +424,12 @@ export const COUNTRY_BY_SLUG = new Map(COUNTRIES.map((country) => [country.slug,
 
 export const DESTINATIONS_INDEX = {
   eyebrow: 'Study destinations',
-  title: 'Six countries. Very different trade-offs.',
+  /* Not "six countries" — the grid is built from the catalogue, so the number
+     changes whenever a country is published. Naming it here guarantees the
+     heading will eventually contradict the page under it. */
+  title: 'Every destination we can get you into.',
   subcopy:
-    'Cost, course length, work rights and what happens after you graduate vary more than most rankings suggest. Compare the things that actually decide it.',
+    'Cost, course length, work rights and what happens after you graduate vary more than most rankings suggest. Six have a full written guide; the rest open straight into their universities.',
 } as const;
 
 export const DESTINATIONS_CTA = {

@@ -69,6 +69,13 @@ describe('/destinations', () => {
     expect(screen.getByText('39 universities in the catalogue.')).toBeInTheDocument();
   });
 
+  it('says "1 university", not "1 universities"', async () => {
+    // Grenada has exactly one in the catalogue, and read "1 universities".
+    stubCountries([{ countryCode: 'GD', country: 'Grenada', institutions: 1 }]);
+    await render();
+    expect(screen.getByText('1 university in the catalogue.')).toBeInTheDocument();
+  });
+
   it('still renders if the catalogue is unreachable', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('down'); }));
     await render();

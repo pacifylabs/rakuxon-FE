@@ -74,7 +74,9 @@ export default async function DestinationsPage() {
                   countryCode={entry.countryCode}
                   description={
                     written?.tagline ??
-                    `${entry.institutions.toLocaleString('en-GB')} universities in the catalogue.`
+                    `${entry.institutions.toLocaleString('en-GB')} universit${
+                      entry.institutions === 1 ? 'y' : 'ies'
+                    } in the catalogue.`
                   }
                 />
               </li>
