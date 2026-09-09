@@ -66,6 +66,19 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
       : institution.about.trim()
     : null;
 
+  const hasDocuments = (institution.requiredDocuments ?? []).length > 0;
+  const hasFaqs = (institution.faqs ?? []).length > 0;
+  const hasApplicationDetail = hasDocuments || Boolean(institution.employability) || hasFaqs;
+
+  /* The band is labelled by whichever of its headings actually renders. An
+     aria-labelledby pointing at an id that was conditioned away names the
+     section nothing at all, which is worse than not labelling it. */
+  const docsBandLabel = hasDocuments
+    ? 'university-docs-heading'
+    : institution.employability
+      ? 'university-employability-heading'
+      : 'university-faqs-heading';
+
   return (
     <>
       <script
@@ -256,7 +269,16 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
         </SectionBand>
       )}
 
-      <SectionBand labelledBy="university-docs-heading">
+      {/*
+        Hidden entirely for imported records rather than shown empty. A
+        "Required documents" heading with nothing under it does not read as
+        "we have not filled this in" — it reads as "no documents required",
+        which is the opposite of true.
+      */}
+      {hasApplicationDetail && (
+      <SectionBand labelledBy={docsBandLabel}>
+        {(institution.requiredDocuments ?? []).length > 0 && (
+        <>
         <h2 id="university-docs-heading" className="font-heading text-2xl font-bold text-text">
           Required documents
         </h2>
@@ -282,10 +304,17 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
             </section>
           ))}
         </div>
+        </>
+        )}
 
         {institution.employability && (
           <>
-            <h2 className="mt-12 font-heading text-2xl font-bold text-text">Employability</h2>
+            <h2
+              id="university-employability-heading"
+              className="mt-12 font-heading text-2xl font-bold text-text"
+            >
+              Employability
+            </h2>
             <p className="mt-4 max-w-prose text-base text-text-muted">
               {institution.employability}
             </p>
@@ -294,7 +323,10 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
 
         {(institution.faqs ?? []).length > 0 && (
           <>
-            <h2 className="mt-12 font-heading text-2xl font-bold text-text">
+            <h2
+              id="university-faqs-heading"
+              className="mt-12 font-heading text-2xl font-bold text-text"
+            >
               Frequently asked questions
             </h2>
             <dl className="mt-6 flex flex-col gap-4">
@@ -308,6 +340,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           </>
         )}
       </SectionBand>
+      )}
 
       <SectionBand tone="muted" labelledBy="signup-prompt-heading">
         <SignUpPrompt
