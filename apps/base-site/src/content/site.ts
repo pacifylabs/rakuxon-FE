@@ -11,6 +11,7 @@ export const NAV_LINKS: readonly NavLink[] = [
   { label: 'Universities', href: ROUTES.universities },
   { label: 'Destinations', href: ROUTES.destinations },
   { label: 'Explore', href: ROUTES.explore },
+  { label: 'Guidance', href: ROUTES.resources },
   { label: 'Agencies', href: ROUTES.agencies },
   { label: 'Services', href: ROUTES.services },
   { label: 'About', href: ROUTES.about },
@@ -69,6 +70,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
       { label: 'Students', href: ROUTES.students },
       { label: 'Agencies', href: ROUTES.agencies },
       { label: 'Explore courses', href: ROUTES.explore },
+      { label: 'Guidance', href: ROUTES.resources },
     ],
   },
 ];

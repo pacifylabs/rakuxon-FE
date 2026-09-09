@@ -56,6 +56,9 @@ export interface ApiInstitutionDetail extends ApiInstitution {
   faqs?: { question: string; answer: string }[];
   qualityRatings?: { scheme: string; level: string; year: number }[];
   employability?: string | null;
+  /** From Wikidata. Absent for institutions it does not cover. */
+  foundedYear?: number | null;
+  studentCount?: number | null;
   tuitionFrom?: string | null;
   tuitionCurrency?: string | null;
   upcomingIntake?: string | null;
@@ -178,6 +181,80 @@ export async function fetchInstitution(slug: string): Promise<ApiInstitutionDeta
     return await getJson<ApiInstitutionDetail>(`/institutions/${encodeURIComponent(slug)}`, 300);
   } catch (error) {
     reportFailure(`/institutions/${slug}`, error);
+    return null;
+  }
+}
+
+export interface ApiArticle {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  heroImageUrl?: string;
+  countryCode?: string;
+  tags: string[];
+  readMinutes?: number;
+  author?: string;
+  publishedAt?: string;
+}
+
+/** The listing's own record, which carries no body — cards never show one. */
+export interface ApiArticleDetail extends ApiArticle {
+  body: string;
+  source?: string;
+  sourceUrl?: string;
+}
+
+export interface BrowseArticlesOptions {
+  country?: string;
+  tag?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function fetchArticles(
+  options: BrowseArticlesOptions = {},
+): Promise<{
+  items: ApiArticle[];
+  total: number;
+  page: number;
+  pageCount: number;
+  tags: string[];
+  error?: string;
+}> {
+  const params = new URLSearchParams();
+  if (options.country) params.set('country', options.country);
+  if (options.tag) params.set('tag', options.tag);
+  if (options.page) params.set('page', String(options.page));
+  if (options.limit) params.set('limit', String(options.limit));
+
+  try {
+    return await getJson(`/articles?${params.toString()}`, 300);
+  } catch (error) {
+    reportFailure('/articles', error);
+    return {
+      items: [],
+      total: 0,
+      page: 1,
+      pageCount: 1,
+      tags: [],
+      /* The heading already says guidance is unavailable; this line says why,
+         so the two together are a sentence rather than the same sentence
+         twice. */
+      error:
+        error instanceof Error && error.name === 'AbortError'
+          ? 'The catalogue took too long to answer.'
+          : 'The catalogue is unavailable right now.',
+    };
+  }
+}
+
+/** One article. Null rather than throwing, so the page can render notFound(). */
+export async function fetchArticle(slug: string): Promise<ApiArticleDetail | null> {
+  try {
+    return await getJson<ApiArticleDetail>(`/articles/${encodeURIComponent(slug)}`, 300);
+  } catch (error) {
+    reportFailure(`/articles/${slug}`, error);
     return null;
   }
 }

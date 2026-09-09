@@ -20,6 +20,7 @@ export const ROUTES = {
   universities: '/universities',
   explore: '/explore',
   destinations: '/destinations',
+  resources: '/resources',
   about: '/about',
   contact: '/contact',
   privacy: '/privacy',
@@ -31,6 +32,7 @@ export const countryRoute = (slug: CountrySlug) => `/destinations/${slug}` as co
 /** Catalogue detail pages. Slugs come from the bank, so these are open-ended. */
 export const courseRoute = (slug: string) => `/courses/${slug}`;
 export const universityRoute = (slug: string) => `/universities/${slug}`;
+export const articleRoute = (slug: string) => `/resources/${slug}`;
 
 /**
  * 04b § 1 hands /login and /register to the product apps, which do not exist

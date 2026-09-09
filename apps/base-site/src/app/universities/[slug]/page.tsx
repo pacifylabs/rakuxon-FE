@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { Award, Building2, GraduationCap, Wallet } from 'lucide-react';
+import { Award, Building2, CalendarDays, Globe2, GraduationCap, Users, Wallet } from 'lucide-react';
 
 import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
@@ -101,42 +101,65 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           </a>
         </div>
 
+        {/*
+          Only facts this institution actually has.
+          A grid of four cards reading "Ask an advisor" tells the visitor
+          nothing except that the page is empty; showing two real ones is a
+          better page than four placeholders.
+        */}
         <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              icon: GraduationCap,
-              label: 'Upcoming intake',
-              value: institution.upcomingIntake ?? 'Ask an advisor',
-            },
-            {
-              icon: Wallet,
-              label: 'Tuition from',
-              value: institution.tuitionFrom
-                ? formatMoney({
-                    amount: Number(institution.tuitionFrom),
-                    currency: institution.tuitionCurrency ?? 'GBP',
-                  })
-                : 'Ask an advisor',
-            },
-            {
-              icon: Building2,
-              label: 'Courses listed',
-              value: String(courses.length),
-            },
-            {
-              icon: Award,
-              label: 'English accepted',
-              value: (institution.englishTests ?? []).map((test) => test.test).join(', ') || '—',
-            },
-          ].map((fact) => (
-            <div key={fact.label} className="rounded-lg border border-border bg-surface p-4">
-              <dt className="flex items-center gap-2 text-sm text-text-muted">
-                <fact.icon size={15} aria-hidden="true" focusable="false" />
-                {fact.label}
-              </dt>
-              <dd className="mt-1 text-base font-semibold text-text">{fact.value}</dd>
-            </div>
-          ))}
+          {(
+            [
+              institution.foundedYear && {
+                icon: CalendarDays,
+                label: 'Founded',
+                value: String(institution.foundedYear),
+              },
+              institution.studentCount && {
+                icon: Users,
+                label: 'Students',
+                value: institution.studentCount.toLocaleString('en-GB'),
+              },
+              courses.length > 0 && {
+                icon: Building2,
+                label: 'Courses listed',
+                value: String(courses.length),
+              },
+              institution.upcomingIntake && {
+                icon: GraduationCap,
+                label: 'Upcoming intake',
+                value: institution.upcomingIntake,
+              },
+              institution.tuitionFrom && {
+                icon: Wallet,
+                label: 'Tuition from',
+                value: formatMoney({
+                  amount: Number(institution.tuitionFrom),
+                  currency: institution.tuitionCurrency ?? 'GBP',
+                }),
+              },
+              (institution.englishTests ?? []).length > 0 && {
+                icon: Award,
+                label: 'English accepted',
+                value: (institution.englishTests ?? []).map((test) => test.test).join(', '),
+              },
+              institution.website && {
+                icon: Globe2,
+                label: 'Official site',
+                value: new URL(institution.website).hostname.replace(/^www\./, ''),
+              },
+            ].filter(Boolean) as { icon: typeof Users; label: string; value: string }[]
+          )
+            .slice(0, 4)
+            .map((fact) => (
+              <div key={fact.label} className="rounded-lg border border-border bg-surface p-4">
+                <dt className="flex items-center gap-2 text-sm text-text-muted">
+                  <fact.icon size={15} aria-hidden="true" focusable="false" />
+                  {fact.label}
+                </dt>
+                <dd className="mt-1 text-base font-semibold text-text">{fact.value}</dd>
+              </div>
+            ))}
         </dl>
       </SectionBand>
 
