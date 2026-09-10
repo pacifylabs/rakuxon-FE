@@ -27,6 +27,17 @@ import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
  */
 export const revalidate = 300;
 
+/** First 155 characters, ending on a word rather than mid-syllable. */
+function summarise(text?: string | null): string | undefined {
+  const trimmed = text?.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.length <= 155) return trimmed;
+
+  const cut = trimmed.slice(0, 155);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${(lastSpace > 100 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -39,10 +50,15 @@ export async function generateMetadata({
 
   return {
     title: `${institution.name} — courses, fees and entry requirements`,
-    /* about is empty for imported records, so the description is built from
-       what every record actually has rather than left blank. */
+    /*
+     * The overview first, since it is written prose. `about` is a lowercase
+     * fragment — "public research university in Cardiff" — which reads as a
+     * truncation in a search result, and both are cut at a word boundary
+     * rather than mid-word.
+     */
     description:
-      institution.about?.slice(0, 155) ??
+      summarise(institution.overview) ??
+      summarise(institution.about) ??
       `${institution.name} in ${where}. Courses, entry requirements and fees, with Rakuxon's support through the application.`,
     alternates: { canonical: universityRoute(institution.slug) },
   };
@@ -144,7 +160,7 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
             '@context': 'https://schema.org',
             '@type': 'EducationalOrganization',
             name: institution.name,
-            description: about,
+            description: overviewParagraphs[0] ?? about,
             address: {
               '@type': 'PostalAddress',
               addressLocality: institution.city,

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { renderPage } from '@/lib/page-harness';
 
-import UniversityPage from './page';
+import UniversityPage, { generateMetadata } from './page';
 
 /**
  * Imported records carry a name, a location and whatever Wikidata could add.
@@ -186,5 +186,31 @@ describe('/universities/[slug]', () => {
       'href',
       '/resources/uk-student-visa-order-of-events',
     );
+  });
+
+  describe('metadata', () => {
+    const meta = () => generateMetadata({ params: Promise.resolve({ slug: 'cardiff-university' }) });
+
+    it('describes the page from the overview, not the one-line fragment', async () => {
+      stubApi();
+      expect((await meta()).description).toBe(
+        'Cardiff University is a public research university.\n\nIt was established in 1883.',
+      );
+    });
+
+    it('cuts a long description on a word rather than mid-word', async () => {
+      stubApi({ overview: `${'situated '.repeat(40)}end` });
+      const description = (await meta()).description ?? '';
+
+      expect(description.length).toBeLessThanOrEqual(156);
+      expect(description).toMatch(/situated…$/);
+    });
+
+    it('falls back to the fragment when there is no overview', async () => {
+      stubApi({ drop: ['overview'] });
+      expect((await meta()).description).toBe(
+        'public research university in Cardiff, United Kingdom',
+      );
+    });
   });
 });
