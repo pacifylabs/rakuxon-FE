@@ -15,8 +15,22 @@ import type { CatalogueResult } from './types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
-/** Long enough for a cold serverless database, short enough not to hang a page. */
-const TIMEOUT_MS = 8_000;
+/**
+ * Long enough to survive a sleeping API, short enough not to hang a page.
+ *
+ * The API is on Render's free tier, which stops the instance after fifteen
+ * minutes of quiet and takes tens of seconds to bring it back. Warm, these
+ * endpoints answer in about a second; cold, the first request is the one that
+ * does the waking. An eight-second abort meant the first visitor after a quiet
+ * spell reliably saw "the catalogue took too long to answer" — which is how
+ * /universities came to look broken while the API was in fact fine.
+ *
+ * So: a short first attempt, then a longer one. The first request wakes the
+ * instance even when it times out, so the retry usually lands on a live server
+ * rather than repeating the same wait.
+ */
+const TIMEOUT_MS = 6_000;
+const RETRY_TIMEOUT_MS = 25_000;
 
 export interface ApiInstitution {
   id: string;
@@ -87,14 +101,14 @@ function reportFailure(path: string, error: unknown): void {
   console.error(`[catalogue] ${path} failed: ${reason}`);
 }
 
-async function getJson<T>(path: string, revalidate: number): Promise<T> {
+async function attempt<T>(path: string, revalidate: number, timeoutMs: number): Promise<T> {
   /*
    * An explicit timeout, because fetch has none by default: a hung upstream
    * would otherwise hold the request until the platform kills it, turning a
    * slow dependency into a dead page.
    */
   const abort = new AbortController();
-  const timer = setTimeout(() => abort.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => abort.abort(), timeoutMs);
 
   try {
     const response = await fetch(`${BASE_URL}/v1/catalogue${path}`, {
@@ -107,6 +121,19 @@ async function getJson<T>(path: string, revalidate: number): Promise<T> {
     return (await response.json()) as T;
   } finally {
     clearTimeout(timer);
+  }
+}
+
+/** Retried once, because the first attempt is often what wakes the instance. */
+async function getJson<T>(path: string, revalidate: number): Promise<T> {
+  try {
+    return await attempt<T>(path, revalidate, TIMEOUT_MS);
+  } catch (error) {
+    /* A 404 is an answer, not a failure to answer. Retrying it wastes the
+       visitor's time and still ends in the same 404. */
+    if (error instanceof Error && /responded 4\d\d/.test(error.message)) throw error;
+
+    return attempt<T>(path, revalidate, RETRY_TIMEOUT_MS);
   }
 }
 

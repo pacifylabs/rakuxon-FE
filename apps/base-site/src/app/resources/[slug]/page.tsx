@@ -39,6 +39,27 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
+/** Stable id for a heading, so the contents rail can link to it. */
+const headingId = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+/**
+ * The article's own section headings, read straight out of the markdown.
+ *
+ * Cheaper and more honest than a second field an editor has to keep in sync:
+ * the rail cannot drift from the article because it is derived from it. Only
+ * `##` — `###` is detail within a section, and a two-level rail on a
+ * seven-minute read is a navigation problem, not navigation.
+ */
+const outline = (body: string): { id: string; label: string }[] =>
+  [...body.matchAll(/^## +(.+)$/gm)]
+    .map((match) => (match[1] ?? '').trim())
+    .filter(Boolean)
+    .map((label) => ({ id: headingId(label), label }));
+
 const formatDate = (iso?: string) =>
   iso
     ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -59,6 +80,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   const others = related.items.filter((entry) => entry.slug !== article.slug).slice(0, 3);
   const published = formatDate(article.publishedAt);
+  const sections = outline(article.body);
 
   return (
     <>
@@ -80,13 +102,13 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
         <h1
           id="article-heading"
-          className="mt-4 max-w-3xl font-heading text-3xl font-bold text-text sm:text-4xl"
+          className="mt-4 max-w-4xl font-heading text-3xl font-bold text-text sm:text-4xl"
         >
           {article.title}
         </h1>
 
         {article.excerpt && (
-          <p className="mt-4 max-w-3xl text-lg text-text-muted">{article.excerpt}</p>
+          <p className="mt-4 max-w-4xl text-lg text-text-muted">{article.excerpt}</p>
         )}
 
         {/*
@@ -99,12 +121,26 @@ export default async function ArticlePage({ params }: { params: Params }) {
           Element styling is explicit because the preset replaces Tailwind's
           scale; there is no typography plugin to inherit from.
         */}
-        <div className="mt-10 max-w-3xl">
+        {/*
+          Two columns rather than a narrow column with an empty half beside it.
+          The prose still stops at a readable measure — a 1,200px line is about
+          160 characters and the eye loses its place returning to the left — but
+          the space that was blank now carries the contents rail, so the page
+          uses its width instead of leaving it.
+        */}
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
+          <div className="min-w-0">
           <Markdown
             remarkPlugins={[remarkGfm]}
             components={{
               h2: ({ children }) => (
-                <h2 className="mt-10 font-heading text-2xl font-bold text-text">{children}</h2>
+                <h2
+                  /* Same derivation as the rail, so every link resolves. */
+                  id={headingId(String(children))}
+                  className="mt-10 scroll-mt-20 font-heading text-2xl font-bold text-text"
+                >
+                  {children}
+                </h2>
               ),
               h3: ({ children }) => (
                 <h3 className="mt-8 font-heading text-xl font-semibold text-text">{children}</h3>
@@ -148,10 +184,37 @@ export default async function ArticlePage({ params }: { params: Params }) {
           >
             {article.body}
           </Markdown>
+          </div>
+
+          {sections.length > 1 && (
+            <nav
+              aria-labelledby="article-contents-heading"
+              className="order-first lg:order-none lg:sticky lg:top-20 lg:self-start"
+            >
+              <h2
+                id="article-contents-heading"
+                className="text-sm font-semibold uppercase tracking-[0.08em] text-text-muted"
+              >
+                On this page
+              </h2>
+              <ol className="mt-4 flex flex-col gap-3 border-l border-border pl-4">
+                {sections.map((section) => (
+                  <li key={section.id}>
+                    <a
+                      href={`#${section.id}`}
+                      className="rounded-sm text-sm text-text-muted transition-colors duration-fast ease-standard hover:text-primary focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
+                    >
+                      {section.label}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
         </div>
 
         {article.tags.length > 0 && (
-          <ul className="mt-10 flex max-w-3xl flex-wrap gap-2" aria-label="Topics">
+          <ul className="mt-10 flex flex-wrap gap-2" aria-label="Topics">
             {article.tags.map((tag) => (
               <li key={tag}>
                 <a

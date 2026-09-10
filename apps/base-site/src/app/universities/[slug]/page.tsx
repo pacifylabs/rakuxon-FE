@@ -5,8 +5,8 @@ import { Award, Building2, CalendarDays, Globe2, GraduationCap, Users, Wallet } 
 
 import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
-import { ROUTES, applyHref, courseRoute, universityRoute } from '@/content/routes';
-import { fetchInstitution } from '@/lib/catalogue/api';
+import { ROUTES, applyHref, articleRoute, courseRoute, universityRoute } from '@/content/routes';
+import { fetchArticles, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
 import { findCourses } from '@/lib/catalogue/bank';
 import {
   formatDuration,
@@ -55,6 +55,28 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
   const courses = findCourses({ institutionSlug: institution.slug }).items;
 
   /*
+   * Everything else the page can honestly say about this institution, fetched
+   * in parallel — neither depends on the other, and awaiting them in sequence
+   * adds a whole round trip to a page that already waited for the record.
+   *
+   * Courses are not wired yet, so without these the page was a name, four
+   * facts and a one-line description. Neighbours and destination guidance are
+   * real rows we already hold; inventing prose to fill the space would not be.
+   */
+  const [nearby, guidance] = await Promise.all([
+    /* Same city where we know it, same country otherwise. The browse filter
+       matches city as well as name, which is what makes this one call. */
+    fetchInstitutions({
+      country: institution.countryCode,
+      q: institution.city ?? undefined,
+      limit: 7,
+    }),
+    fetchArticles({ country: institution.countryCode, limit: 3 }),
+  ]);
+
+  const neighbours = nearby.items.filter((entry) => entry.slug !== institution.slug).slice(0, 6);
+
+  /*
    * Wikidata descriptions are lowercase sentence fragments — "public research
    * university in Cardiff, United Kingdom" — written to sit after a label, not
    * to stand alone. Dropped straight into a paragraph under a heading they read
@@ -65,6 +87,20 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
       ? `${institution.name} is a ${institution.about.trim()}.`
       : institution.about.trim()
     : null;
+
+  /*
+   * new URL throws on anything it cannot parse, and these websites are
+   * imported for 6,400 institutions — one malformed value would take the whole
+   * page down rather than dropping one card off it.
+   */
+  const host = (() => {
+    if (!institution.website) return null;
+    try {
+      return new URL(institution.website).hostname.replace(/^www\./, '');
+    } catch {
+      return null;
+    }
+  })();
 
   const hasDocuments = (institution.requiredDocuments ?? []).length > 0;
   const hasFaqs = (institution.faqs ?? []).length > 0;
@@ -132,7 +168,10 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           nothing except that the page is empty; showing two real ones is a
           better page than four placeholders.
         */}
-        <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* auto-fit, not a fixed four: the number of cards depends on what
+            this institution actually has, and a fixed track leaves a visible
+            hole in the row whenever that is three. */}
+        <dl className="mt-8 grid gap-4 grid-cols-[repeat(auto-fit,minmax(15rem,1fr))]">
           {(
             [
               institution.foundedYear && {
@@ -168,10 +207,10 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
                 label: 'English accepted',
                 value: (institution.englishTests ?? []).map((test) => test.test).join(', '),
               },
-              institution.website && {
+              host && {
                 icon: Globe2,
                 label: 'Official site',
-                value: new URL(institution.website).hostname.replace(/^www\./, ''),
+                value: host,
               },
             ].filter(Boolean) as { icon: typeof Users; label: string; value: string }[]
           )
@@ -340,6 +379,82 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           </>
         )}
       </SectionBand>
+      )}
+
+      {guidance.items.length > 0 && (
+        <SectionBand tone="surface" labelledBy="university-guidance-heading">
+          <h2
+            id="university-guidance-heading"
+            className="font-heading text-2xl font-bold text-text"
+          >
+            Applying to {institution.country}
+          </h2>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            What the process looks like, and where applicants lose time.
+          </p>
+
+          <ul className="mt-6 grid items-stretch gap-4 sm:grid-cols-3">
+            {guidance.items.map((entry) => (
+              <li key={entry.id} className="h-full">
+                <a
+                  href={articleRoute(entry.slug)}
+                  className="flex h-full flex-col rounded-lg border border-border bg-bg p-6 transition-[transform,box-shadow] duration-base ease-standard hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  {entry.readMinutes && (
+                    <span className="text-sm text-text-muted">{entry.readMinutes} min read</span>
+                  )}
+                  <h3 className="mt-2 font-heading text-base font-semibold text-text">
+                    {entry.title}
+                  </h3>
+                  {entry.excerpt && (
+                    <p className="mt-2 flex-1 text-sm text-text-muted">{entry.excerpt}</p>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </SectionBand>
+      )}
+
+      {neighbours.length > 0 && (
+        <SectionBand labelledBy="university-nearby-heading">
+          <h2 id="university-nearby-heading" className="font-heading text-2xl font-bold text-text">
+            {institution.city
+              ? `Other universities in ${institution.city}`
+              : `More universities in ${institution.country}`}
+          </h2>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            Most applicants apply to several. These are the closest alternatives we hold.
+          </p>
+
+          <ul className="mt-6 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {neighbours.map((entry) => (
+              <li key={entry.id} className="h-full">
+                <a
+                  href={universityRoute(entry.slug)}
+                  className="flex h-full flex-col rounded-lg border border-border bg-surface p-5 transition-[transform,box-shadow] duration-base ease-standard hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  <span className="flex items-center gap-2 text-sm text-text-muted">
+                    <CountryFlag countryCode={entry.countryCode} size="sm" />
+                    {formatLocation(entry.city, entry.country)}
+                  </span>
+                  <h3 className="mt-2 font-heading text-base font-semibold text-text">
+                    {entry.name}
+                  </h3>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-6 text-sm text-text-muted">
+            <a
+              href={`${ROUTES.universities}?country=${institution.countryCode}`}
+              className="rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+            >
+              Browse every university in {institution.country}
+            </a>
+          </p>
+        </SectionBand>
       )}
 
       <SectionBand tone="muted" labelledBy="signup-prompt-heading">
