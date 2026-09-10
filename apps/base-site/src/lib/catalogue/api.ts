@@ -73,6 +73,14 @@ export interface ApiInstitutionDetail extends ApiInstitution {
   /** From Wikidata. Absent for institutions it does not cover. */
   foundedYear?: number | null;
   studentCount?: number | null;
+  /** Wikipedia intro. CC BY-SA, so it is unusable without the source URL. */
+  overview?: string | null;
+  overviewSourceUrl?: string | null;
+  heroImageUrl?: string | null;
+  motto?: string | null;
+  memberships?: string[];
+  latitude?: string | null;
+  longitude?: string | null;
   tuitionFrom?: string | null;
   tuitionCurrency?: string | null;
   upcomingIntake?: string | null;

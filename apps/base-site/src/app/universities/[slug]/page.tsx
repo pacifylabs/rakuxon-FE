@@ -102,6 +102,26 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
     }
   })();
 
+  /* Wikipedia extracts come back as plain text with blank-line paragraphs. */
+  const overviewParagraphs = (institution.overview ?? '')
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
+  /*
+   * Campus photo, with a link back to the file page.
+   *
+   * Commons images are freely licensed but most are CC BY-SA, which obliges
+   * attribution. We do not hold the photographer's name per image, and the
+   * file page does — so the credit links there rather than inventing one.
+   * Logos are deliberately not treated this way: those are trademarks and a
+   * licence on the file does not grant use of the mark.
+   */
+  const heroImage = institution.heroImageUrl ?? null;
+  const heroCreditUrl = heroImage?.includes('/Special:FilePath/')
+    ? `https://commons.wikimedia.org/wiki/File:${heroImage.split('/Special:FilePath/')[1]?.split('?')[0] ?? ''}`
+    : null;
+
   const hasDocuments = (institution.requiredDocuments ?? []).length > 0;
   const hasFaqs = (institution.faqs ?? []).length > 0;
   const hasApplicationDetail = hasDocuments || Boolean(institution.employability) || hasFaqs;
@@ -133,6 +153,35 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
           }),
         }}
       />
+
+      {heroImage && (
+        <div className="relative w-full overflow-hidden bg-surface-muted">
+          {/* A plain img, not next/image: these are hotlinked from Commons and
+              adding a remote pattern per host buys nothing here. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={heroImage}
+            alt={`${institution.name} campus`}
+            /* Aspect ratio, not a fixed height: the preset replaces the
+               spacing scale, so an off-scale height compiles to nothing and
+               the banner collapses to zero. */
+            className="aspect-[16/6] w-full object-cover sm:aspect-[16/5]"
+            loading="eager"
+          />
+          {heroCreditUrl && (
+            <a
+              href={heroCreditUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              /* bg-scrim with opacity, not bg-scrim/70: the preset maps colours
+                 to a bare var(), which Tailwind cannot apply an alpha to. */
+              className="absolute bottom-2 right-2 rounded-sm bg-scrim px-2 py-1 text-xs text-on-scrim underline opacity-90 focus-visible:outline-none focus-visible:ring"
+            >
+              Photo: Wikimedia Commons
+            </a>
+          )}
+        </div>
+      )}
 
       <SectionBand tone="muted" labelledBy="university-heading">
         <div className="flex flex-wrap items-start justify-between gap-6">
@@ -231,10 +280,67 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
         <h2 id="university-about-heading" className="font-heading text-2xl font-bold text-text">
           About {institution.name}
         </h2>
-        <p className="mt-4 max-w-prose text-base text-text-muted">
-          {about ??
-            `We are still writing up ${institution.name}. Our advisors know it — ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
-        </p>
+
+        {/*
+          Two columns: the overview reads at a normal measure and the
+          highlights sit beside it rather than under it, which is what stops
+          the band being one short line across a 1,200px page.
+        */}
+        <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <div className="min-w-0">
+            {overviewParagraphs.length > 0 ? (
+              <>
+                {overviewParagraphs.map((paragraph) => (
+                  <p key={paragraph.slice(0, 40)} className="mb-4 text-base text-text">
+                    {paragraph}
+                  </p>
+                ))}
+
+                {/* Required by the licence, not decoration. */}
+                {institution.overviewSourceUrl && (
+                  <p className="mt-6 text-sm text-text-muted">
+                    Overview adapted from{' '}
+                    <a
+                      href={institution.overviewSourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                    >
+                      Wikipedia
+                    </a>
+                    , available under CC BY-SA.
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-base text-text-muted">
+                {about ??
+                  `We are still writing up ${institution.name}. Our advisors know it — ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
+              </p>
+            )}
+          </div>
+
+          {(institution.highlights ?? []).length > 0 && (
+            <aside aria-labelledby="university-highlights-heading">
+              <h3
+                id="university-highlights-heading"
+                className="text-sm font-semibold uppercase tracking-[0.08em] text-text-muted"
+              >
+                Highlights
+              </h3>
+              <ul className="mt-4 flex flex-col gap-3">
+                {(institution.highlights ?? []).map((line) => (
+                  <li
+                    key={line}
+                    className="rounded-md border border-border bg-surface px-4 py-3 text-sm text-text"
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
+        </div>
 
         {(institution.qualityRatings ?? []).length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-3">

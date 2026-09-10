@@ -24,6 +24,10 @@ const detail = {
   about: 'public research university in Cardiff, United Kingdom',
   foundedYear: 1883,
   studentCount: 30930,
+  overview: 'Cardiff University is a public research university.\n\nIt was established in 1883.',
+  overviewSourceUrl: 'https://en.wikipedia.org/wiki/Cardiff_University',
+  heroImageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cardiff.jpg?width=1200',
+  highlights: ['Member of the Russell Group', 'Around 30,930 students enrolled'],
 };
 
 const neighbours = {
@@ -96,10 +100,39 @@ describe('/universities/[slug]', () => {
     expect(screen.getByText('cardiff.ac.uk')).toBeInTheDocument();
   });
 
-  it('turns the imported fragment into a sentence', async () => {
-    // Wikidata descriptions are lowercase and written to sit after a label, so
-    // dropped under a heading they read as a truncation.
+  it('renders the overview as paragraphs, with its attribution', async () => {
+    // Wikipedia text is CC BY-SA: the credit is a condition of use, not a
+    // nicety, so it ships with the prose or the prose does not ship.
     stubApi();
+    await render();
+
+    expect(screen.getByText('It was established in 1883.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Wikipedia' })).toHaveAttribute(
+      'href',
+      'https://en.wikipedia.org/wiki/Cardiff_University',
+    );
+  });
+
+  it('credits the campus photo back to its file page', async () => {
+    stubApi();
+    await render();
+
+    expect(screen.getByRole('link', { name: /Photo: Wikimedia Commons/ })).toHaveAttribute(
+      'href',
+      'https://commons.wikimedia.org/wiki/File:Cardiff.jpg',
+    );
+  });
+
+  it('shows highlights beside the overview', async () => {
+    stubApi();
+    await render();
+
+    const highlights = within(screen.getByRole('complementary', { name: /highlights/i }));
+    expect(highlights.getByText('Member of the Russell Group')).toBeInTheDocument();
+  });
+
+  it('falls back to the one-line description when there is no overview', async () => {
+    stubApi({ drop: ['overview', 'overviewSourceUrl'] });
     await render();
 
     expect(
