@@ -1,5 +1,5 @@
 import { emptyResult } from './types';
-import type { CatalogueResult } from './types';
+import type { CatalogueResult, Intake, StudyLevel, StudyMode } from './types';
 
 /**
  * The catalogue, from our own API.
@@ -13,7 +13,7 @@ import type { CatalogueResult } from './types';
  * fails should not take the header with it.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
+const BASE_URL = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
 /**
  * Long enough to survive a sleeping API, short enough not to hang a page.
@@ -217,6 +217,73 @@ export async function fetchInstitution(slug: string): Promise<ApiInstitutionDeta
   } catch (error) {
     reportFailure(`/institutions/${slug}`, error);
     return null;
+  }
+}
+
+export interface ApiCourse {
+  id: string;
+  slug: string;
+  title: string;
+  level: StudyLevel;
+  studyMode: StudyMode;
+  disciplines: string[];
+  durationMonths: number;
+  /** Numeric string — Postgres `numeric` comes back as text, not a float. */
+  tuitionAmount?: string;
+  tuitionCurrency?: string;
+  fastTrackOffer: boolean;
+  intakes: Intake[];
+  institutionId: string;
+  institutionName: string;
+  institutionSlug: string;
+  country: string;
+  countryCode: string;
+}
+
+export interface CourseBrowseOptions {
+  country?: string;
+  q?: string;
+  level?: string;
+  discipline?: string;
+  institutionSlug?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function fetchCourses(
+  options: CourseBrowseOptions = {},
+): Promise<CatalogueResult<ApiCourse> & { page: number; pageCount: number }> {
+  const params = new URLSearchParams();
+  if (options.country) params.set('country', options.country);
+  if (options.q?.trim()) params.set('q', options.q.trim());
+  if (options.level) params.set('level', options.level);
+  if (options.discipline) params.set('discipline', options.discipline);
+  if (options.institutionSlug) params.set('institutionSlug', options.institutionSlug);
+  if (options.page) params.set('page', String(options.page));
+  if (options.limit) params.set('limit', String(options.limit));
+
+  try {
+    const paged = await getJson<Paged<ApiCourse>>(`/courses?${params.toString()}`, 300);
+
+    return {
+      items: paged.items,
+      total: paged.total,
+      page: paged.page,
+      pageCount: paged.pageCount,
+      source: 'bank',
+    };
+  } catch (error) {
+    reportFailure('/courses', error);
+    return {
+      ...emptyResult<ApiCourse>(
+        'unavailable',
+        error instanceof Error && error.name === 'AbortError'
+          ? 'The catalogue took too long to answer.'
+          : 'The catalogue is unavailable right now.',
+      ),
+      page: 1,
+      pageCount: 1,
+    };
   }
 }
 

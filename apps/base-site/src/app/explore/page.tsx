@@ -3,8 +3,7 @@ import { Suspense } from 'react';
 
 import { CtaBand, PageHeader, SectionBand, SignUpPrompt, StatChip } from '@rakuxon/ui';
 
-import { findCourses, listInstitutions } from '@/lib/catalogue/bank';
-import { fetchCountryCounts } from '@/lib/catalogue/institutions';
+import { fetchCountries, fetchCourses, fetchInstitutions } from '@/lib/catalogue/api';
 import { ROUTES, SIGN_UP } from '@/content/routes';
 
 import { ExploreControls } from './ExploreControls';
@@ -28,16 +27,14 @@ const asString = (value: string | string[] | undefined) =>
 async function Results({ tab, country, query }: { tab: TabKey; country: string; query: string }) {
   if (tab === 'universities') {
     /*
-     * Our own catalogue, not the open registry.
-     *
-     * The registry lists every education organisation on earth, which looked
-     * generous and behaved badly: most cards had no page to open and no course
-     * to apply to, so the only action left was a link off to the university's
-     * own site. A listing where half the cards are dead ends is worse than a
-     * shorter one where every card works. The registry still powers the
-     * per-country counts below, which is a real signal.
+     * Our own catalogue, fetched from the backend — the same source
+     * /universities reads. This used to read a local illustrative sample
+     * (`bank.ts`), left over from before the backend held anything; now that
+     * it holds several thousand imported institutions, there is no reason
+     * for this tab to show different results from the dedicated page.
      */
-    return <InstitutionResults result={listInstitutions()} />;
+    const result = await fetchInstitutions({ country, q: query, limit: 24 });
+    return <InstitutionResults result={result} />;
   }
 
   /*
@@ -59,12 +56,20 @@ async function Results({ tab, country, query }: { tab: TabKey; country: string; 
     );
   }
 
-  return <CourseResults result={findCourses({ q: query, countryCode: country })} />;
+  /*
+   * Our own catalogue, same as the universities tab above. There is
+   * currently no licensed source of real course-level data (fees, intakes,
+   * entry requirements) — only institutions, from ROR — so this is honestly
+   * near-empty rather than backed by illustrative content invented under a
+   * real university's name.
+   */
+  const result = await fetchCourses({ country, q: query, limit: 24 });
+  return <CourseResults result={result} />;
 }
 
 async function CountryCounts() {
-  const counts = await fetchCountryCounts();
-  if (counts.error || counts.items.length === 0) return null;
+  const counts = await fetchCountries();
+  if (counts.length === 0) return null;
 
   return (
     <SectionBand tone="muted" labelledBy="explore-counts-heading">
@@ -75,12 +80,11 @@ async function CountryCounts() {
         Institutions by destination
       </h2>
       <p className="mx-auto mt-4 max-w-prose text-center text-base text-text-muted">
-        Registered education organisations per country, from the open Research Organization
-        Registry.
+        Published universities per country, counted live from our own catalogue.
       </p>
 
-      <ul className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {counts.items.map((entry) => (
+      <ul className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-3">
+        {counts.map((entry) => (
           <li key={entry.countryCode}>
             <StatChip
               countryCode={entry.countryCode}
@@ -103,6 +107,12 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
   const country = asString(params.country);
   const query = asString(params.q);
 
+  /* Destinations the catalogue actually has published universities in —
+     replaces a hand-written six-country list that could say "Germany" long
+     after every German institution had been unpublished, or stay silent
+     about a seventh once one is. */
+  const countries = await fetchCountries();
+
   return (
     <>
       <PageHeader
@@ -118,7 +128,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
         </h2>
 
         <Suspense fallback={null}>
-          <ExploreControls tab={tab} country={country} query={query} />
+          <ExploreControls tab={tab} country={country} query={query} countries={countries} />
         </Suspense>
 
         <div className="mt-10">

@@ -3,7 +3,8 @@ import { CourseCard, InstitutionCard } from '@rakuxon/ui';
 import { applyHref, courseRoute, universityRoute } from '@/content/routes';
 import { formatDuration, formatIntake, formatMoney, nextIntake, formatLocation } from '@/lib/catalogue/format';
 import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
-import type { CatalogueResult, Course, InstitutionDetail } from '@/lib/catalogue/types';
+import type { CatalogueResult } from '@/lib/catalogue/types';
+import type { ApiCourse, ApiInstitution } from '@/lib/catalogue/api';
 
 /**
  * Empty and error states are first-class here: this page depends on upstream
@@ -45,7 +46,7 @@ function Shell({
 export function InstitutionResults({
   result,
 }: {
-  result: CatalogueResult<InstitutionDetail>;
+  result: CatalogueResult<ApiInstitution>;
 }) {
   return (
     <Shell result={result} noun="Universities">
@@ -61,15 +62,10 @@ export function InstitutionResults({
               badge={institution.fastTrackOffer ? 'Fast-track offer' : undefined}
               facts={[
                 {
-                  label: 'Tuition from',
-                  value: institution.tuitionFrom ? formatMoney(institution.tuitionFrom) : '—',
+                  label: 'Courses listed',
+                  value: institution.courseCount ? String(institution.courseCount) : 'Ask an advisor',
                 },
-                {
-                  label: 'Next intake',
-                  value: institution.upcomingIntake
-                    ? formatIntake(institution.upcomingIntake)
-                    : '—',
-                },
+                { label: 'Destination', value: institution.country },
               ]}
             />
           </li>
@@ -79,7 +75,7 @@ export function InstitutionResults({
   );
 }
 
-export function CourseResults({ result }: { result: CatalogueResult<Course> }) {
+export function CourseResults({ result }: { result: CatalogueResult<ApiCourse> }) {
   return (
     <Shell result={result} noun="Courses">
       <ul className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -98,7 +94,16 @@ export function CourseResults({ result }: { result: CatalogueResult<Course> }) {
                 applyHref={applyHref({ course: course.slug })}
                 badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
                 facts={[
-                  { label: 'Fee', value: formatMoney(course.tuition) },
+                  {
+                    label: 'Fee',
+                    value:
+                      course.tuitionAmount && course.tuitionCurrency
+                        ? formatMoney({
+                            amount: Number(course.tuitionAmount),
+                            currency: course.tuitionCurrency,
+                          })
+                        : 'Ask an advisor',
+                  },
                   { label: 'Duration', value: formatDuration(course.durationMonths) },
                   {
                     label: 'Next intake',

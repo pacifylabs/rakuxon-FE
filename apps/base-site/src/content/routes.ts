@@ -1,4 +1,5 @@
 import { COURSES, INSTITUTIONS } from '@/lib/catalogue/bank';
+import { SERVICES } from './services';
 
 /**
  * Every route this site serves. The single source of truth for links.
@@ -16,6 +17,7 @@ export const ROUTES = {
   home: '/',
   students: '/students',
   agencies: '/agencies',
+  institutions: '/institutions',
   services: '/services',
   universities: '/universities',
   explore: '/explore',
@@ -25,6 +27,16 @@ export const ROUTES = {
   contact: '/contact',
   privacy: '/privacy',
   terms: '/terms',
+  register: '/register',
+  login: '/login',
+  dashboard: '/dashboard',
+  /** Prefix only — the real path always carries a token: `/invite/${token}`. */
+  invite: '/invite',
+  forgotPassword: '/forgot-password',
+  /** Prefix only — the real path always carries a token: `/reset-password/${token}`. */
+  resetPassword: '/reset-password',
+  /** Prefix only — the real path always carries a token: `/verify-email/${token}`. */
+  verifyEmail: '/verify-email',
 } as const;
 
 export const countryRoute = (slug: CountrySlug) => `/destinations/${slug}` as const;
@@ -33,13 +45,9 @@ export const countryRoute = (slug: CountrySlug) => `/destinations/${slug}` as co
 export const courseRoute = (slug: string) => `/courses/${slug}`;
 export const universityRoute = (slug: string) => `/universities/${slug}`;
 export const articleRoute = (slug: string) => `/resources/${slug}`;
+export const serviceRoute = (id: string) => `/services/${id}`;
 
-/**
- * 04b § 1 hands /login and /register to the product apps, which do not exist
- * yet. Rather than ship two dead links, both CTAs land on the contact page
- * with the role pre-selected. Swap these two values when auth goes live.
- */
-export const SIGN_UP = `${ROUTES.contact}?intent=signup`;
+export const SIGN_UP = ROUTES.register;
 
 /**
  * Apply, carrying what the visitor was looking at.
@@ -50,12 +58,13 @@ export const SIGN_UP = `${ROUTES.contact}?intent=signup`;
  * One helper, so every button spells the parameters the same way.
  */
 export const applyHref = (selection: { course?: string; university?: string }) => {
-  const params = new URLSearchParams({ intent: 'signup' });
+  const params = new URLSearchParams();
   if (selection.course) params.set('course', selection.course);
   if (selection.university) params.set('university', selection.university);
-  return `${ROUTES.contact}?${params.toString()}`;
+  const query = params.toString();
+  return query ? `${ROUTES.register}?${query}` : ROUTES.register;
 };
-export const LOG_IN = `${ROUTES.contact}?intent=login`;
+export const LOG_IN = ROUTES.login;
 
 /**
  * All valid pathnames, for link verification.
@@ -69,4 +78,5 @@ export const ALL_ROUTES: readonly string[] = [
   ...COUNTRY_SLUGS.map(countryRoute),
   ...COURSES.map((course) => courseRoute(course.slug)),
   ...INSTITUTIONS.map((institution) => universityRoute(institution.slug)),
+  ...SERVICES.map((service) => serviceRoute(service.id)),
 ];

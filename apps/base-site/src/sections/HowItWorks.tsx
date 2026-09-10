@@ -16,7 +16,7 @@ export function HowItWorks() {
         Three steps from first idea to a decision letter.
       </p>
 
-      <ol className="mt-12 grid gap-10 md:grid-cols-3">
+      <ol className="mt-12 grid grid-cols-2 gap-10 md:grid-cols-3">
         {STEPS.map((step, index) => (
           <StepItem
             key={step.title}

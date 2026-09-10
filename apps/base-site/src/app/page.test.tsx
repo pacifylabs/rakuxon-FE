@@ -7,8 +7,6 @@ import {
   AUDIENCES,
   TRUST_BAR,
   CAPABILITIES,
-  DESTINATIONS,
-  HERO,
   HOME_IMAGE_SLOTS,
   INSTITUTIONS,
   STATS,
@@ -27,6 +25,12 @@ import HomePage from './page';
  */
 vi.mock('@/sections/DestinationCounts', () => ({
   DestinationCounts: () => null,
+}));
+
+/* Same reasoning as above: PopularDestinations now fetches the live registry
+   too, to show a count per destination card. */
+vi.mock('@/sections/PopularDestinations', () => ({
+  PopularDestinations: () => null,
 }));
 
 function renderHome() {
@@ -64,7 +68,6 @@ describe('home page structure', () => {
       'Your study abroad journey, simplified.',
       'Rakuxon by the numbers',
       'How it works',
-      'Popular destinations',
       'Explore leading institutions',
       'Success stories that inspire',
       'Start your journey with us',
@@ -74,18 +77,6 @@ describe('home page structure', () => {
 });
 
 describe('§3.1 hero', () => {
-  it('renders both CTAs as real links', () => {
-    renderHome();
-    expect(screen.getByRole('link', { name: /Get started/ })).toHaveAttribute(
-      'href',
-      HERO.primaryCta.href,
-    );
-    expect(screen.getByRole('link', { name: /How it works/ })).toHaveAttribute(
-      'href',
-      HERO.secondaryCta.href,
-    );
-  });
-
   it('renders the avatar social proof', () => {
     renderHome();
     expect(screen.getAllByRole('img', { name: 'Student' })).toHaveLength(3);
@@ -267,25 +258,6 @@ describe('§3.5 how it works', () => {
   });
 });
 
-describe('§3.6 popular destinations', () => {
-  it('renders all six countries, each linking to its destination page', () => {
-    renderHome();
-    for (const destination of DESTINATIONS) {
-      expect(screen.getByRole('link', { name: new RegExp(destination.country) })).toHaveAttribute(
-        'href',
-        destination.href,
-      );
-    }
-  });
-
-  it('uses the spec alt text for each destination photo', () => {
-    renderHome();
-    for (const destination of DESTINATIONS) {
-      expect(screen.getByRole('img', { name: destination.alt })).toBeInTheDocument();
-    }
-  });
-});
-
 describe('§3.7 institutions', () => {
   it('renders each campus card', () => {
     renderHome();
@@ -355,12 +327,15 @@ describe('images', () => {
 
   it('renders one image per declared slot', () => {
     // Excludes the marquee's aria-hidden seam copy, which deliberately repeats
-    // the testimonial portraits to make the loop continuous.
+    // the testimonial portraits to make the loop continuous. Also excludes
+    // §3.6: PopularDestinations is mocked to null above, for the same reason
+    // DestinationCounts is — both are async Server Components RTL cannot render.
     const { container } = renderHome();
     const shown = [...container.querySelectorAll('img')].filter(
       (image) => !image.closest('[aria-hidden="true"]'),
     );
-    expect(shown).toHaveLength(HOME_IMAGE_SLOTS.length);
+    const expectedSlots = HOME_IMAGE_SLOTS.filter((slot) => !slot.slot.startsWith('§3.6'));
+    expect(shown).toHaveLength(expectedSlots.length);
   });
 
   it('serves every photo from an allow-listed remote host', () => {

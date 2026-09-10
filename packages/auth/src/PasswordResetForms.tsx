@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { ApiClient, ApiError, NetworkError } from '@rakuxon/api-client';
 import { AuthCard, Button, FormField } from '@rakuxon/ui';
 
-const PASSWORD_MIN = 12;
+const PASSWORD_MIN = 8;
 
 /**
  * Step one: ask for a link.
@@ -17,9 +17,11 @@ const PASSWORD_MIN = 12;
 export function RequestPasswordResetForm({
   baseUrl,
   signInHref = '/login',
+  ownsMainLandmark = true,
 }: {
   baseUrl: string;
   signInHref?: string;
+  ownsMainLandmark?: boolean;
 }) {
   const [fieldError, setFieldError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | null>(null);
@@ -55,6 +57,7 @@ export function RequestPasswordResetForm({
       <AuthCard
         title="Check your email"
         subtitle="If that address has an account, a reset link is on its way. The link expires in an hour."
+        ownsMainLandmark={ownsMainLandmark}
         footer={
           <a href={signInHref} className="rounded-sm font-semibold text-primary underline">
             Back to sign in
@@ -73,6 +76,7 @@ export function RequestPasswordResetForm({
     <AuthCard
       title="Reset your password"
       subtitle="We will email you a link to set a new one."
+      ownsMainLandmark={ownsMainLandmark}
       footer={
         <a href={signInHref} className="rounded-sm font-semibold text-primary underline">
           Back to sign in
@@ -85,6 +89,7 @@ export function RequestPasswordResetForm({
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="ada@example.com"
           error={fieldError}
         />
 
@@ -113,10 +118,12 @@ export function ConfirmPasswordResetForm({
   baseUrl,
   token,
   onComplete,
+  ownsMainLandmark = true,
 }: {
   baseUrl: string;
   token: string;
   onComplete: () => void;
+  ownsMainLandmark?: boolean;
 }) {
   const [fieldError, setFieldError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | null>(null);
@@ -157,6 +164,7 @@ export function ConfirmPasswordResetForm({
     <AuthCard
       title="Choose a new password"
       subtitle="Setting it signs you out everywhere else."
+      ownsMainLandmark={ownsMainLandmark}
       footer={null}
     >
       <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -165,6 +173,7 @@ export function ConfirmPasswordResetForm({
           name="password"
           type="password"
           autoComplete="new-password"
+          placeholder={`At least ${PASSWORD_MIN} characters`}
           error={fieldError}
           hint={`At least ${PASSWORD_MIN} characters.`}
         />

@@ -4,7 +4,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { useId, useState } from 'react';
 
-import { COVERED_COUNTRIES } from '@/lib/catalogue/institutions';
+import { SearchField } from '@rakuxon/ui';
+
+import type { ApiCountry } from '@/lib/catalogue/api';
 
 export const TABS = [
   { key: 'courses', label: 'Courses' },
@@ -29,10 +31,12 @@ export function ExploreControls({
   tab,
   country,
   query,
+  countries,
 }: {
   tab: TabKey;
   country: string;
   query: string;
+  countries: readonly ApiCountry[];
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -87,19 +91,13 @@ export function ExploreControls({
         }}
         className="grid gap-4 rounded-lg border border-border bg-surface p-5 shadow-sm sm:grid-cols-[2fr_1fr_auto]"
       >
-        <div className="flex flex-col gap-2">
-          <label htmlFor={`${id}-q`} className="text-sm font-medium text-text">
-            Search
-          </label>
-          <input
-            id={`${id}-q`}
-            type="search"
-            value={term}
-            onChange={(event) => setTerm(event.target.value)}
-            placeholder="Subject, university or keyword"
-            className={fieldClasses}
-          />
-        </div>
+        <SearchField
+          id={`${id}-q`}
+          label="Search"
+          value={term}
+          onChange={(event) => setTerm(event.target.value)}
+          placeholder="Subject, university or keyword"
+        />
 
         <div className="flex flex-col gap-2">
           <label htmlFor={`${id}-country`} className="text-sm font-medium text-text">
@@ -112,9 +110,9 @@ export function ExploreControls({
             className={fieldClasses}
           >
             <option value="">All countries</option>
-            {COVERED_COUNTRIES.map((entry) => (
-              <option key={entry.code} value={entry.code}>
-                {entry.name}
+            {countries.map((entry) => (
+              <option key={entry.countryCode} value={entry.countryCode}>
+                {entry.country}
               </option>
             ))}
           </select>

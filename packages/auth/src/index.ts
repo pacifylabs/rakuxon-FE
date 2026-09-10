@@ -1,4 +1,4 @@
-export { AuthContext, AuthProvider, useAuth } from './AuthProvider';
+export { AuthContext, AuthProvider, useApiClient, useAuth } from './AuthProvider';
 export type { AuthContextValue } from './AuthProvider';
 export { GuardedPage } from './GuardedPage';
 export { ConfirmPasswordResetForm, RequestPasswordResetForm } from './PasswordResetForms';

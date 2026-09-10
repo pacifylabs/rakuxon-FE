@@ -18,7 +18,7 @@ const session = (role: string) => ({
   accessToken: 'a',
   refreshToken: 'r',
   expiresIn: 900,
-  user: { id: 'u1', email: 'user@b.test', fullName: 'Test User', role, tenantId: 't1' },
+  user: { id: 'u1', email: 'user@b.test', firstName: 'Test', lastName: 'User', role, tenantId: 't1' },
   expiresAt: Date.now() + 900_000,
 });
 

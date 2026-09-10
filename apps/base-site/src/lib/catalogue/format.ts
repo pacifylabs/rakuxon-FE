@@ -1,4 +1,4 @@
-import type { Course, Intake, Money } from './types';
+import type { Intake, Money } from './types';
 
 /** "£ 17,500" / "AUD 34,000" — symbol where one is unambiguous, code otherwise. */
 const SYMBOLS: Record<string, string> = { GBP: '£', USD: '$', EUR: '€' };
@@ -25,7 +25,7 @@ export function formatDuration(months: number): string {
 export const formatIntake = (intake: Intake) => `${intake.month} ${intake.year}`;
 
 /** The soonest intake still open. Undefined once they have all closed. */
-export function nextIntake(course: Course): Intake | undefined {
+export function nextIntake(course: { intakes: readonly Intake[] }): Intake | undefined {
   return course.intakes.find((intake) => intake.status !== 'closed');
 }
 

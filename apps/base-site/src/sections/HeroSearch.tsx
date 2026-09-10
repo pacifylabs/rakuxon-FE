@@ -2,7 +2,7 @@
 
 import { Search } from 'lucide-react';
 
-import { AppLink, CountryFlag } from '@rakuxon/ui';
+import { AppLink, CountryFlag, SearchField } from '@rakuxon/ui';
 import { useEffect, useId, useRef, useState } from 'react';
 
 
@@ -169,9 +169,6 @@ export function HeroSearch() {
   const showList = open && query.trim().length >= MIN_QUERY;
   const activeId = activeIndex >= 0 ? `${id}-opt-${activeIndex}` : undefined;
 
-  const fieldClasses =
-    'w-full rounded-md border border-border bg-surface px-4 py-3 text-base text-text focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2';
-
   return (
     <form
       ref={formRef}
@@ -180,58 +177,70 @@ export function HeroSearch() {
       method="get"
       className="rounded-lg border border-border bg-surface p-4 shadow-md"
     >
-      <div className="flex flex-col items-stretch gap-4 sm:items-center">
-        <div className="flex w-full flex-col gap-2">
-          <label htmlFor={`${id}-q`} className="text-sm font-medium text-text">
-            Search courses, universities and guidance
-          </label>
-          <div className="relative">
-            <input
-              id={`${id}-q`}
-              name="q"
-              type="search"
-              role="combobox"
-              autoComplete="off"
-              aria-autocomplete="list"
-              aria-expanded={showList}
-              aria-controls={listboxId}
-              aria-activedescendant={activeId}
-              placeholder="Computer science, Toronto, scholarships…"
-              className={fieldClasses}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              onFocus={() => {
-                if (query.trim().length >= MIN_QUERY) setOpen(true);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'ArrowDown') {
-                  event.preventDefault();
-                  setOpen(true);
-                  setActiveIndex((current) =>
-                    results.length === 0 ? -1 : Math.min(current + 1, results.length - 1),
-                  );
-                } else if (event.key === 'ArrowUp') {
-                  event.preventDefault();
-                  setActiveIndex((current) => (current <= 0 ? -1 : current - 1));
-                } else if (event.key === 'Escape') {
-                  event.preventDefault();
-                  setOpen(false);
-                  setActiveIndex(-1);
-                } else if (event.key === 'Enter' && showList && activeIndex >= 0) {
-                  event.preventDefault();
-                  const option = document.getElementById(`${id}-opt-${activeIndex}`);
-                  if (option instanceof HTMLAnchorElement) option.click();
-                }
-              }}
-            />
+      <SearchField
+        id={`${id}-q`}
+        name="q"
+        label="Search courses, universities and guidance"
+        role="combobox"
+        autoComplete="off"
+        aria-autocomplete="list"
+        aria-expanded={showList}
+        aria-controls={listboxId}
+        aria-activedescendant={activeId}
+        placeholder="Computer science, Toronto, scholarships…"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        onFocus={() => {
+          if (query.trim().length >= MIN_QUERY) setOpen(true);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setOpen(true);
+            setActiveIndex((current) =>
+              results.length === 0 ? -1 : Math.min(current + 1, results.length - 1),
+            );
+          } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActiveIndex((current) => (current <= 0 ? -1 : current - 1));
+          } else if (event.key === 'Escape') {
+            event.preventDefault();
+            setOpen(false);
+            setActiveIndex(-1);
+          } else if (event.key === 'Enter' && showList && activeIndex >= 0) {
+            event.preventDefault();
+            const option = document.getElementById(`${id}-opt-${activeIndex}`);
+            if (option instanceof HTMLAnchorElement) option.click();
+          }
+        }}
+        trailing={
+          /*
+            The Type and Destination selects are gone.
 
-            <div
-              id={listboxId}
-              role="listbox"
-              hidden={!showList}
-              className="absolute left-0 right-0 top-full z-20 mt-1 rounded-md border border-border bg-surface text-left shadow-lg"
-            >
-              {loading ? (
+            They narrowed a results page the dropdown had already made
+            unnecessary — the typeahead searches everything and goes straight
+            to the record, so the selects only slowed the common path down.
+            The filters that matter now live on /explore, where results are
+            actually being compared. The submit button stays: it is the no-JS
+            path, and the way to reach the full results page from a broad
+            query.
+          */
+          <button
+            type="submit"
+            aria-label="Search"
+            className="grid size-10 place-items-center rounded-md bg-primary text-on-primary shadow-sm transition-colors duration-fast ease-standard hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
+          >
+            <Search size={18} aria-hidden="true" focusable="false" />
+          </button>
+        }
+      >
+        <div
+          id={listboxId}
+          role="listbox"
+          hidden={!showList}
+          className="absolute left-0 right-0 top-full z-20 mt-1 rounded-md border border-border bg-surface text-left shadow-lg"
+        >
+          {loading ? (
                 <p className="px-4 py-3 text-sm text-text-muted" role="status">
                   Searching…
                 </p>
@@ -292,28 +301,8 @@ export function HeroSearch() {
                   ));
                 })()
               )}
-            </div>
-          </div>
         </div>
-
-        {/*
-          The Type and Destination selects are gone.
-          
-          They narrowed a results page the dropdown had already made
-          unnecessary — the typeahead searches everything and goes straight to
-          the record, so the selects only slowed the common path down. The
-          filters that matter now live on /explore, where results are actually
-          being compared. The submit button stays: it is the no-JS path, and
-          the way to reach the full results page from a broad query.
-        */}
-        <button
-          type="submit"
-          className="inline-flex w-full items-center justify-center gap-2 self-center whitespace-nowrap rounded-md bg-primary px-8 py-3 text-base font-semibold text-on-primary shadow-sm transition-colors duration-fast ease-standard hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto"
-        >
-          <Search size={18} aria-hidden="true" focusable="false" />
-          Search
-        </button>
-      </div>
+      </SearchField>
     </form>
   );
 }

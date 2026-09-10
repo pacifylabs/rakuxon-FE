@@ -1,4 +1,4 @@
-import { InstitutionCard, SignUpPrompt } from '@rakuxon/ui';
+import { InstitutionCard, SearchField, SignUpPrompt } from '@rakuxon/ui';
 
 import { ROUTES, applyHref, universityRoute } from '@/content/routes';
 import { formatLocation } from '@/lib/catalogue/format';
@@ -10,6 +10,10 @@ interface Props {
   result: CatalogueResult<ApiInstitution> & { page: number; pageCount: number };
   country: string;
   query: string;
+  /** Where the form and pagination links point — the page this is mounted on. */
+  basePath?: string;
+  /** Off inside the dashboard: a signed-in visitor doesn't need an account pitch. */
+  showSignUpPrompt?: boolean;
 }
 
 /**
@@ -21,8 +25,19 @@ interface Props {
  * none of which a useState filter can be.
  *
  * The form works without JavaScript: it is a GET form pointing at this page.
+ *
+ * Reused as-is inside the dashboard's Schools page (`basePath="/dashboard/schools"`)
+ * rather than duplicated, so a signed-in visitor can browse without leaving the
+ * app shell and the two listings can never drift apart.
  */
-export function UniversityBrowser({ countries, result, country, query }: Props) {
+export function UniversityBrowser({
+  countries,
+  result,
+  country,
+  query,
+  basePath = ROUTES.universities,
+  showSignUpPrompt = true,
+}: Props) {
   const { items, total, page, pageCount, error } = result;
 
   const hrefFor = (next: { country?: string; q?: string; page?: number }) => {
@@ -35,26 +50,20 @@ export function UniversityBrowser({ countries, result, country, query }: Props) 
     if (next.page && next.page > 1) params.set('page', String(next.page));
 
     const search = params.toString();
-    return search ? `${ROUTES.universities}?${search}` : ROUTES.universities;
+    return search ? `${basePath}?${search}` : basePath;
   };
 
   return (
     <div className="flex flex-col gap-8">
-      <form method="get" action={ROUTES.universities} className="flex flex-col gap-4">
+      <form method="get" action={basePath} className="flex flex-col gap-4">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="university-q" className="text-sm font-medium text-text">
-              Search universities
-            </label>
-            <input
-              id="university-q"
-              name="q"
-              type="search"
-              defaultValue={query}
-              placeholder="Name, acronym or city"
-              className="rounded-md border border-border bg-surface px-4 py-3 text-base text-text focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
-            />
-          </div>
+          <SearchField
+            id="university-q"
+            name="q"
+            label="Search universities"
+            defaultValue={query}
+            placeholder="Name, acronym or city"
+          />
 
           <div className="flex flex-col gap-2">
             <label htmlFor="university-country" className="text-sm font-medium text-text">
@@ -102,7 +111,7 @@ export function UniversityBrowser({ countries, result, country, query }: Props) 
           <span className="block font-semibold text-text">No universities match that search.</span>
           <span className="mt-2 block text-sm">
             Try a broader term, or{' '}
-            <a href={ROUTES.universities} className="rounded-sm text-primary underline">
+            <a href={basePath} className="rounded-sm text-primary underline">
               clear the filters
             </a>
             .
@@ -174,15 +183,17 @@ export function UniversityBrowser({ countries, result, country, query }: Props) 
         </>
       )}
 
-      <SignUpPrompt
-        heading="Not sure which of these fits?"
-        body="Create a free account and we will match you against the catalogue on your grades, budget and destination — or talk it through with an advisor first."
-        ctaLabel="Get matched"
-        ctaHref={applyHref({})}
-        secondaryLabel="Book a free consultation"
-        secondaryHref={ROUTES.contact}
-        reassurance="Free to join. The first consultation costs nothing."
-      />
+      {showSignUpPrompt && (
+        <SignUpPrompt
+          heading="Not sure which of these fits?"
+          body="Create a free account and we will match you against the catalogue on your grades, budget and destination — or talk it through with an advisor first."
+          ctaLabel="Get matched"
+          ctaHref={applyHref({})}
+          secondaryLabel="Book a free consultation"
+          secondaryHref={ROUTES.contact}
+          reassurance="Free to join. The first consultation costs nothing."
+        />
+      )}
     </div>
   );
 }

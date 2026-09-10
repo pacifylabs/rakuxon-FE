@@ -9,10 +9,10 @@ import { AuthCard, Button, FormField } from '@rakuxon/ui';
 
 /** Mirrors the API's rule, so the same input is rejected in the same terms. */
 const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
-const PASSWORD_MIN = 12;
+const PASSWORD_MIN = 8;
 
 type FieldErrors = Partial<
-  Record<'agencyName' | 'slug' | 'email' | 'fullName' | 'password', string>
+  Record<'agencyName' | 'slug' | 'email' | 'firstName' | 'lastName' | 'password', string>
 >;
 
 export default function RegisterPage() {
@@ -33,7 +33,8 @@ export default function RegisterPage() {
         .trim()
         .toLowerCase(),
       email: String(data.get('email') ?? '').trim(),
-      fullName: String(data.get('fullName') ?? '').trim(),
+      firstName: String(data.get('firstName') ?? '').trim(),
+      lastName: String(data.get('lastName') ?? '').trim(),
       password: String(data.get('password') ?? ''),
     };
 
@@ -43,7 +44,8 @@ export default function RegisterPage() {
       errors.slug = 'Use 3–40 lowercase letters, digits or hyphens.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
       errors.email = 'Enter a valid email address.';
-    if (!values.fullName) errors.fullName = 'Enter your name.';
+    if (!values.firstName) errors.firstName = 'Enter your first name.';
+    if (!values.lastName) errors.lastName = 'Enter your last name.';
     if (values.password.length < PASSWORD_MIN)
       errors.password = `Use at least ${PASSWORD_MIN} characters.`;
 
@@ -84,24 +86,41 @@ export default function RegisterPage() {
       }
     >
       <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <FormField label="Agency name" name="agencyName" error={fieldErrors.agencyName} />
+        <FormField
+          label="Agency name"
+          name="agencyName"
+          placeholder="Northwind Education"
+          error={fieldErrors.agencyName}
+        />
         <FormField
           label="Subdomain"
           name="slug"
+          placeholder="northwind"
           error={fieldErrors.slug}
           hint="Your workspace address, for example northwind.rakuxon.com"
         />
-        <FormField
-          label="Your name"
-          name="fullName"
-          autoComplete="name"
-          error={fieldErrors.fullName}
-        />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <FormField
+            label="First name"
+            name="firstName"
+            autoComplete="given-name"
+            placeholder="Ada"
+            error={fieldErrors.firstName}
+          />
+          <FormField
+            label="Last name"
+            name="lastName"
+            autoComplete="family-name"
+            placeholder="Lovelace"
+            error={fieldErrors.lastName}
+          />
+        </div>
         <FormField
           label="Email address"
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="ada@northwind.example"
           error={fieldErrors.email}
         />
         <FormField
@@ -109,6 +128,7 @@ export default function RegisterPage() {
           name="password"
           type="password"
           autoComplete="new-password"
+          placeholder={`At least ${PASSWORD_MIN} characters`}
           error={fieldErrors.password}
           hint={`At least ${PASSWORD_MIN} characters.`}
         />

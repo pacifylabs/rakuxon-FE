@@ -8,7 +8,7 @@ const tokens = (over: Record<string, unknown> = {}) => ({
   accessToken: 'access-1',
   refreshToken: 'refresh-1',
   expiresIn: 900,
-  user: { id: 'u1', email: 'a@b.test', fullName: 'Ada', role: 'agency_admin', tenantId: 't1' },
+  user: { id: 'u1', email: 'a@b.test', firstName: 'Ada', lastName: 'Lovelace', role: 'agency_admin', tenantId: 't1' },
   ...over,
 });
 
@@ -181,8 +181,11 @@ describe('<RequireAuth/>', () => {
           ready: false,
           signIn: vi.fn(),
           registerAgency: vi.fn(),
+          registerStudent: vi.fn(),
+          registerViaOnboardingLink: vi.fn(),
           signOut: vi.fn(),
           hasRole: () => false,
+          apiClient: {} as never,
         }}
       >
         <RequireAuth fallback={<p>Checking…</p>} denied={<p>Denied</p>}>

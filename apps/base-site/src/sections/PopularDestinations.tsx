@@ -1,9 +1,17 @@
 import { DestinationCard, Reveal, SectionBand } from '@rakuxon/ui';
 
 import { DESTINATIONS } from '@/content/home';
+import { fetchCountryCounts } from '@/lib/catalogue/institutions';
 
 /** docs/04b § 3.6 — six country cards linking to the destination pages. */
-export function PopularDestinations() {
+export async function PopularDestinations() {
+  /* Same live registry count DestinationCounts uses further down the page —
+     matched by name, since DESTINATIONS predates that endpoint and never
+     carried an ISO code. Falls back to no count rather than failing the
+     section if the registry is unreachable. */
+  const counts = await fetchCountryCounts();
+  const countByName = new Map(counts.items.map((entry) => [entry.country, entry.institutions]));
+
   return (
     <SectionBand tone="muted" id="destinations" labelledBy="destinations-heading">
       <h2
@@ -17,18 +25,27 @@ export function PopularDestinations() {
       </p>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {DESTINATIONS.map((destination, index) => (
-          <li key={destination.country} className="h-full">
-            <Reveal delay={index * 70}>
-              <DestinationCard
-                country={destination.country}
-                href={destination.href}
-                src={destination.src}
-                alt={destination.alt}
-              />
-            </Reveal>
-          </li>
-        ))}
+        {DESTINATIONS.map((destination, index) => {
+          const count = countByName.get(destination.country);
+
+          return (
+            <li key={destination.country} className="h-full">
+              <Reveal delay={index * 70}>
+                <DestinationCard
+                  country={destination.country}
+                  href={destination.href}
+                  src={destination.src}
+                  alt={destination.alt}
+                  description={
+                    count
+                      ? `${count.toLocaleString('en-GB')} universit${count === 1 ? 'y' : 'ies'} in the catalogue.`
+                      : undefined
+                  }
+                />
+              </Reveal>
+            </li>
+          );
+        })}
       </ul>
     </SectionBand>
   );

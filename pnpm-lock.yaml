@@ -102,9 +102,18 @@ importers:
 
   apps/base-site:
     dependencies:
+      '@rakuxon/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@rakuxon/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@rakuxon/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@rakuxon/contract':
+        specifier: workspace:*
+        version: link:../../packages/contract
       '@rakuxon/ui':
         specifier: workspace:*
         version: link:../../packages/ui

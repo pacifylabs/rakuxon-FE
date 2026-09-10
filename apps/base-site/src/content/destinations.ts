@@ -456,3 +456,51 @@ export const COUNTRY_HERO_IMAGE_SLOTS: readonly (ImageSlot & { slot: string })[]
     ...country.heroImage,
   }),
 );
+
+/** Written guides exist for six countries; every other ISO code has none. */
+export const GUIDE_BY_CODE: Record<string, CountrySlug> = {
+  GB: 'uk',
+  CA: 'canada',
+  US: 'usa',
+  IE: 'ireland',
+  AU: 'australia',
+  DE: 'germany',
+};
+
+export interface DestinationCardContent {
+  country: string;
+  href: string;
+  src?: string;
+  alt?: string;
+  description: string;
+}
+
+/**
+ * The card content for one catalogue destination — a written guide's own
+ * photo and tagline where one exists, a plain flag-on-a-name card (via
+ * `DestinationCard`'s own fallback) with an institution count otherwise.
+ *
+ * Shared between /destinations and any other surface that teases
+ * destinations — the dashboard home page, most notably — so a guide added
+ * for one shows up consistently everywhere a country card renders.
+ */
+export function destinationCardContent(entry: {
+  countryCode: string;
+  country: string;
+  institutions: number;
+}): DestinationCardContent {
+  const guide = GUIDE_BY_CODE[entry.countryCode];
+  const written = guide ? COUNTRY_BY_SLUG.get(guide) : undefined;
+
+  return {
+    country: written?.shortName ?? entry.country,
+    href: guide ? countryRoute(guide) : `${ROUTES.universities}?country=${entry.countryCode}`,
+    src: written?.cardImage.src,
+    alt: written?.cardImage.alt,
+    description:
+      written?.tagline ??
+      `${entry.institutions.toLocaleString('en-GB')} universit${
+        entry.institutions === 1 ? 'y' : 'ies'
+      } in the catalogue.`,
+  };
+}

@@ -1,11 +1,25 @@
 import type {
+  Application,
+  ArticleList,
   AuthTokens,
+  ConfirmDocumentUploadRequest,
   ConsumedLink,
+  CountryCount,
+  CreateApplicationRequest,
   HealthResponse,
   IssueOnboardingLinkRequest,
   LoginRequest,
   OnboardingLink,
+  PeekedLink,
+  ReferenceCountry,
   RegisterAgencyRequest,
+  RegisterStudentRequest,
+  RegisterViaOnboardingLinkRequest,
+  StudentDocument,
+  StudentProfile,
+  UpdateStudentProfileRequest,
+  UploadSignature,
+  UploadSignatureRequest,
 } from '@rakuxon/contract';
 
 import { ApiError, NetworkError } from './errors';
@@ -108,6 +122,10 @@ export class ApiClient {
     return this.request<AuthTokens>('/v1/auth/register', { method: 'POST', body });
   }
 
+  registerStudent(body: RegisterStudentRequest): Promise<AuthTokens> {
+    return this.request<AuthTokens>('/v1/auth/register/student', { method: 'POST', body });
+  }
+
   login(body: LoginRequest): Promise<AuthTokens> {
     return this.request<AuthTokens>('/v1/auth/login', { method: 'POST', body });
   }
@@ -141,6 +159,18 @@ export class ApiClient {
     });
   }
 
+  /** A no-op if the signed-in user's address is already verified. */
+  resendEmailVerification(): Promise<void> {
+    return this.request<void>('/v1/auth/verify-email/resend', { method: 'POST', auth: true });
+  }
+
+  confirmEmailVerification(token: string): Promise<void> {
+    return this.request<void>('/v1/auth/verify-email/confirm', {
+      method: 'POST',
+      body: { token },
+    });
+  }
+
   /** Completes a provider redirect. The code is exchanged server-side. */
   ssoCallback(provider: string, code: string, redirectUri: string): Promise<AuthTokens> {
     return this.request<AuthTokens>(`/v1/auth/sso/${provider}/callback`, {
@@ -161,6 +191,101 @@ export class ApiClient {
     return this.request<ConsumedLink>('/v1/onboarding-links/consume', {
       method: 'POST',
       body: { token },
+    });
+  }
+
+  /** Looks up an invitation without spending it — for prefilling a sign-up form. */
+  peekOnboardingLink(token: string): Promise<PeekedLink> {
+    return this.request<PeekedLink>('/v1/onboarding-links/peek', {
+      method: 'POST',
+      body: { token },
+    });
+  }
+
+  registerViaOnboardingLink(body: RegisterViaOnboardingLinkRequest): Promise<AuthTokens> {
+    return this.request<AuthTokens>('/v1/onboarding-links/register', { method: 'POST', body });
+  }
+
+  getMyProfile(): Promise<StudentProfile> {
+    return this.request<StudentProfile>('/v1/students/me', { auth: true });
+  }
+
+  /** Every country, for a profile or address form's dropdown. Public — no session needed. */
+  listReferenceCountries(): Promise<ReferenceCountry[]> {
+    return this.request<ReferenceCountry[]>('/v1/catalogue/countries/reference');
+  }
+
+  /** Destinations with a published institution count, for a "where to study" teaser. */
+  listDestinationCounts(): Promise<CountryCount[]> {
+    return this.request<CountryCount[]>('/v1/catalogue/countries');
+  }
+
+  /** Latest guidance articles, for a home-page teaser. Public — no session needed. */
+  listArticles(limit = 3): Promise<ArticleList> {
+    return this.request<ArticleList>(`/v1/catalogue/articles?limit=${limit}`);
+  }
+
+  updateMyProfile(body: UpdateStudentProfileRequest): Promise<StudentProfile> {
+    return this.request<StudentProfile>('/v1/students/me', { method: 'PATCH', body, auth: true });
+  }
+
+  getUploadSignature(body: UploadSignatureRequest): Promise<UploadSignature> {
+    return this.request<UploadSignature>('/v1/documents/upload-signature', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  confirmDocumentUpload(
+    documentId: string,
+    body: ConfirmDocumentUploadRequest,
+  ): Promise<StudentDocument> {
+    return this.request<StudentDocument>(`/v1/documents/${documentId}/confirm`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  listDocuments(): Promise<StudentDocument[]> {
+    return this.request<StudentDocument[]>('/v1/documents', { auth: true });
+  }
+
+  deleteDocument(documentId: string): Promise<void> {
+    return this.request<void>(`/v1/documents/${documentId}`, { method: 'DELETE', auth: true });
+  }
+
+  createApplication(body: CreateApplicationRequest): Promise<Application> {
+    return this.request<Application>('/v1/applications', { method: 'POST', body, auth: true });
+  }
+
+  listApplications(): Promise<Application[]> {
+    return this.request<Application[]>('/v1/applications', { auth: true });
+  }
+
+  getApplication(id: string): Promise<Application> {
+    return this.request<Application>(`/v1/applications/${id}`, { auth: true });
+  }
+
+  attachDocumentToApplication(applicationId: string, documentId: string): Promise<Application> {
+    return this.request<Application>(`/v1/applications/${applicationId}/documents/${documentId}`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  detachDocumentFromApplication(applicationId: string, documentId: string): Promise<Application> {
+    return this.request<Application>(`/v1/applications/${applicationId}/documents/${documentId}`, {
+      method: 'DELETE',
+      auth: true,
+    });
+  }
+
+  submitApplication(id: string): Promise<Application> {
+    return this.request<Application>(`/v1/applications/${id}/submit`, {
+      method: 'POST',
+      auth: true,
     });
   }
 }

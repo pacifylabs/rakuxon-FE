@@ -16,7 +16,8 @@ const tokens = {
   user: {
     id: 'u1',
     email: 'a@b.test',
-    fullName: 'Ada',
+    firstName: 'Ada',
+    lastName: 'Lovelace',
     role: 'agency_admin',
     tenantId: 't1',
   },

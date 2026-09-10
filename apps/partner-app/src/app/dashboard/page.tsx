@@ -36,7 +36,7 @@ function Workspace() {
       <main id="main">
         <SectionBand labelledBy="dashboard-heading">
           <h1 id="dashboard-heading" className="font-heading text-3xl font-bold text-text">
-            Welcome back, {user?.fullName}
+            Welcome back, {user?.firstName}
           </h1>
           <p className="mt-4 max-w-prose text-base text-text-muted">
             Your pipeline, document review and applications land here as the later stages ship.

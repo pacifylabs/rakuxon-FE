@@ -23,7 +23,8 @@ const tokens = (over: Record<string, unknown> = {}) => ({
   user: {
     id: 'u1',
     email: 'ada@b.test',
-    fullName: 'Ada Lovelace',
+    firstName: 'Ada',
+    lastName: 'Lovelace',
     role: 'agency_admin',
     tenantId: 't1',
   },
@@ -142,7 +143,8 @@ describe('register screen', () => {
   const fill = async () => {
     await userEvent.type(screen.getByLabelText('Agency name'), 'Northwind');
     await userEvent.type(screen.getByLabelText('Subdomain'), 'northwind');
-    await userEvent.type(screen.getByLabelText('Your name'), 'Ada Lovelace');
+    await userEvent.type(screen.getByLabelText('First name'), 'Ada');
+    await userEvent.type(screen.getByLabelText('Last name'), 'Lovelace');
     await userEvent.type(screen.getByLabelText('Email address'), 'ada@b.test');
     await userEvent.type(screen.getByLabelText('Password'), 'correct-horse-battery');
   };
@@ -165,7 +167,7 @@ describe('register screen', () => {
     await userEvent.type(screen.getByLabelText('Password'), 'short');
     await userEvent.click(screen.getByRole('button', { name: 'Create workspace' }));
 
-    expect(screen.getByText('Use at least 12 characters.')).toBeInTheDocument();
+    expect(screen.getByText('Use at least 8 characters.')).toBeInTheDocument();
   });
 
   it('registers and moves to the dashboard', async () => {
@@ -214,7 +216,7 @@ describe('dashboard', () => {
     mockFetch(() => json(200, { status: 'ok', dependencies: { database: 'up' } }));
     renderApp(<DashboardPage />);
 
-    expect(await screen.findByText(/Welcome back, Ada Lovelace/)).toBeInTheDocument();
+    expect(await screen.findByText(/Welcome back, Ada/)).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
   });
 

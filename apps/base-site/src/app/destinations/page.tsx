@@ -2,10 +2,8 @@ import type { Metadata } from 'next';
 
 import { CtaBand, DestinationCard, PageHeader, SectionBand } from '@rakuxon/ui';
 
-import { COUNTRIES, DESTINATIONS_CTA, DESTINATIONS_INDEX } from '@/content/destinations';
-import { ROUTES, countryRoute } from '@/content/routes';
+import { DESTINATIONS_CTA, DESTINATIONS_INDEX, destinationCardContent } from '@/content/destinations';
 import { fetchCountries } from '@/lib/catalogue/api';
-import type { CountrySlug } from '@/content/routes';
 
 /* Revalidated: the destination list is now whatever the catalogue holds. */
 export const revalidate = 300;
@@ -15,20 +13,6 @@ export const metadata: Metadata = {
   description:
     'Compare the UK, Canada, the US, Ireland, Australia and Germany on cost, course length, intakes and post-study work rights.',
 };
-
-/** Written guides exist for six countries; the rest link to the filtered list. */
-const GUIDE_BY_CODE: Record<string, CountrySlug> = {
-  GB: 'uk',
-  CA: 'canada',
-  US: 'usa',
-  IE: 'ireland',
-  AU: 'australia',
-  DE: 'germany',
-};
-
-const CARD_IMAGE_BY_CODE = new Map(
-  COUNTRIES.map((country) => [country.slug, country] as const),
-);
 
 export default async function DestinationsPage() {
   /*
@@ -57,28 +41,11 @@ export default async function DestinationsPage() {
 
         <ul className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {countries.map((entry) => {
-            const guide = GUIDE_BY_CODE[entry.countryCode];
-            const written = guide ? CARD_IMAGE_BY_CODE.get(guide) : undefined;
+            const card = destinationCardContent(entry);
 
             return (
               <li key={entry.countryCode} className="h-full">
-                <DestinationCard
-                  country={written?.shortName ?? entry.country}
-                  href={
-                    guide
-                      ? countryRoute(guide)
-                      : `${ROUTES.universities}?country=${entry.countryCode}`
-                  }
-                  src={written?.cardImage.src}
-                  alt={written?.cardImage.alt}
-                  countryCode={entry.countryCode}
-                  description={
-                    written?.tagline ??
-                    `${entry.institutions.toLocaleString('en-GB')} universit${
-                      entry.institutions === 1 ? 'y' : 'ies'
-                    } in the catalogue.`
-                  }
-                />
+                <DestinationCard {...card} countryCode={entry.countryCode} />
               </li>
             );
           })}

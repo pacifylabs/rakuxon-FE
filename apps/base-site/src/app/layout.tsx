@@ -1,25 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
-import { Footer, Header, ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
+import { ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
-import { PageBackdrop } from '@/sections/PageBackdrop';
+import { SessionProvider } from '@/components/SessionProvider';
+import { SiteChrome } from '@/components/SiteChrome';
 
-import {
-  BRAND_LOGO,
-  CONTACT_ADDRESSES,
-  CONTACT_PHONES,
-  FOOTER_BLURB,
-  CONTACT_EMAIL,
-  FOOTER_COLUMNS,
-  FOOTER_DOMAIN,
-  FOOTER_LEGAL_LINKS,
-  FOOTER_TAGLINE,
-  GET_STARTED_LINK,
-  LOG_IN_LINK,
-  NAV_LINKS,
-  SOCIALS,
-} from '@/content/site';
+import { BRAND_LOGO } from '@/content/site';
 
 import './globals.css';
 
@@ -66,26 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {/* No tenant overrides on the public site — always the base theme. */}
         <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
-          <a className="skip-link" href="#main">
-            Skip to main content
-          </a>
-
-          <PageBackdrop />
-          <Header navLinks={NAV_LINKS} logIn={LOG_IN_LINK} getStarted={GET_STARTED_LINK} />
-
-          <main id="main">{children}</main>
-
-          <Footer
-            tagline={FOOTER_TAGLINE}
-            domain={FOOTER_DOMAIN}
-            email={CONTACT_EMAIL}
-            addresses={CONTACT_ADDRESSES}
-            phones={CONTACT_PHONES}
-            blurb={FOOTER_BLURB}
-            columns={FOOTER_COLUMNS}
-            socials={SOCIALS}
-            legalLinks={FOOTER_LEGAL_LINKS}
-          />
+          <SessionProvider>
+            <SiteChrome>{children}</SiteChrome>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -12,7 +12,14 @@ import {
 import type { ReactNode } from 'react';
 
 import { ApiClient, ApiError } from '@rakuxon/api-client';
-import type { AuthUser, LoginRequest, RegisterAgencyRequest, Role } from '@rakuxon/contract';
+import type {
+  AuthUser,
+  LoginRequest,
+  RegisterAgencyRequest,
+  RegisterStudentRequest,
+  RegisterViaOnboardingLinkRequest,
+  Role,
+} from '@rakuxon/contract';
 
 import {
   clearSession,
@@ -29,8 +36,17 @@ export interface AuthContextValue {
   ready: boolean;
   signIn: (credentials: LoginRequest) => Promise<void>;
   registerAgency: (input: RegisterAgencyRequest) => Promise<void>;
+  registerStudent: (input: RegisterStudentRequest) => Promise<void>;
+  registerViaOnboardingLink: (input: RegisterViaOnboardingLinkRequest) => Promise<void>;
   signOut: () => Promise<void>;
   hasRole: (...roles: Role[]) => boolean;
+  /**
+   * The client every auth method already routes through, for a screen that
+   * needs an authenticated call this context has no dedicated method for
+   * (profile, documents, applications) — one bearer-token-aware client per
+   * app, not one hand-instantiated per page.
+   */
+  apiClient: ApiClient;
 }
 
 /** Exported so a guard's not-ready branch can be exercised directly. */
@@ -40,6 +56,11 @@ export function useAuth(): AuthContextValue {
   const value = useContext(AuthContext);
   if (!value) throw new Error('useAuth must be used inside <AuthProvider/>.');
   return value;
+}
+
+/** The same bearer-token-aware client every auth method uses internally. */
+export function useApiClient(): ApiClient {
+  return useAuth().apiClient;
 }
 
 /**
@@ -113,6 +134,20 @@ export function AuthProvider({ baseUrl, children }: { baseUrl: string; children:
     [client, apply],
   );
 
+  const registerStudent = useCallback(
+    async (input: RegisterStudentRequest) => {
+      apply(sessionFromTokens(await client.registerStudent(input)));
+    },
+    [client, apply],
+  );
+
+  const registerViaOnboardingLink = useCallback(
+    async (input: RegisterViaOnboardingLinkRequest) => {
+      apply(sessionFromTokens(await client.registerViaOnboardingLink(input)));
+    },
+    [client, apply],
+  );
+
   const signOut = useCallback(async () => {
     const current = sessionRef.current;
     /* Clear locally first: the user asked to leave, and a failing network call
@@ -134,10 +169,22 @@ export function AuthProvider({ baseUrl, children }: { baseUrl: string; children:
       ready,
       signIn,
       registerAgency,
+      registerStudent,
+      registerViaOnboardingLink,
       signOut,
       hasRole: (...roles) => (session ? roles.includes(session.user.role as Role) : false),
+      apiClient: client,
     }),
-    [session, ready, signIn, registerAgency, signOut],
+    [
+      session,
+      ready,
+      signIn,
+      registerAgency,
+      registerStudent,
+      registerViaOnboardingLink,
+      signOut,
+      client,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

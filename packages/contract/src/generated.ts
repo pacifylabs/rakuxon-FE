@@ -4,534 +4,1939 @@
  */
 
 export interface paths {
-  '/v1/health': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Liveness and dependency check
+         * @description Returns build information and the reachability of each dependency. Always 200 so a load balancer can distinguish "process is up" from "database is down" by reading the body. Unauthenticated, because a probe has no credentials.
+         */
+        get: operations["HealthController_check_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Liveness and dependency check
-     * @description Returns build information and the reachability of each dependency. Always 200 so a load balancer can distinguish "process is up" from "database is down" by reading the body. Unauthenticated, because a probe has no credentials.
-     */
-    get: operations['HealthController_check_v1'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/auth/register': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register an agency and its first administrator
+         * @description Creates the tenant and its `agency_admin` in one transaction and returns a session. The tenant starts as `pending` until an administrator vets it.
+         */
+        post: operations["AuthController_register_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Register an agency and its first administrator
-     * @description Creates the tenant and its `agency_admin` in one transaction and returns a session. The tenant starts as `pending` until an administrator vets it.
-     */
-    post: operations['AuthController_register_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/auth/login': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/register/student": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register directly as a student, with no agency
+         * @description Creates the account under the shared house tenant and returns a session. For a student joining through an agency's invitation, use POST /onboarding-links/register instead.
+         */
+        post: operations["AuthController_registerStudent_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Exchange credentials for a token pair
-     * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered.
-     */
-    post: operations['AuthController_login_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/auth/refresh': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange credentials for a token pair
+         * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered.
+         */
+        post: operations["AuthController_login_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Rotate a refresh token
-     * @description Refresh tokens are single-use. Presenting one that has already been rotated revokes every token in its family, because a replay and a stolen token are indistinguishable.
-     */
-    post: operations['AuthController_refresh_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/auth/logout': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate a refresh token
+         * @description Refresh tokens are single-use. Presenting one that has already been rotated revokes every token in its family, because a replay and a stolen token are indistinguishable.
+         */
+        post: operations["AuthController_refresh_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * End the session behind a refresh token
-     * @description Idempotent: an unknown token succeeds rather than reporting whether it existed.
-     */
-    post: operations['AuthController_logout_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/auth/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End the session behind a refresh token
+         * @description Idempotent: an unknown token succeeds rather than reporting whether it existed.
+         */
+        post: operations["AuthController_logout_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** The identity behind the current access token */
-    post: operations['AuthController_me_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/onboarding-links': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/password-reset/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request a password reset link
+         * @description Always answers 204, whether or not the address has an account. Reporting which is which would make this an account-enumeration endpoint.
+         */
+        post: operations["AuthController_requestPasswordReset_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Issue a student invitation link
-     * @description The URL is returned once and never again — only a hash is stored. The tenant comes from your token, not from the request body.
-     */
-    post: operations['OnboardingLinksController_issue_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/onboarding-links/consume': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/password-reset/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set a new password from a reset link
+         * @description Single-use, and every existing session is revoked. If the reset was triggered by a compromise, leaving the attacker signed in would defeat the point.
+         */
+        post: operations["AuthController_confirmPasswordReset_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Redeem an invitation link
-     * @description Public, because the student has no account yet. Expired, revoked, already-used and unknown tokens all return the same message.
-     */
-    post: operations['OnboardingLinksController_consume_v1'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/v1/onboarding-links/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/v1/auth/verify-email/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Re-send the verification link to the signed-in user
+         * @description A no-op if the address is already verified — never reports which.
+         */
+        post: operations["AuthController_resendEmailVerification_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Revoke an invitation link */
-    delete: operations['OnboardingLinksController_revoke_v1'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/v1/auth/verify-email/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm an email address from a verification link
+         * @description Single-use. Unlike a password reset, existing sessions are left alone.
+         */
+        post: operations["AuthController_confirmEmailVerification_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sso/{provider}/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete a single sign-on redirect
+         * @description Exchanges the authorization code server-side, so no client secret reaches a browser. An address the provider has not verified is refused, and an address that already has an account is linked rather than duplicated. SSO does not create tenants.
+         */
+        post: operations["AuthController_ssoCallback_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The identity behind the current access token */
+        post: operations["AuthController_me_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search universities, courses and guidance
+         * @description One ranked list across all three. Returns nothing for a query under two characters, since a shorter one matches most of the catalogue.
+         */
+        get: operations["CatalogueController_search_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Destinations with a published institution count */
+        get: operations["CatalogueController_countries_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/countries/reference": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every country, for a form dropdown */
+        get: operations["CatalogueController_referenceCountries_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/institutions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Browse universities
+         * @description Filter by country and free text. Only published records are returned.
+         */
+        get: operations["CatalogueController_listInstitutions_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/institutions/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One university */
+        get: operations["CatalogueController_institution_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Published guidance, newest first
+         * @description Filterable by destination or tag. Cards only — bodies come from the detail route.
+         */
+        get: operations["CatalogueController_listArticles_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/articles/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One article, with its body */
+        get: operations["CatalogueController_article_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue a student invitation link
+         * @description The URL is returned once and never again — only a hash is stored. The tenant comes from your token, not from the request body.
+         */
+        post: operations["OnboardingLinksController_issue_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding-links/consume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Redeem an invitation link
+         * @description Public, because the student has no account yet. Expired, revoked, already-used and unknown tokens all return the same message.
+         */
+        post: operations["OnboardingLinksController_consume_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding-links/peek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Look up an invitation without spending it
+         * @description Lets a sign-up form show who the invitation is from and prefill the invitee email, before the student has set a password. Does not mark the link consumed.
+         */
+        post: operations["OnboardingLinksController_peek_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding-links/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Redeem an invitation and create the account in one step
+         * @description The tenant and email come from the token, not the request body, so a client cannot choose which agency they join. Returns a session — no separate login step.
+         */
+        post: operations["OnboardingLinksController_register_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding-links/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke an invitation link */
+        delete: operations["OnboardingLinksController_revoke_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/students/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own applicant profile */
+        get: operations["StudentsController_getOwnProfile_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update the caller's own applicant profile
+         * @description Every field is optional — a partial save is expected. `profileCompletedAt` is set once every field admission processing needs is present, and stays set afterwards.
+         */
+        patch: operations["StudentsController_updateOwnProfile_v1"];
+        trace?: never;
+    };
+    "/v1/documents/upload-signature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get a signed Cloudinary upload for one document
+         * @description Creates a `pending_upload` record and returns everything the browser needs to POST the file straight to Cloudinary. The file never passes through this API.
+         */
+        post: operations["DocumentsController_getUploadSignature_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/documents/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record that a signed upload actually completed */
+        post: operations["DocumentsController_confirm_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own documents */
+        get: operations["DocumentsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/documents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete one of the caller's own documents */
+        delete: operations["DocumentsController_remove_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own applications */
+        get: operations["ApplicationsController_list_v1"];
+        put?: never;
+        /**
+         * Start a draft application to one course
+         * @description Does not require a completed profile yet — that gate applies at submit time.
+         */
+        post: operations["ApplicationsController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/applications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of the caller's own applications */
+        get: operations["ApplicationsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/applications/{id}/documents/{documentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach an uploaded document to a draft application */
+        post: operations["ApplicationsController_attachDocument_v1"];
+        /** Detach a document from a draft application */
+        delete: operations["ApplicationsController_detachDocument_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/applications/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit a draft application
+         * @description Requires a completed profile and every required document type attached. Not idempotent — resubmitting an already-submitted application is a conflict.
+         */
+        post: operations["ApplicationsController_submit_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    HealthDependenciesDto: {
-      /**
-       * @description Postgres reachability.
-       * @enum {string}
-       */
-      database: 'up' | 'down';
+    schemas: {
+        HealthDependenciesDto: {
+            /**
+             * @description Postgres reachability.
+             * @enum {string}
+             */
+            database: "up" | "down";
+        };
+        HealthResponseDto: {
+            /** @example ok */
+            status: string;
+            /** @enum {string} */
+            environment: "development" | "test" | "production";
+            /**
+             * @description Commit the running build came from.
+             * @example a1b2c3d
+             */
+            version: string;
+            /** @example 42 */
+            uptimeSeconds: number;
+            dependencies: components["schemas"]["HealthDependenciesDto"];
+        };
+        RegisterAgencyDto: {
+            /**
+             * @description Agency name.
+             * @example Northwind Education
+             */
+            agencyName: string;
+            /**
+             * @description Subdomain label. Lowercase letters, digits and hyphens.
+             * @example northwind
+             */
+            slug: string;
+            /** @example ada@northwind.example */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        /** @enum {string} */
+        Role: "platform_admin" | "agency_admin" | "counselor" | "institution_user" | "student";
+        AuthUserDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example ada@northwind.example */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            role: components["schemas"]["Role"];
+            /**
+             * Format: uuid
+             * @description Null for a platform administrator.
+             */
+            tenantId: string | null;
+            /**
+             * Format: date-time
+             * @description Null until the address is confirmed. Not a sign-in gate.
+             */
+            emailVerifiedAt: string | null;
+        };
+        AuthTokensDto: {
+            /** @description Short-lived JWT. Send as `Authorization: Bearer <token>`. */
+            accessToken: string;
+            /** @description Opaque, single-use. Rotated on every refresh. */
+            refreshToken: string;
+            /**
+             * @description Access token lifetime in seconds.
+             * @example 900
+             */
+            expiresIn: number;
+            user: components["schemas"]["AuthUserDto"];
+        };
+        RegisterStudentDto: {
+            /** @example ada@example.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        LoginDto: {
+            /** @example ada@northwind.example */
+            email: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        RefreshDto: {
+            /** @description The refresh token from the previous login or refresh. */
+            refreshToken: string;
+        };
+        RequestPasswordResetDto: {
+            /** @example ada@northwind.example */
+            email: string;
+        };
+        ConfirmPasswordResetDto: {
+            /** @description The token from the reset link. */
+            token: string;
+            /** @example a-brand-new-passphrase */
+            password: string;
+        };
+        ConfirmEmailVerificationDto: {
+            /** @description The token from the verification link. */
+            token: string;
+        };
+        SsoCallbackDto: {
+            /** @description Authorization code from the provider redirect. */
+            code: string;
+            /** @description The redirect URI the code was issued against. */
+            redirectUri: string;
+        };
+        HighlightSegmentDto: {
+            /** @example Uni */
+            text: string;
+            /**
+             * @description True where this segment matched the query.
+             * @example true
+             */
+            match: boolean;
+        };
+        SearchResultDto: {
+            /** @enum {string} */
+            type: "institution" | "course" | "article";
+            id: string;
+            /** @description Route key. /universities/[slug], /courses/[slug], /resources/[slug]. */
+            slug: string;
+            /** @example University of Manchester */
+            name: string;
+            /** @example Manchester, United Kingdom */
+            subtitle?: string;
+            /**
+             * @description ISO 3166-1 alpha-2, for the flag.
+             * @example GB
+             */
+            countryCode?: string;
+            highlight: components["schemas"]["HighlightSegmentDto"][];
+        };
+        SearchResponseDto: {
+            items: components["schemas"]["SearchResultDto"][];
+            /** @description Total matches before the limit, so the UI can offer "see all". */
+            total: number;
+        };
+        CountryCountDto: {
+            /** @example GB */
+            countryCode: string;
+            /** @example United Kingdom */
+            country: string;
+            /** @example 456 */
+            institutions: number;
+        };
+        CountryDto: {
+            /** @example GB */
+            code: string;
+            /** @example United Kingdom */
+            name: string;
+            /** @description Whether the catalogue has universities here. */
+            isDestination: boolean;
+            /** @example 🇬🇧 */
+            flagEmoji: string;
+        };
+        InstitutionSummaryDto: {
+            id: string;
+            slug: string;
+            name: string;
+            /** @description Acronyms and alternates. */
+            aka: string[];
+            country: string;
+            /** @example GB */
+            countryCode: string;
+            city?: string;
+            website?: string;
+            /** @description Only where licensed; the flag is the fallback. */
+            logoUrl?: string;
+            fastTrackOffer: boolean;
+            /** @description Published courses at this institution. */
+            courseCount: number;
+        };
+        InstitutionListDto: {
+            items: components["schemas"]["InstitutionSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        Institution: Record<string, never>;
+        ArticleSummaryDto: {
+            id: string;
+            slug: string;
+            title: string;
+            excerpt?: string;
+            heroImageUrl?: string;
+            /** @example GB */
+            countryCode?: string;
+            tags: string[];
+            readMinutes?: number;
+            author?: string;
+            /** Format: date-time */
+            publishedAt?: string;
+        };
+        ArticleListDto: {
+            items: components["schemas"]["ArticleSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+            /** @description Every tag in the published set. */
+            tags: string[];
+        };
+        ArticleDetailDto: {
+            id: string;
+            slug: string;
+            title: string;
+            excerpt?: string;
+            heroImageUrl?: string;
+            /** @example GB */
+            countryCode?: string;
+            tags: string[];
+            readMinutes?: number;
+            author?: string;
+            /** Format: date-time */
+            publishedAt?: string;
+            /** @description Markdown. Never raw HTML. */
+            body: string;
+            source?: string;
+            sourceUrl?: string;
+        };
+        IssueOnboardingLinkDto: {
+            /**
+             * @description Who the invitation is for.
+             * @example student@example.com
+             */
+            inviteeEmail: string;
+            /**
+             * @description Days until the link expires. Defaults to 14.
+             * @example 14
+             */
+            expiresInDays?: number;
+        };
+        OnboardingLinkDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description The full invitation URL. Shown once, at issue time — only a hash is stored, so it cannot be retrieved again. */
+            url: string;
+            /** @example student@example.com */
+            inviteeEmail: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        ConsumeOnboardingLinkDto: {
+            /** @description The token from the invitation link. */
+            token: string;
+        };
+        ConsumedLinkDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenantId: string;
+            /** @example student@example.com */
+            inviteeEmail: string;
+        };
+        PeekOnboardingLinkDto: {
+            /** @description The token from the invitation link. */
+            token: string;
+        };
+        PeekedLinkDto: {
+            /** @example Northwind Education */
+            tenantName: string;
+            /** @example student@example.com */
+            inviteeEmail: string;
+        };
+        RegisterViaOnboardingLinkDto: {
+            /** @description The token from the invitation link. */
+            token: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        AddressDto: {
+            line1?: string;
+            line2?: string;
+            city?: string;
+            region?: string;
+            postalCode?: string;
+            /** @example NG */
+            countryCode?: string;
+        };
+        EducationHistoryEntryDto: {
+            institutionName: string;
+            qualification: string;
+            fieldOfStudy?: string;
+            startYear?: number;
+            endYear?: number;
+            grade?: string;
+        };
+        /** @enum {string} */
+        StudyLevel: "foundation" | "undergraduate" | "postgraduate" | "research";
+        StudentProfileDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            sourceOnboardingLinkId: string | null;
+            /** Format: date */
+            dateOfBirth: string | null;
+            nationality: string | null;
+            phone: string | null;
+            passportNumber: string | null;
+            address: components["schemas"]["AddressDto"];
+            educationHistory: components["schemas"]["EducationHistoryEntryDto"][];
+            intendedStudyLevel: components["schemas"]["StudyLevel"] | null;
+            intendedCountry: string | null;
+            preferredIntake: string | null;
+            /** Format: date-time */
+            profileCompletedAt: string | null;
+        };
+        UpdateStudentProfileDto: {
+            /** @example 2001-04-12 */
+            dateOfBirth?: string;
+            /** @example NG */
+            nationality?: string;
+            /** @example +2348012345678 */
+            phone?: string;
+            passportNumber?: string;
+            address?: components["schemas"]["AddressDto"];
+            educationHistory?: components["schemas"]["EducationHistoryEntryDto"][];
+            intendedStudyLevel?: components["schemas"]["StudyLevel"];
+            /** @example GB */
+            intendedCountry?: string;
+            /** @example 2026-09 */
+            preferredIntake?: string;
+        };
+        /** @enum {string} */
+        DocumentType: "academic_certificate" | "english_test" | "identity" | "medical" | "secondary_marksheet" | "senior_secondary_marksheet";
+        UploadSignatureRequestDto: {
+            type: components["schemas"]["DocumentType"];
+            /** @example transcript.pdf */
+            filename: string;
+        };
+        UploadSignatureDto: {
+            /** Format: uuid */
+            documentId: string;
+            cloudName: string;
+            apiKey: string;
+            /** @description Unix seconds. Signed alongside publicId — must be sent back unchanged. */
+            timestamp: number;
+            signature: string;
+            publicId: string;
+            /** @description POST the file here as multipart form data. */
+            uploadUrl: string;
+        };
+        ConfirmDocumentUploadDto: {
+            /** @description Cloudinary's `secure_url` from the upload response. */
+            secureUrl: string;
+            bytes: number;
+            /** @example application/pdf */
+            mimeType: string;
+        };
+        /** @enum {string} */
+        DocumentStatus: "pending_upload" | "uploaded" | "deleted";
+        DocumentDto: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["DocumentType"];
+            status: components["schemas"]["DocumentStatus"];
+            originalFilename: string;
+            url: string | null;
+            bytes: number | null;
+            mimeType: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        CreateApplicationDto: {
+            /** Format: uuid */
+            courseId: string;
+        };
+        /** @enum {string} */
+        ApplicationStatus: "draft" | "submitted";
+        ApplicationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            courseId: string;
+            /** Format: uuid */
+            institutionId: string;
+            status: components["schemas"]["ApplicationStatus"];
+            /** Format: date-time */
+            submittedAt: string | null;
+            attachedDocumentIds: string[];
+            /** @description Required document types not yet attached. Empty once ready to submit. */
+            missingDocumentTypes: components["schemas"]["DocumentType"][];
+            /** @description Whether the profile and document gates are both satisfied. */
+            readyToSubmit: boolean;
+            /** Format: date-time */
+            createdAt: string;
+        };
     };
-    HealthResponseDto: {
-      /** @example ok */
-      status: string;
-      /** @enum {string} */
-      environment: 'development' | 'test' | 'production';
-      /**
-       * @description Commit the running build came from.
-       * @example a1b2c3d
-       */
-      version: string;
-      /** @example 42 */
-      uptimeSeconds: number;
-      dependencies: components['schemas']['HealthDependenciesDto'];
-    };
-    RegisterAgencyDto: {
-      /**
-       * @description Agency name.
-       * @example Northwind Education
-       */
-      agencyName: string;
-      /**
-       * @description Subdomain label. Lowercase letters, digits and hyphens.
-       * @example northwind
-       */
-      slug: string;
-      /** @example ada@northwind.example */
-      email: string;
-      /** @example Ada Lovelace */
-      fullName: string;
-      /** @example correct-horse-battery */
-      password: string;
-    };
-    /** @enum {string} */
-    Role: 'platform_admin' | 'agency_admin' | 'counselor' | 'institution_user' | 'student';
-    AuthUserDto: {
-      /** Format: uuid */
-      id: string;
-      /** @example ada@northwind.example */
-      email: string;
-      /** @example Ada Lovelace */
-      fullName: string;
-      role: components['schemas']['Role'];
-      /**
-       * Format: uuid
-       * @description Null for a platform administrator.
-       */
-      tenantId: string | null;
-    };
-    AuthTokensDto: {
-      /** @description Short-lived JWT. Send as `Authorization: Bearer <token>`. */
-      accessToken: string;
-      /** @description Opaque, single-use. Rotated on every refresh. */
-      refreshToken: string;
-      /**
-       * @description Access token lifetime in seconds.
-       * @example 900
-       */
-      expiresIn: number;
-      user: components['schemas']['AuthUserDto'];
-    };
-    LoginDto: {
-      /** @example ada@northwind.example */
-      email: string;
-      /** @example correct-horse-battery */
-      password: string;
-    };
-    RefreshDto: {
-      /** @description The refresh token from the previous login or refresh. */
-      refreshToken: string;
-    };
-    IssueOnboardingLinkDto: {
-      /**
-       * @description Who the invitation is for.
-       * @example student@example.com
-       */
-      inviteeEmail: string;
-      /**
-       * @description Days until the link expires. Defaults to 14.
-       * @example 14
-       */
-      expiresInDays?: number;
-    };
-    OnboardingLinkDto: {
-      /** Format: uuid */
-      id: string;
-      /** @description The full invitation URL. Shown once, at issue time — only a hash is stored, so it cannot be retrieved again. */
-      url: string;
-      /** @example student@example.com */
-      inviteeEmail: string;
-      /** Format: date-time */
-      expiresAt: string;
-    };
-    ConsumeOnboardingLinkDto: {
-      /** @description The token from the invitation link. */
-      token: string;
-    };
-    ConsumedLinkDto: {
-      /** Format: uuid */
-      tenantId: string;
-      /** @example student@example.com */
-      inviteeEmail: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  HealthController_check_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    HealthController_check_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['HealthResponseDto'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthResponseDto"];
+                };
+            };
         };
-      };
     };
-  };
-  AuthController_register_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RegisterAgencyDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_register_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['AuthTokensDto'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterAgencyDto"];
+            };
         };
-      };
-      /** @description The subdomain is already taken. */
-      409: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensDto"];
+                };
+            };
+            /** @description The subdomain is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  AuthController_login_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LoginDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_registerStudent_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['AuthTokensDto'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterStudentDto"];
+            };
         };
-      };
-      /** @description Credentials are not valid, or the account is inactive. */
-      401: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensDto"];
+                };
+            };
+            /** @description That email is already registered. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  AuthController_refresh_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RefreshDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_login_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['AuthTokensDto'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
         };
-      };
-      /** @description Token unknown, expired, or already used. */
-      401: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensDto"];
+                };
+            };
+            /** @description Credentials are not valid, or the account is inactive. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  AuthController_logout_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RefreshDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_refresh_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-    };
-  };
-  AuthController_me_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description The authenticated user. */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshDto"];
+            };
         };
-        content?: never;
-      };
-      /** @description Missing, invalid or expired bearer token. */
-      401: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensDto"];
+                };
+            };
+            /** @description Token unknown, expired, or already used. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  OnboardingLinksController_issue_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['IssueOnboardingLinkDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_logout_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['OnboardingLinkDto'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshDto"];
+            };
         };
-      };
-      /** @description Only an agency admin or counselor may issue links. */
-      403: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  OnboardingLinksController_consume_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ConsumeOnboardingLinkDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_requestPasswordReset_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['ConsumedLinkDto'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestPasswordResetDto"];
+            };
         };
-      };
-      /** @description The link is not valid. */
-      401: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  OnboardingLinksController_revoke_v1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_confirmPasswordReset_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPasswordResetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The link is unknown, expired or already used. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-  };
+    AuthController_resendEmailVerification_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_confirmEmailVerification_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmEmailVerificationDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The link is unknown, expired or already used. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_ssoCallback_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SsoCallbackDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensDto"];
+                };
+            };
+            /** @description Provider refused, address unverified, or no account. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_me_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The authenticated user. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogueController_search_v1: {
+        parameters: {
+            query: {
+                /** @description What the visitor has typed so far. */
+                query: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResponseDto"];
+                };
+            };
+        };
+    };
+    CatalogueController_countries_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CountryCountDto"][];
+                };
+            };
+        };
+    };
+    CatalogueController_referenceCountries_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CountryDto"][];
+                };
+            };
+        };
+    };
+    CatalogueController_listInstitutions_v1: {
+        parameters: {
+            query?: {
+                /** @description ISO 3166-1 alpha-2. */
+                country?: string;
+                /** @description Free text over name, acronyms and city. */
+                q?: string;
+                page?: number;
+                limit?: number;
+                sort?: "name" | "city";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstitutionListDto"];
+                };
+            };
+        };
+    };
+    CatalogueController_institution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Institution"];
+                };
+            };
+            /** @description No published university with that slug. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogueController_listArticles_v1: {
+        parameters: {
+            query?: {
+                /** @description ISO 3166-1 alpha-2. */
+                country?: string;
+                /** @description Single tag, matched exactly. */
+                tag?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleListDto"];
+                };
+            };
+        };
+    };
+    CatalogueController_article_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleDetailDto"];
+                };
+            };
+            /** @description No published article with that slug. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingLinksController_issue_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IssueOnboardingLinkDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OnboardingLinkDto"];
+                };
+            };
+            /** @description Only an agency admin or counselor may issue links. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingLinksController_consume_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsumeOnboardingLinkDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsumedLinkDto"];
+                };
+            };
+            /** @description The link is not valid. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingLinksController_peek_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeekOnboardingLinkDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeekedLinkDto"];
+                };
+            };
+            /** @description The link is not valid. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingLinksController_register_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterViaOnboardingLinkDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensDto"];
+                };
+            };
+            /** @description The link is not valid. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description That email is already registered in this agency. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingLinksController_revoke_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentsController_getOwnProfile_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentProfileDto"];
+                };
+            };
+        };
+    };
+    StudentsController_updateOwnProfile_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStudentProfileDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentProfileDto"];
+                };
+            };
+        };
+    };
+    DocumentsController_getUploadSignature_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadSignatureRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadSignatureDto"];
+                };
+            };
+        };
+    };
+    DocumentsController_confirm_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmDocumentUploadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"];
+                };
+            };
+        };
+    };
+    DocumentsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"][];
+                };
+            };
+        };
+    };
+    DocumentsController_remove_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ApplicationsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDto"][];
+                };
+            };
+        };
+    };
+    ApplicationsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateApplicationDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDto"];
+                };
+            };
+        };
+    };
+    ApplicationsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDto"];
+                };
+            };
+        };
+    };
+    ApplicationsController_attachDocument_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDto"];
+                };
+            };
+        };
+    };
+    ApplicationsController_detachDocument_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDto"];
+                };
+            };
+        };
+    };
+    ApplicationsController_submit_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDto"];
+                };
+            };
+        };
+    };
 }

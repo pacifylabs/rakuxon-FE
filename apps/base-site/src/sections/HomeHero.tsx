@@ -1,6 +1,4 @@
-import { CirclePlay } from 'lucide-react';
-
-import { AvatarStack, Button, LogoBar } from '@rakuxon/ui';
+import { AvatarStack, LogoBar } from '@rakuxon/ui';
 
 import { HERO, HERO_AVATARS, TRUST_BAR } from '@/content/home';
 
@@ -12,7 +10,7 @@ export function HomeHero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative isolate flex min-h-screen w-full flex-col px-5 pb-16 pt-12 md:pb-20 md:pt-16"
+      className="relative isolate flex w-full flex-col px-5 pb-16 pt-12 md:pb-20 md:pt-16 lg:min-h-screen"
     >
       {/* The hero draws the map at full strength; the layout's page-wide copy
           sits behind it at 40%. */}
@@ -72,16 +70,6 @@ export function HomeHero() {
             </li>
           ))}
         </ol>
-
-        <div className="mx-auto mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button href={HERO.primaryCta.href} size="lg">
-            {HERO.primaryCta.label}
-          </Button>
-          <Button href={HERO.secondaryCta.href} size="lg" variant="ghost">
-            <CirclePlay size={20} strokeWidth={2} aria-hidden="true" focusable="false" />
-            {HERO.secondaryCta.label}
-          </Button>
-        </div>
 
         <AvatarStack className="mt-10" avatars={HERO_AVATARS} caption={HERO.socialProof} />
       </div>

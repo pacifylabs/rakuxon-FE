@@ -5,7 +5,7 @@ import { CtaBand, PageHeader, SectionBand } from '@rakuxon/ui';
 import { UNIVERSITIES_CTA, UNIVERSITIES_HEADER } from '@/content/universities';
 import { fetchCountries, fetchInstitutions } from '@/lib/catalogue/api';
 
-import { UniversityBrowser } from './UniversityBrowser';
+import { UniversityBrowser } from '@/components/catalogue/UniversityBrowser';
 
 /* Revalidated, not static: the catalogue behind this page changes when an
    admin publishes or suspends a record. */

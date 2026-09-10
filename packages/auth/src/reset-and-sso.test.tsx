@@ -107,7 +107,7 @@ describe('<ConfirmPasswordResetForm/>', () => {
     await userEvent.type(screen.getByLabelText('New password'), 'short');
     await userEvent.click(screen.getByRole('button', { name: 'Set new password' }));
 
-    expect(screen.getByText('Use at least 12 characters.')).toBeInTheDocument();
+    expect(screen.getByText('Use at least 8 characters.')).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 

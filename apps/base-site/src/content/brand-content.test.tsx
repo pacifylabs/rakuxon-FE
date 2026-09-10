@@ -140,13 +140,18 @@ describe('services', () => {
     }
   });
 
-  it('separates travel from the study-abroad services', () => {
+  it('links every summary card straight to that service\'s own page, not a shared anchor', () => {
+    // A student comparing courses should not have to read past honeymoon
+    // packages to reach visa support — each service gets its own page now,
+    // rather than a heading-separated section on one shared page.
     render(<ServicesPage />);
 
-    // A student comparing courses should not have to read past honeymoon
-    // packages to reach visa support.
-    expect(screen.getByRole('heading', { name: 'Studying abroad' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Travel and tourism' })).toBeInTheDocument();
+    for (const service of SERVICES) {
+      expect(screen.getByRole('link', { name: new RegExp(service.title) })).toHaveAttribute(
+        'href',
+        `/services/${service.id}`,
+      );
+    }
   });
 
   it('leads with the free consultancy, which is the way in', () => {
@@ -155,14 +160,12 @@ describe('services', () => {
 });
 
 describe('footer links', () => {
-  it('resolves every service link to an anchor on a page that exists', () => {
+  it('resolves every service link to its own page', () => {
     const services = FOOTER_COLUMNS.find((column) => column.heading === 'Our services');
     expect(services?.links).toHaveLength(6);
 
     for (const link of services?.links ?? []) {
-      const [path, hash] = link.href.split('#');
-      expect(ALL_ROUTES).toContain(path);
-      expect(SERVICES.map((service) => service.id)).toContain(hash);
+      expect(ALL_ROUTES).toContain(link.href);
     }
   });
 

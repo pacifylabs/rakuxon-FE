@@ -8,14 +8,23 @@ export function AuthCard({
   subtitle,
   children,
   footer,
+  /**
+   * Most apps have no other landmark, so this is their page's `<main>`. A
+   * host that already renders one around every route (base-site's shared
+   * marketing shell) passes `false` — a document may only have one `<main>`.
+   */
+  ownsMainLandmark = true,
 }: {
   title: string;
   subtitle: string;
   children: ReactNode;
   footer: ReactNode;
+  ownsMainLandmark?: boolean;
 }) {
+  const Wrapper = ownsMainLandmark ? 'main' : 'div';
+
   return (
-    <main className="grid min-h-screen place-items-center bg-surface-muted px-5 py-16">
+    <Wrapper className="grid min-h-screen place-items-center bg-surface-muted px-5 py-16">
       <div className="w-full max-w-prose">
         <div className="flex justify-center">
           <Wordmark href="/" />
@@ -29,6 +38,6 @@ export function AuthCard({
 
         <p className="mt-6 text-center text-sm text-text-muted">{footer}</p>
       </div>
-    </main>
+    </Wrapper>
   );
 }

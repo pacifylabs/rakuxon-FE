@@ -18,6 +18,8 @@ export interface SignInFormProps {
   above?: React.ReactNode;
   /** Where "Forgot your password?" points. Omitted hides the link. */
   forgotPasswordHref?: string;
+  /** Passed through to AuthCard. See its doc comment. */
+  ownsMainLandmark?: boolean;
 }
 
 interface FieldErrors {
@@ -38,6 +40,7 @@ export function SignInForm({
   footer,
   above,
   forgotPasswordHref,
+  ownsMainLandmark,
 }: SignInFormProps) {
   const { signIn } = useAuth();
 
@@ -77,7 +80,12 @@ export function SignInForm({
   }
 
   return (
-    <AuthCard title="Sign in" subtitle={subtitle} footer={footer}>
+    <AuthCard
+      title="Sign in"
+      subtitle={subtitle}
+      footer={footer}
+      ownsMainLandmark={ownsMainLandmark}
+    >
       {/* `above` may be an element that itself renders nothing — SsoButton does
           exactly that when no provider is configured — so callers pass null
           rather than relying on this, but the separator is grouped with the
@@ -107,6 +115,7 @@ export function SignInForm({
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="ada@example.com"
           error={fieldErrors.email}
         />
         <FormField
@@ -114,6 +123,7 @@ export function SignInForm({
           name="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Enter your password"
           error={fieldErrors.password}
         />
 

@@ -1,3 +1,11 @@
+# VPS deployment
+
+Production deployment now uses the shared Rakuxon Docker Compose stack. See `rakuxon-BE/ops/README.md` for the operational runbook. This repository supplies one standalone container per existing app and a CI-gated deployment workflow.
+
+Browser API base: `/api`. Server-side catalogue base: `API_INTERNAL_URL=http://api:3001`. Public endpoints remain `/api/v1/...`.
+
+The configuration below is the previous Vercel option, retained for reference.
+
 # Frontend Deploy Guide — Vercel
 **Repo:** `rakuxon-FE` · Turborepo monorepo → multiple Vercel projects.
 

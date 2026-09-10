@@ -20,6 +20,15 @@ vi.mock('@/sections/DestinationCounts', () => ({
   DestinationCounts: () => null,
 }));
 
+/*
+ * PopularDestinations is likewise now an async Server Component — it fetches
+ * the same live registry count DestinationCounts does, to show a count per
+ * destination card. Same reasoning, same stub.
+ */
+vi.mock('@/sections/PopularDestinations', () => ({
+  PopularDestinations: () => null,
+}));
+
 import NotFound from './not-found';
 import AboutPage from './about/page';
 import AgenciesPage from './agencies/page';

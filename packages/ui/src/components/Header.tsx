@@ -1,8 +1,8 @@
 'use client';
 
 import clsx from 'clsx';
-import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronDown, Menu, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button } from './Button';
 import { ThemeToggle } from './ThemeToggle';
@@ -11,6 +11,8 @@ import { Wordmark } from './Wordmark';
 export interface NavLink {
   label: string;
   href: string;
+  /** Rendered as a dropdown on desktop and a disclosure on mobile, instead of a plain link. */
+  children?: readonly NavLink[];
 }
 
 export interface HeaderProps {
@@ -22,6 +24,117 @@ export interface HeaderProps {
 
 const NAV_LINK_CLASSES =
   'rounded-sm text-sm font-medium text-text-muted transition-colors duration-fast ease-standard hover:text-primary focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none';
+
+/** A parent nav item with children — its own link, plus a toggle that opens a dropdown of them. */
+function NavDropdown({ link }: { link: NavLink }) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function onPointerDown(event: PointerEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false);
+    }
+
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <li ref={containerRef} className="relative flex items-center">
+      {/* The label itself still navigates to the overview page — only the
+          chevron opens the dropdown, so neither affordance costs the other. */}
+      <a href={link.href} className={NAV_LINK_CLASSES}>
+        {link.label}
+      </a>
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        aria-expanded={open}
+        aria-label={`${open ? 'Close' : 'Open'} ${link.label} menu`}
+        className="ml-1 rounded-sm p-1 text-text-muted transition-colors duration-fast ease-standard hover:text-primary focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
+      >
+        <ChevronDown
+          aria-hidden="true"
+          focusable="false"
+          size={14}
+          className={clsx('transition-transform duration-fast ease-standard', open && 'rotate-180')}
+        />
+      </button>
+
+      {open && (
+        <ul className="absolute left-0 top-full z-20 mt-2 min-w-[12rem] rounded-lg border border-border bg-surface p-2 shadow-lg">
+          {link.children?.map((child) => (
+            <li key={child.label}>
+              <a
+                href={child.href}
+                onClick={() => setOpen(false)}
+                className="block rounded-md px-3 py-2 text-sm font-medium text-text transition-colors duration-fast ease-standard hover:bg-accent-soft hover:text-primary motion-reduce:transition-none"
+              >
+                {child.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
+
+/** The same item on mobile — a native disclosure, so it needs no extra state. */
+function MobileNavItem({ link, onNavigate }: { link: NavLink; onNavigate: () => void }) {
+  if (!link.children) {
+    return (
+      <li>
+        <a href={link.href} className={NAV_LINK_CLASSES} onClick={onNavigate}>
+          {link.label}
+        </a>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <details className="group">
+        <summary
+          className={clsx(NAV_LINK_CLASSES, 'flex cursor-pointer list-none items-center gap-1')}
+        >
+          {link.label}
+          <ChevronDown
+            aria-hidden="true"
+            focusable="false"
+            size={14}
+            className="transition-transform duration-fast ease-standard group-open:rotate-180"
+          />
+        </summary>
+        <ul className="mt-3 flex flex-col gap-3 border-l border-border pl-4">
+          {/* The overview page itself — <summary> only toggles, so this is
+              its one direct link on mobile, the same as the desktop label. */}
+          <li>
+            <a href={link.href} className={NAV_LINK_CLASSES} onClick={onNavigate}>
+              All {link.label.toLowerCase()}
+            </a>
+          </li>
+          {link.children.map((child) => (
+            <li key={child.label}>
+              <a href={child.href} className={NAV_LINK_CLASSES} onClick={onNavigate}>
+                {child.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </li>
+  );
+}
 
 /**
  * Sticky translucent global header (docs/04b § 2).
@@ -44,13 +157,17 @@ export function Header({ navLinks, logIn, getStarted, className }: HeaderProps) 
 
         <nav aria-label="Primary" className="hidden lg:block">
           <ul className="flex items-center gap-6">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a href={link.href} className={NAV_LINK_CLASSES}>
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link) =>
+              link.children ? (
+                <NavDropdown key={link.href} link={link} />
+              ) : (
+                <li key={link.href}>
+                  <a href={link.href} className={NAV_LINK_CLASSES}>
+                    {link.label}
+                  </a>
+                </li>
+              ),
+            )}
           </ul>
         </nav>
 
@@ -86,11 +203,7 @@ export function Header({ navLinks, logIn, getStarted, className }: HeaderProps) 
       >
         <ul className="flex flex-col gap-4">
           {navLinks.map((link) => (
-            <li key={link.href}>
-              <a href={link.href} className={NAV_LINK_CLASSES} onClick={() => setOpen(false)}>
-                {link.label}
-              </a>
-            </li>
+            <MobileNavItem key={link.href} link={link} onNavigate={() => setOpen(false)} />
           ))}
           <li className="sm:hidden">
             <a href={logIn.href} className={NAV_LINK_CLASSES} onClick={() => setOpen(false)}>

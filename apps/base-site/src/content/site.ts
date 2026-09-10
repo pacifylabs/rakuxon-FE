@@ -1,19 +1,32 @@
 import type { FooterColumn, NavLink } from '@rakuxon/ui';
 
-import { LOG_IN, ROUTES, SIGN_UP, countryRoute } from './routes';
+import { LOG_IN, ROUTES, SIGN_UP, countryRoute, serviceRoute } from './routes';
+import { SERVICES } from './services';
 
 /** Global shell content (docs/04b § 2), shared by every page. */
 
 export const NAV_LINKS: readonly NavLink[] = [
   /* Universities is the catalogue listing; Destinations is the same catalogue
-     grouped by country; Explore searches across both. Three separate entries
-     that all opened a list of universities was two too many. */
+     grouped by country. Explore — a third entry point into the same
+     catalogue — used to sit here too; it's dropped from top-level nav since
+     the homepage's own search bar already opens it, and a visitor who wants
+     it can still search from there. */
   { label: 'Universities', href: ROUTES.universities },
   { label: 'Destinations', href: ROUTES.destinations },
-  { label: 'Explore', href: ROUTES.explore },
   { label: 'Guidance', href: ROUTES.resources },
-  { label: 'Agencies', href: ROUTES.agencies },
-  { label: 'Services', href: ROUTES.services },
+  {
+    label: 'Students',
+    href: ROUTES.students,
+    children: [
+      { label: 'Agencies', href: ROUTES.agencies },
+      { label: 'Institutions', href: ROUTES.institutions },
+    ],
+  },
+  {
+    label: 'Services',
+    href: ROUTES.services,
+    children: SERVICES.map((service) => ({ label: service.title, href: serviceRoute(service.id) })),
+  },
   { label: 'About', href: ROUTES.about },
 ];
 
@@ -37,15 +50,15 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     ],
   },
   {
-    /* The six real services from rakuxon.com, each anchored on /services. */
+    /* The six real services from rakuxon.com, each with its own page. */
     heading: 'Our services',
     links: [
-      { label: 'Free consultancy', href: `${ROUTES.services}#free-consultancy` },
-      { label: 'University applications', href: `${ROUTES.services}#university-applications` },
-      { label: 'Visa support', href: `${ROUTES.services}#visa-support` },
-      { label: 'Travels & tourism', href: `${ROUTES.services}#travels-tourism` },
-      { label: 'Pre-departure & arrival', href: `${ROUTES.services}#pre-departure` },
-      { label: 'Ongoing support', href: `${ROUTES.services}#ongoing-support` },
+      { label: 'Free consultancy', href: serviceRoute('free-consultancy') },
+      { label: 'University applications', href: serviceRoute('university-applications') },
+      { label: 'Visa support', href: serviceRoute('visa-support') },
+      { label: 'Travels & tourism', href: serviceRoute('travels-tourism') },
+      { label: 'Pre-departure & arrival', href: serviceRoute('pre-departure') },
+      { label: 'Ongoing support', href: serviceRoute('ongoing-support') },
     ],
   },
   {
@@ -69,6 +82,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     links: [
       { label: 'Students', href: ROUTES.students },
       { label: 'Agencies', href: ROUTES.agencies },
+      { label: 'Institutions', href: ROUTES.institutions },
       { label: 'Explore courses', href: ROUTES.explore },
       { label: 'Guidance', href: ROUTES.resources },
     ],

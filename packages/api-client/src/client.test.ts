@@ -90,7 +90,8 @@ describe('ApiClient', () => {
         agencyName: 'A',
         slug: 'a',
         email: 'a@b.test',
-        fullName: 'A',
+        firstName: 'A',
+        lastName: 'B',
         password: 'x'.repeat(12),
       });
       throw new Error('expected a rejection');

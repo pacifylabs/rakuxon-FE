@@ -10,7 +10,10 @@
     "ingest:catalogue": "tsx scripts/ingest-catalogue.ts"
   },
   "dependencies": {
+    "@rakuxon/api-client": "workspace:*",
+    "@rakuxon/auth": "workspace:*",
     "@rakuxon/config": "workspace:*",
+    "@rakuxon/contract": "workspace:*",
     "@rakuxon/ui": "workspace:*",
     "lucide-react": "^0.468.0",
     "next": "^15.1.3",
