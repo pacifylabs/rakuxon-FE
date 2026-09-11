@@ -2,13 +2,25 @@
 
 import { Building2, ClipboardList, FileText, Home, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
-import { GuardedPage, useAuth } from '@rakuxon/auth';
+import { GuardedPage, useApiClient, useAuth } from '@rakuxon/auth';
 import { AppShell, Wordmark } from '@rakuxon/ui';
-import type { AppShellNavItem } from '@rakuxon/ui';
+import type { AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
+import type { Notification } from '@rakuxon/contract';
 
 import { VerifyEmailBanner } from '@/components/dashboard/VerifyEmailBanner';
+
+function toShellItem(notification: Notification): AppShellNotificationItem {
+  return {
+    id: notification.id,
+    title: notification.title,
+    body: notification.body,
+    link: notification.link,
+    readAt: notification.readAt,
+  };
+}
 
 const NAV_ITEMS: AppShellNavItem[] = [
   { href: '/dashboard', label: 'Home', icon: Home },
@@ -21,6 +33,39 @@ const NAV_ITEMS: AppShellNavItem[] = [
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const client = useApiClient();
+  const [notifications, setNotifications] = useState<Notification[] | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    client
+      .listNotifications()
+      .then(setNotifications)
+      .catch(() => {
+        /* The bell falling back to "nothing here yet" is a fine outcome for a
+           failed fetch — nothing on this page depends on notifications loading. */
+      });
+  }, [client, user]);
+
+  async function handleOpenNotification(id: string) {
+    const target = notifications?.find((notification) => notification.id === id);
+    if (!target) return;
+
+    setNotifications((current) =>
+      (current ?? []).map((notification) =>
+        notification.id === id ? { ...notification, readAt: notification.readAt ?? new Date().toISOString() } : notification,
+      ),
+    );
+
+    try {
+      await client.markNotificationRead(id);
+    } catch {
+      /* The optimistic update already reflects "read" — a failed confirmation
+         is not worth surfacing over what is a low-stakes housekeeping call. */
+    }
+
+    if (target.link) router.push(target.link);
+  }
 
   return (
     <GuardedPage
@@ -47,6 +92,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           await signOut();
           router.push('/login');
         }}
+        notifications={
+          notifications
+            ? {
+                items: notifications.map(toShellItem),
+                unreadCount: notifications.filter((notification) => !notification.readAt).length,
+                onOpen: handleOpenNotification,
+              }
+            : undefined
+        }
       >
         {user && !user.emailVerifiedAt && <VerifyEmailBanner email={user.email} />}
         {children}

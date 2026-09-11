@@ -20,6 +20,20 @@ export interface AppShellNavItem {
   children?: AppShellNavItem[];
 }
 
+export interface AppShellNotificationItem {
+  id: string;
+  title: string;
+  body: string;
+  link: string | null;
+  readAt: string | null;
+}
+
+export interface AppShellNotificationsSlot {
+  items: AppShellNotificationItem[];
+  unreadCount: number;
+  onOpen: (id: string) => void;
+}
+
 export interface AppShellProps {
   navItems: AppShellNavItem[];
   /** Where the wordmark links to — typically the shell's own home. */
@@ -28,6 +42,12 @@ export interface AppShellProps {
   userEmail?: string;
   onSignOut: () => void;
   signOutLabel?: string;
+  /**
+   * Backs the bell icon with real data. Omitted (admin's case today, since
+   * only students receive a notification) leaves the bell rendering exactly
+   * the static "nothing here yet" panel it always has.
+   */
+  notifications?: AppShellNotificationsSlot;
   children: ReactNode;
 }
 
@@ -127,11 +147,17 @@ function HeaderMenuButton({
   label,
   panelTitle,
   panelDescription,
+  badgeCount,
+  children,
 }: {
   icon: LucideIcon;
   label: string;
   panelTitle: string;
   panelDescription: string;
+  /** A small count badge on the trigger button itself — omitted or 0 shows nothing. */
+  badgeCount?: number;
+  /** Replaces the default "nothing here yet" panel when there is real content to show. */
+  children?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -159,16 +185,24 @@ function HeaderMenuButton({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        aria-label={label}
+        aria-label={badgeCount ? `${label} (${badgeCount} unread)` : label}
         aria-expanded={open}
-        className="grid size-10 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface-muted hover:text-text"
+        className="relative grid size-10 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface-muted hover:text-text"
       >
         <Icon aria-hidden="true" className="size-5" />
+        {Boolean(badgeCount) && (
+          <span
+            aria-hidden="true"
+            className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-danger text-[10px] font-bold text-on-primary"
+          >
+            {badgeCount! > 9 ? '9+' : badgeCount}
+          </span>
+        )}
       </button>
 
       {open && (
         <div className="absolute right-0 z-30 mt-2 w-[18rem] rounded-lg border border-border bg-surface p-2 shadow-lg">
-          <EmptyState icon={Icon} title={panelTitle} description={panelDescription} />
+          {children ?? <EmptyState icon={Icon} title={panelTitle} description={panelDescription} />}
         </div>
       )}
     </div>
@@ -193,6 +227,7 @@ export function AppShell({
   userEmail,
   onSignOut,
   signOutLabel,
+  notifications,
   children,
 }: AppShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -205,6 +240,29 @@ export function AppShell({
   }, [pathname]);
 
   const sidebarProps = { navItems, homeHref, userName, userEmail, onSignOut, signOutLabel };
+
+  /* undefined (not an empty fragment) when there's nothing real to show, so
+     HeaderMenuButton falls back to its own default "nothing here yet" panel
+     in both cases — no notifications prop at all, and a prop with zero items. */
+  const notificationsPanel =
+    notifications && notifications.items.length > 0 ? (
+      <ul className="flex max-h-80 flex-col gap-1 overflow-y-auto">
+        {notifications.items.map((item) => (
+          <li key={item.id}>
+            <button
+              type="button"
+              onClick={() => notifications.onOpen(item.id)}
+              className={`flex w-full flex-col items-start gap-0.5 rounded-md p-3 text-left transition-colors hover:bg-surface-muted ${
+                item.readAt ? '' : 'bg-accent-soft'
+              }`}
+            >
+              <span className="text-sm font-semibold text-text">{item.title}</span>
+              <span className="text-sm text-text-muted">{item.body}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    ) : undefined;
 
   return (
     <div className="min-h-screen">
@@ -228,7 +286,10 @@ export function AppShell({
             label="Notifications"
             panelTitle="Nothing here yet"
             panelDescription="Updates on your applications and account will show up here."
-          />
+            badgeCount={notifications?.unreadCount}
+          >
+            {notificationsPanel}
+          </HeaderMenuButton>
           <HeaderMenuButton
             icon={MessageCircle}
             label="Messages"

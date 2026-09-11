@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, FileText, Trash2, Upload } from 'lucide-react';
+import { CheckCircle2, FileText, Trash2, Upload, XCircle } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
@@ -99,17 +99,20 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
   }
 
   const uploaded = document?.status === 'uploaded';
+  const rejected = document?.status === 'rejected';
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-start gap-3">
         <span
           className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
-            uploaded ? 'bg-primary/15 text-primary' : 'bg-surface-muted text-text-muted'
+            uploaded ? 'bg-primary/15 text-primary' : rejected ? 'bg-danger/15 text-danger' : 'bg-surface-muted text-text-muted'
           }`}
         >
           {uploaded ? (
             <CheckCircle2 aria-hidden="true" className="size-4" />
+          ) : rejected ? (
+            <XCircle aria-hidden="true" className="size-4" />
           ) : (
             <FileText aria-hidden="true" className="size-4" />
           )}
@@ -121,6 +124,9 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
               {document.originalFilename}
               {document.bytes ? ` · ${formatBytes(document.bytes)}` : ''}
             </p>
+          )}
+          {rejected && document?.rejectionReason && (
+            <p className="mt-1 text-sm text-danger">Rejected: {document.rejectionReason}</p>
           )}
           {error && (
             <p role="alert" className="mt-1 text-sm text-danger">
@@ -168,7 +174,7 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
             onClick={() => inputRef.current?.click()}
           >
             <Upload aria-hidden="true" className="mr-2 inline size-4" />
-            {uploading ? 'Uploading…' : 'Upload'}
+            {uploading ? 'Uploading…' : rejected ? 'Upload replacement' : 'Upload'}
           </Button>
         )}
       </div>

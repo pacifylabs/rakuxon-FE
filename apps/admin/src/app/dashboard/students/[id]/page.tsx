@@ -5,8 +5,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { Button, FormField, StatusBadge } from '@rakuxon/ui';
-import type { AdminStudentDetail, EducationHistoryEntry, StudyLevel } from '@rakuxon/contract';
+import type { AdminStudentDetail, EducationHistoryEntry, StudentDocument, StudyLevel } from '@rakuxon/contract';
 
+import { AdminDocumentRow } from '@/components/dashboard/AdminDocumentRow';
+import { DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS } from '@/components/dashboard/documentTypes';
 import { RepeatableGroup } from '@/components/dashboard/editors/RepeatableGroup';
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
@@ -76,6 +78,9 @@ function StudentDetail() {
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<StudentDocument[] | null>(null);
+  const [documentsError, setDocumentsError] = useState<string | null>(null);
+  const canReview = hasPermission('documents.review');
 
   const load = useCallback(async () => {
     try {
@@ -93,6 +98,31 @@ function StudentDetail() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const loadDocuments = useCallback(async () => {
+    if (!canReview) return;
+    try {
+      setDocuments(await client.listAdminStudentDocuments(params.id));
+      setDocumentsError(null);
+    } catch (caught) {
+      setDocumentsError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not load this student’s documents. Please try again.',
+      );
+    }
+  }, [client, params.id, canReview]);
+
+  useEffect(() => {
+    void loadDocuments();
+  }, [loadDocuments]);
+
+  function handleDocumentChanged(updated: StudentDocument) {
+    setDocuments((current) => {
+      const withoutPrevious = (current ?? []).filter((entry) => entry.id !== updated.id);
+      return [updated, ...withoutPrevious];
+    });
+  }
 
   function startEditing() {
     if (!student) return;
@@ -360,6 +390,43 @@ function StudentDetail() {
           </ul>
         )}
       </div>
+
+      {canReview && (
+        <div className="mt-10">
+          <h2 className="font-heading text-xl font-semibold text-text">Documents</h2>
+          <p className="mt-1 text-sm text-text-muted">
+            Reject an upload that doesn't hold up, or upload one on this student's behalf.
+          </p>
+
+          {documentsError && (
+            <p role="alert" className="mt-4 text-sm text-danger">
+              {documentsError}
+            </p>
+          )}
+
+          {!documents && !documentsError && (
+            <p role="status" className="mt-4 text-sm text-text-muted">
+              Loading…
+            </p>
+          )}
+
+          {documents && (
+            <div className="mt-4 flex flex-col gap-3">
+              {DOCUMENT_TYPES.map((type) => (
+                <AdminDocumentRow
+                  key={type}
+                  studentId={student.id}
+                  type={type}
+                  label={DOCUMENT_TYPE_LABELS[type]}
+                  document={documents.find((entry) => entry.type === type && entry.status !== 'deleted')}
+                  canReview={canReview}
+                  onChanged={handleDocumentChanged}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }

@@ -39,6 +39,10 @@ export type UploadSignatureRequest = Schemas['UploadSignatureRequestDto'];
 export type UploadSignature = Schemas['UploadSignatureDto'];
 export type ConfirmDocumentUploadRequest = Schemas['ConfirmDocumentUploadDto'];
 export type StudentDocument = Schemas['DocumentDto'];
+export type RejectDocumentRequest = Schemas['RejectDocumentDto'];
+
+export type Notification = Schemas['NotificationDto'];
+export type UnreadCount = Schemas['UnreadCountDto'];
 export type CreateApplicationRequest = Schemas['CreateApplicationDto'];
 export type Application = Schemas['ApplicationDto'];
 export type ReferenceCountry = Schemas['CountryDto'];

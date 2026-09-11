@@ -1,5 +1,10 @@
 export { AppShell } from './AppShell';
-export type { AppShellNavItem, AppShellProps } from './AppShell';
+export type {
+  AppShellNavItem,
+  AppShellNotificationItem,
+  AppShellNotificationsSlot,
+  AppShellProps,
+} from './AppShell';
 export { ApplicationStatusBadge } from './ApplicationStatusBadge';
 export { DataTable } from './DataTable';
 export type { DataTableColumn, DataTableProps } from './DataTable';

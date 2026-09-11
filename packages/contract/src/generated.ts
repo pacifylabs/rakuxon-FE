@@ -1034,6 +1034,57 @@ export interface paths {
         patch: operations["AdminStudentsController_update_v1"];
         trace?: never;
     };
+    "/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own notifications, newest first */
+        get: operations["NotificationsInboxController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How many of the caller's notifications are unread */
+        get: operations["NotificationsInboxController_unreadCount_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark one notification read */
+        post: operations["NotificationsInboxController_markRead_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/documents/upload-signature": {
         parameters: {
             query?: never;
@@ -1100,6 +1151,77 @@ export interface paths {
         post?: never;
         /** Delete one of the caller's own documents */
         delete: operations["DocumentsController_remove_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/students/{studentId}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One student's documents, for review */
+        get: operations["AdminDocumentsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/students/{studentId}/documents/upload-signature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Issue an upload signature for a student who cannot upload it themselves */
+        post: operations["AdminDocumentsController_getUploadSignature_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/documents/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record that an admin-issued upload actually completed */
+        post: operations["AdminDocumentsController_confirm_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/documents/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject an uploaded document
+         * @description Notifies the student in-app and by email with the given reason.
+         */
+        post: operations["AdminDocumentsController_reject_v1"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2215,6 +2337,21 @@ export interface components {
             /** @example 2026-09 */
             preferredIntake?: string;
         };
+        NotificationDto: {
+            /** Format: uuid */
+            id: string;
+            type: string;
+            title: string;
+            body: string;
+            link: string | null;
+            /** Format: date-time */
+            readAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        UnreadCountDto: {
+            count: number;
+        };
         /** @enum {string} */
         DocumentType: "academic_certificate" | "english_test" | "identity" | "medical" | "secondary_marksheet" | "senior_secondary_marksheet";
         UploadSignatureRequestDto: {
@@ -2242,7 +2379,7 @@ export interface components {
             mimeType: string;
         };
         /** @enum {string} */
-        DocumentStatus: "pending_upload" | "uploaded" | "deleted";
+        DocumentStatus: "pending_upload" | "uploaded" | "deleted" | "rejected";
         DocumentDto: {
             /** Format: uuid */
             id: string;
@@ -2252,8 +2389,13 @@ export interface components {
             url: string | null;
             bytes: number | null;
             mimeType: string | null;
+            rejectionReason: string | null;
             /** Format: date-time */
             createdAt: string;
+        };
+        RejectDocumentDto: {
+            /** @example The scan is illegible — please re-upload a clearer copy. */
+            reason: string;
         };
         CreateApplicationDto: {
             /** Format: uuid */
@@ -4117,6 +4259,65 @@ export interface operations {
             };
         };
     };
+    NotificationsInboxController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationDto"][];
+                };
+            };
+        };
+    };
+    NotificationsInboxController_unreadCount_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnreadCountDto"];
+                };
+            };
+        };
+    };
+    NotificationsInboxController_markRead_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationDto"];
+                };
+            };
+        };
+    };
     DocumentsController_getUploadSignature_v1: {
         parameters: {
             query?: never;
@@ -4200,6 +4401,102 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AdminDocumentsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"][];
+                };
+            };
+        };
+    };
+    AdminDocumentsController_getUploadSignature_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadSignatureRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadSignatureDto"];
+                };
+            };
+        };
+    };
+    AdminDocumentsController_confirm_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmDocumentUploadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"];
+                };
+            };
+        };
+    };
+    AdminDocumentsController_reject_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectDocumentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"];
+                };
             };
         };
     };

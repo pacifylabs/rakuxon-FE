@@ -90,9 +90,7 @@ export default function DocumentsPage() {
                     key={type}
                     type={type}
                     label={DOCUMENT_TYPE_META[type].label}
-                    document={documents.find(
-                      (document) => document.type === type && document.status === 'uploaded',
-                    )}
+                    document={documents.find((document) => document.type === type && document.status !== 'deleted')}
                     onUploaded={handleUploaded}
                     onDeleted={handleDeleted}
                   />

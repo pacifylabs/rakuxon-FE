@@ -19,17 +19,22 @@ import type {
   AdminStudentList,
   AdminSummary,
   ConfirmAdminPasswordResetRequest,
+  ConfirmDocumentUploadRequest,
   CreateAdminRequest,
   CreateArticleRequest,
   CreateCourseRequest,
   CreateInstitutionRequest,
   Permission,
+  RejectDocumentRequest,
+  StudentDocument,
   Tenant,
   TenantList,
   UpdateArticleRequest,
   UpdateCourseRequest,
   UpdateInstitutionRequest,
   UpdateStudentAdminRequest,
+  UploadSignature,
+  UploadSignatureRequest,
 } from '@rakuxon/contract';
 
 import { ApiError, NetworkError } from './errors';
@@ -389,6 +394,36 @@ export class AdminApiClient {
 
   getDashboardSummary(): Promise<AdminDashboardSummary> {
     return this.request<AdminDashboardSummary>('/v1/admin/dashboard/summary', { auth: true });
+  }
+
+  /* ------------------------------------------------------------ documents */
+
+  listAdminStudentDocuments(studentId: string): Promise<StudentDocument[]> {
+    return this.request<StudentDocument[]>(`/v1/admin/students/${studentId}/documents`, { auth: true });
+  }
+
+  getAdminUploadSignature(studentId: string, body: UploadSignatureRequest): Promise<UploadSignature> {
+    return this.request<UploadSignature>(`/v1/admin/students/${studentId}/documents/upload-signature`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  confirmAdminDocumentUpload(documentId: string, body: ConfirmDocumentUploadRequest): Promise<StudentDocument> {
+    return this.request<StudentDocument>(`/v1/admin/documents/${documentId}/confirm`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  rejectDocument(documentId: string, body: RejectDocumentRequest): Promise<StudentDocument> {
+    return this.request<StudentDocument>(`/v1/admin/documents/${documentId}/reject`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 }
 

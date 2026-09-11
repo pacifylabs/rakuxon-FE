@@ -9,6 +9,7 @@ import type {
   HealthResponse,
   IssueOnboardingLinkRequest,
   LoginRequest,
+  Notification,
   OnboardingLink,
   PeekedLink,
   ReferenceCountry,
@@ -17,6 +18,7 @@ import type {
   RegisterViaOnboardingLinkRequest,
   StudentDocument,
   StudentProfile,
+  UnreadCount,
   UpdateStudentProfileRequest,
   UploadSignature,
   UploadSignatureRequest,
@@ -287,5 +289,17 @@ export class ApiClient {
       method: 'POST',
       auth: true,
     });
+  }
+
+  listNotifications(): Promise<Notification[]> {
+    return this.request<Notification[]>('/v1/notifications', { auth: true });
+  }
+
+  getUnreadNotificationCount(): Promise<UnreadCount> {
+    return this.request<UnreadCount>('/v1/notifications/unread-count', { auth: true });
+  }
+
+  markNotificationRead(id: string): Promise<Notification> {
+    return this.request<Notification>(`/v1/notifications/${id}/read`, { method: 'POST', auth: true });
   }
 }
