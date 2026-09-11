@@ -1,10 +1,10 @@
 import { CourseCard, InstitutionCard } from '@rakuxon/ui';
 
 import { applyHref, courseRoute, universityRoute } from '@/content/routes';
-import { formatDuration, formatIntake, formatMoney, nextIntake, formatLocation } from '@/lib/catalogue/format';
-import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
+import { formatLocation } from '@/lib/catalogue/format';
 import type { CatalogueResult } from '@/lib/catalogue/types';
 import type { ApiCourse, ApiInstitution } from '@/lib/catalogue/api';
+import { cardFacts } from '@/lib/catalogue/course-view';
 
 /**
  * Empty and error states are first-class here: this page depends on upstream
@@ -80,7 +80,6 @@ export function CourseResults({ result }: { result: CatalogueResult<ApiCourse> }
     <Shell result={result} noun="Courses">
       <ul className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {result.items.map((course) => {
-          const intake = nextIntake(course);
 
           return (
             <li key={course.id} className="h-full">
@@ -93,25 +92,7 @@ export function CourseResults({ result }: { result: CatalogueResult<ApiCourse> }
                    path — the visitor arrives already wanting the thing. */
                 applyHref={applyHref({ course: course.slug })}
                 badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
-                facts={[
-                  {
-                    label: 'Fee',
-                    value:
-                      course.tuitionAmount && course.tuitionCurrency
-                        ? formatMoney({
-                            amount: Number(course.tuitionAmount),
-                            currency: course.tuitionCurrency,
-                          })
-                        : 'Ask an advisor',
-                  },
-                  { label: 'Duration', value: formatDuration(course.durationMonths) },
-                  {
-                    label: 'Next intake',
-                    value: intake ? formatIntake(intake) : 'No open intake',
-                    urgent: intake?.status === 'closing_soon',
-                  },
-                  { label: 'Course level', value: STUDY_LEVEL_LABELS[course.level] },
-                ]}
+                facts={cardFacts(course)}
               />
             </li>
           );

@@ -6,16 +6,9 @@ import { Award, Building2, CalendarDays, Globe2, GraduationCap, Users, Wallet } 
 import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
 import { ROUTES, applyHref, articleRoute, courseRoute, universityRoute } from '@/content/routes';
-import { fetchArticles, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
-import { findCourses } from '@/lib/catalogue/bank';
-import {
-  formatDuration,
-  formatIntake,
-  formatLocation,
-  formatMoney,
-  nextIntake,
-} from '@/lib/catalogue/format';
-import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
+import { fetchArticles, fetchCourses, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
+import { cardFacts } from '@/lib/catalogue/course-view';
+import { formatLocation, formatMoney, summarise } from '@/lib/catalogue/format';
 
 /*
  * Rendered on demand and then cached, not prebuilt.
@@ -27,16 +20,8 @@ import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
  */
 export const revalidate = 300;
 
-/** First 155 characters, ending on a word rather than mid-syllable. */
-function summarise(text?: string | null): string | undefined {
-  const trimmed = text?.trim();
-  if (!trimmed) return undefined;
-  if (trimmed.length <= 155) return trimmed;
-
-  const cut = trimmed.slice(0, 155);
-  const lastSpace = cut.lastIndexOf(' ');
-  return `${(lastSpace > 100 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
-}
+/** Enough to compare, few enough to scan; Kaplan alone lists 526. */
+const COURSES_PER_PAGE = 12;
 
 export async function generateMetadata({
   params,
@@ -64,22 +49,27 @@ export async function generateMetadata({
   };
 }
 
-export default async function UniversityPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function UniversityPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const institution = await fetchInstitution((await params).slug);
   if (!institution) notFound();
 
-  const courses = findCourses({ institutionSlug: institution.slug }).items;
+  const query = (await searchParams) ?? {};
+  const coursePage = Number(Array.isArray(query.courses) ? query.courses[0] : query.courses) || 1;
 
   /*
    * Everything else the page can honestly say about this institution, fetched
-   * in parallel — neither depends on the other, and awaiting them in sequence
-   * adds a whole round trip to a page that already waited for the record.
-   *
-   * Courses are not wired yet, so without these the page was a name, four
-   * facts and a one-line description. Neighbours and destination guidance are
-   * real rows we already hold; inventing prose to fill the space would not be.
+   * in parallel — none depends on another, and awaiting them in sequence adds a
+   * round trip each to a page that already waited for the record. Its courses,
+   * neighbours and destination guidance are all real rows we hold; inventing
+   * prose to fill the space would not be.
    */
-  const [nearby, guidance] = await Promise.all([
+  const [nearby, guidance, courseResult] = await Promise.all([
     /* Same city where we know it, same country otherwise. The browse filter
        matches city as well as name, which is what makes this one call. */
     fetchInstitutions({
@@ -88,7 +78,12 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
       limit: 7,
     }),
     fetchArticles({ country: institution.countryCode, limit: 3 }),
+    fetchCourses({ institutionSlug: institution.slug, page: coursePage, limit: COURSES_PER_PAGE }),
   ]);
+
+  const courses = courseResult.items;
+  /* The API's published count; the list total covers an API that predates it. */
+  const courseCount = institution.courseCount ?? courseResult.total;
 
   const neighbours = nearby.items.filter((entry) => entry.slug !== institution.slug).slice(0, 6);
 
@@ -249,10 +244,10 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
                 label: 'Students',
                 value: institution.studentCount.toLocaleString('en-GB'),
               },
-              courses.length > 0 && {
+              courseCount > 0 && {
                 icon: Building2,
                 label: 'Courses listed',
-                value: String(courses.length),
+                value: courseCount.toLocaleString('en-GB'),
               },
               institution.upcomingIntake && {
                 icon: GraduationCap,
@@ -394,39 +389,62 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
 
       {courses.length > 0 && (
         <SectionBand tone="muted" labelledBy="university-courses-heading">
-          <h2
-            id="university-courses-heading"
-            className="font-heading text-2xl font-bold text-text"
-          >
-            Courses at {institution.name}
-          </h2>
+          <div id="courses" className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2
+              id="university-courses-heading"
+              className="font-heading text-2xl font-bold text-text"
+            >
+              Courses at {institution.name}
+            </h2>
+            <p className="text-sm text-text-muted">
+              {`${courseResult.total.toLocaleString('en-GB')} course${courseResult.total === 1 ? '' : 's'}`}
+            </p>
+          </div>
           <ul className="mt-6 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => {
-              const intake = nextIntake(course);
-              return (
-                <li key={course.id} className="h-full">
-                  <CourseCard
-                    title={course.title}
-                    institution={course.institutionName}
-                    countryCode={course.countryCode}
-                    href={courseRoute(course.slug)}
-                    applyHref={applyHref({ course: course.slug })}
-                    badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
-                    facts={[
-                      { label: 'Fee', value: formatMoney(course.tuition) },
-                      { label: 'Duration', value: formatDuration(course.durationMonths) },
-                      {
-                        label: 'Next intake',
-                        value: intake ? formatIntake(intake) : 'No open intake',
-                        urgent: intake?.status === 'closing_soon',
-                      },
-                      { label: 'Study level', value: STUDY_LEVEL_LABELS[course.level] },
-                    ]}
-                  />
-                </li>
-              );
-            })}
+            {courses.map((course) => (
+              <li key={course.id} className="h-full">
+                <CourseCard
+                  title={course.title}
+                  institution={course.institutionName}
+                  countryCode={course.countryCode}
+                  href={courseRoute(course.slug)}
+                  applyHref={applyHref({ course: course.slug })}
+                  badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
+                  facts={cardFacts(course)}
+                />
+              </li>
+            ))}
           </ul>
+
+          {courseResult.pageCount > 1 && (
+            <nav aria-label="Course pages" className="mt-6 flex items-center justify-between gap-4">
+              {/* Real links, not buttons: a page of courses should be shareable,
+                  and the back button should work. */}
+              {courseResult.page > 1 ? (
+                <a
+                  href={`${universityRoute(institution.slug)}?courses=${courseResult.page - 1}#courses`}
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                >
+                  ← Previous
+                </a>
+              ) : (
+                <span />
+              )}
+              <p className="text-sm text-text-muted">
+                Page {courseResult.page} of {courseResult.pageCount}
+              </p>
+              {courseResult.page < courseResult.pageCount ? (
+                <a
+                  href={`${universityRoute(institution.slug)}?courses=${courseResult.page + 1}#courses`}
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                >
+                  Next →
+                </a>
+              ) : (
+                <span />
+              )}
+            </nav>
+          )}
         </SectionBand>
       )}
 

@@ -54,3 +54,18 @@ export function formatLocation(city: string | null | undefined, country: string)
   if (!trimmed || trimmed.toLowerCase() === country.trim().toLowerCase()) return country;
   return `${trimmed}, ${country}`;
 }
+
+/**
+ * First 155 characters, ending on a word rather than mid-syllable — the length
+ * a search result shows. Shared by the university and course pages.
+ */
+export function summarise(text?: string | null): string | undefined {
+  const trimmed = text?.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.length <= 155) return trimmed;
+
+  const cut = trimmed.slice(0, 155);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${(lastSpace > 100 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+

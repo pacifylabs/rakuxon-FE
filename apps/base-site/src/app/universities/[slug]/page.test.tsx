@@ -67,15 +67,52 @@ const articles = {
   tags: ['visas'],
 };
 
-function stubApi(overrides: Partial<typeof detail> & { drop?: (keyof typeof detail)[] } = {}) {
+const noCourses = { items: [], total: 0, page: 1, pageCount: 1 };
+
+/** An imported course: a title, a level, a subject and an approximate fee. */
+const courseList = {
+  items: [
+    {
+      id: 'c1',
+      slug: 'msc-data-science-cardiff',
+      title: 'MSc Data Science',
+      level: 'postgraduate',
+      studyMode: 'full_time',
+      disciplines: ['data-sciences-and-big-data'],
+      tuitionAmount: '24800.00',
+      tuitionCurrency: 'GBP',
+      tuitionIsEstimate: true,
+      fastTrackOffer: false,
+      intakes: [],
+      institutionId: 'i1',
+      institutionName: 'Cardiff University',
+      institutionSlug: 'cardiff-university',
+      country: 'United Kingdom',
+      countryCode: 'GB',
+    },
+  ],
+  total: 263,
+  page: 1,
+  pageCount: 22,
+};
+
+function stubApi(
+  overrides: Partial<typeof detail> & {
+    drop?: (keyof typeof detail)[];
+    courses?: typeof courseList | typeof noCourses;
+  } = {},
+) {
   const record: Record<string, unknown> = { ...detail, ...overrides };
   for (const key of overrides.drop ?? []) delete record[key];
   delete record.drop;
+  delete record.courses;
 
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string) => {
-      const body = url.includes('/articles')
+      const body = url.includes('/courses')
+        ? (overrides.courses ?? noCourses)
+        : url.includes('/articles')
         ? articles
         : url.includes('/institutions?')
           ? neighbours
@@ -186,6 +223,40 @@ describe('/universities/[slug]', () => {
       'href',
       '/resources/uk-student-visa-order-of-events',
     );
+  });
+
+  it('lists its courses with the real count, and marks an approximate fee as one', async () => {
+    stubApi({ courseCount: 263, courses: courseList });
+    await render();
+
+    const main = within(screen.getByRole('main'));
+    expect(main.getByText('Courses listed')).toBeInTheDocument();
+    expect(main.getByText('263')).toBeInTheDocument();
+    expect(main.getByRole('link', { name: 'MSc Data Science' })).toHaveAttribute(
+      'href',
+      '/courses/msc-data-science-cardiff',
+    );
+    // The feed calls its figure approximate, so the card must too.
+    expect(main.getByText('approx. £ 24,800')).toBeInTheDocument();
+    expect(main.getByText('Data sciences and big data')).toBeInTheDocument();
+  });
+
+  it('pages through a long course list with shareable links', async () => {
+    stubApi({ courseCount: 263, courses: courseList });
+    await render();
+
+    expect(screen.getByRole('link', { name: 'Next →' })).toHaveAttribute(
+      'href',
+      '/universities/cardiff-university?courses=2#courses',
+    );
+  });
+
+  it('shows no course section for a university with none', async () => {
+    stubApi();
+    await render();
+
+    expect(screen.queryByText('Courses at Cardiff University')).toBeNull();
+    expect(within(screen.getByRole('main')).queryByText('Courses listed')).toBeNull();
   });
 
   describe('metadata', () => {

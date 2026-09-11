@@ -1,5 +1,13 @@
 import { emptyResult } from './types';
-import type { CatalogueResult, Intake, StudyLevel, StudyMode } from './types';
+import type {
+  CatalogueResult,
+  EnglishTest,
+  Intake,
+  RequirementGroup,
+  Scholarship,
+  StudyLevel,
+  StudyMode,
+} from './types';
 
 /**
  * The catalogue, from our own API.
@@ -227,10 +235,13 @@ export interface ApiCourse {
   level: StudyLevel;
   studyMode: StudyMode;
   disciplines: string[];
-  durationMonths: number;
+  /** Absent where the source does not state it; never estimated. */
+  durationMonths?: number;
   /** Numeric string — Postgres `numeric` comes back as text, not a float. */
   tuitionAmount?: string;
   tuitionCurrency?: string;
+  /** The source calls the fee approximate, so it must render as one. */
+  tuitionIsEstimate?: boolean;
   fastTrackOffer: boolean;
   intakes: Intake[];
   institutionId: string;
@@ -284,6 +295,29 @@ export async function fetchCourses(
       page: 1,
       pageCount: 1,
     };
+  }
+}
+
+/** The whole course from /courses/:slug. Imported courses leave most of it empty. */
+export interface ApiCourseDetail extends ApiCourse {
+  overview?: string;
+  highlights: string[];
+  careers?: string;
+  campus?: string;
+  tuitionPeriod: 'year' | 'course';
+  entryRequirements: RequirementGroup[];
+  englishTests: EnglishTest[];
+  scholarships: Scholarship[];
+  offerResponseWeeks?: number;
+}
+
+/** One course. Null rather than throwing, so the page can fall back or 404. */
+export async function fetchCourse(slug: string): Promise<ApiCourseDetail | null> {
+  try {
+    return await getJson<ApiCourseDetail>(`/courses/${encodeURIComponent(slug)}`, 300);
+  } catch (error) {
+    reportFailure(`/courses/${slug}`, error);
+    return null;
   }
 }
 
