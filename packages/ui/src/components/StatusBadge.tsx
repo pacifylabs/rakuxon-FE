@@ -1,10 +1,14 @@
 import type { LucideIcon } from 'lucide-react';
 
-export type StatusBadgeTone = 'neutral' | 'positive';
+export type StatusBadgeTone = 'neutral' | 'positive' | 'negative';
 
 const TONE_CLASSES: Record<StatusBadgeTone, string> = {
   neutral: 'bg-surface-muted text-text-muted',
   positive: 'bg-primary/15 text-primary',
+  /* A border, not a filled background: the token colours are CSS custom
+     properties, so Tailwind's `/alpha` opacity modifier (as `positive` uses
+     above) produces nothing on them — see the project's own note on this. */
+  negative: 'border border-danger text-danger',
 };
 
 export interface StatusBadgeProps {

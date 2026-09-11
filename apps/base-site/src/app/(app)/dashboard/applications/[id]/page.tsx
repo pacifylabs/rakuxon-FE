@@ -5,10 +5,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { Button } from '@rakuxon/ui';
+import { ApplicationStatusBadge, Button } from '@rakuxon/ui';
 import type { Application } from '@rakuxon/contract';
 
-import { ApplicationStatusBadge } from '@/components/dashboard/ApplicationStatusBadge';
 import { RequiredDocumentsChecklist } from '@/components/dashboard/RequiredDocumentsChecklist';
 
 export default function ApplicationDetailPage() {

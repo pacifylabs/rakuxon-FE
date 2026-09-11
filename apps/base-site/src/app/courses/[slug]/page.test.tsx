@@ -104,6 +104,25 @@ describe('/courses/[slug]', () => {
     expect(screen.queryByText('Mode of study')).toBeNull();
   });
 
+  it('shows a scholarship amount with its currency, and just the name without one', async () => {
+    // formatMoney() takes a {amount, currency} pair — passing the bare
+    // amount threw (`Cannot read properties of undefined`) the first time a
+    // published course actually carried a scholarship with an amount set.
+    const withScholarships = {
+      ...imported,
+      slug: 'msc-with-scholarships',
+      scholarships: [
+        { name: "Dean's Excellence Award", amount: 3000, currency: 'GBP' },
+        { name: 'Alumni discount' },
+      ],
+    };
+    stubCatalogue({ [withScholarships.slug]: withScholarships });
+    await render(withScholarships.slug);
+
+    expect(screen.getByText(/Dean's Excellence Award.*£ 3,000/)).toBeInTheDocument();
+    expect(screen.getByText('Alumni discount')).toBeInTheDocument();
+  });
+
   it('lists other courses at the same university from the catalogue', async () => {
     stubCatalogue();
     await render(imported.slug);

@@ -332,6 +332,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/catalogue/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Browse courses
+         * @description Filter by country, level, discipline, institution or free text. Only courses at published institutions are returned.
+         */
+        get: operations["CatalogueController_listCourses_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalogue/courses/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One course, with its university */
+        get: operations["CatalogueController_course_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/catalogue/articles": {
         parameters: {
             query?: never;
@@ -363,6 +400,481 @@ export interface paths {
         get: operations["CatalogueController_article_v1"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/institutions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List institutions, including drafts and suspended records */
+        get: operations["AdminCatalogueController_listInstitutions_v1"];
+        put?: never;
+        /**
+         * Create an institution
+         * @description Starts life as draft, with just the required fields — everything else is filled in on the edit screen afterwards.
+         */
+        post: operations["AdminCatalogueController_createInstitution_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/institutions/{id}/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One institution, every field */
+        get: operations["AdminCatalogueController_getInstitutionDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/institutions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One institution, any status */
+        get: operations["AdminCatalogueController_getInstitution_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an institution's own fields */
+        patch: operations["AdminCatalogueController_updateInstitution_v1"];
+        trace?: never;
+    };
+    "/v1/admin/catalogue/institutions/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish an institution */
+        post: operations["AdminCatalogueController_publishInstitution_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/institutions/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend an institution */
+        post: operations["AdminCatalogueController_suspendInstitution_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/institutions/{id}/revert-to-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revert an institution to draft */
+        post: operations["AdminCatalogueController_revertInstitutionToDraft_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List courses, including drafts and suspended records */
+        get: operations["AdminCatalogueController_listCourses_v1"];
+        put?: never;
+        /**
+         * Create a course
+         * @description Starts life as draft, with just the required fields — everything else is filled in on the edit screen afterwards.
+         */
+        post: operations["AdminCatalogueController_createCourse_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/courses/{id}/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One course, every field */
+        get: operations["AdminCatalogueController_getCourseDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One course, any status */
+        get: operations["AdminCatalogueController_getCourse_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a course's own fields */
+        patch: operations["AdminCatalogueController_updateCourse_v1"];
+        trace?: never;
+    };
+    "/v1/admin/catalogue/courses/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish a course */
+        post: operations["AdminCatalogueController_publishCourse_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/courses/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend a course */
+        post: operations["AdminCatalogueController_suspendCourse_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/courses/{id}/revert-to-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revert a course to draft */
+        post: operations["AdminCatalogueController_revertCourseToDraft_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List articles, including drafts and suspended records */
+        get: operations["AdminCatalogueController_listArticles_v1"];
+        put?: never;
+        /**
+         * Create an article
+         * @description Starts life as draft.
+         */
+        post: operations["AdminCatalogueController_createArticle_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/articles/{id}/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One article, every field */
+        get: operations["AdminCatalogueController_getArticleDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/articles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One article, any status */
+        get: operations["AdminCatalogueController_getArticle_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an article's own fields */
+        patch: operations["AdminCatalogueController_updateArticle_v1"];
+        trace?: never;
+    };
+    "/v1/admin/catalogue/articles/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish an article */
+        post: operations["AdminCatalogueController_publishArticle_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/articles/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend an article */
+        post: operations["AdminCatalogueController_suspendArticle_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/articles/{id}/revert-to-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revert an article to draft */
+        post: operations["AdminCatalogueController_revertArticleToDraft_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every reference country, not just the destinations */
+        get: operations["AdminCatalogueController_listCountries_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/countries/{code}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a country as one Rakuxon serves
+         * @description Adds it to the "where do you want to study" dropdown.
+         */
+        post: operations["AdminCatalogueController_activateCountry_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/countries/{code}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark a country as one Rakuxon no longer serves */
+        post: operations["AdminCatalogueController_deactivateCountry_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange admin credentials for a token pair
+         * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered.
+         */
+        post: operations["AdminAuthController_login_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate an admin refresh token
+         * @description Single-use. Presenting one that has already been rotated revokes every token in its family. Permission keys on the returned access token are reloaded fresh, so a permission change takes effect the next time the admin refreshes, at the latest.
+         */
+        post: operations["AdminAuthController_refresh_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End the admin session behind a refresh token
+         * @description Idempotent: an unknown token succeeds rather than reporting whether it existed.
+         */
+        post: operations["AdminAuthController_logout_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/password-reset/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request an admin password reset link
+         * @description Always answers 204, whether or not the address has an admin account.
+         */
+        post: operations["AdminAuthController_requestPasswordReset_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/password-reset/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set a new admin password from a reset link
+         * @description Single-use, and every existing admin session for that account is revoked.
+         */
+        post: operations["AdminAuthController_confirmPasswordReset_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -485,6 +997,41 @@ export interface paths {
          * @description Every field is optional — a partial save is expected. `profileCompletedAt` is set once every field admission processing needs is present, and stays set afterwards.
          */
         patch: operations["StudentsController_updateOwnProfile_v1"];
+        trace?: never;
+    };
+    "/v1/admin/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List students, searchable by name or email */
+        get: operations["AdminStudentsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/students/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One student, with their full applicant profile */
+        get: operations["AdminStudentsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit a student's applicant profile on their behalf */
+        patch: operations["AdminStudentsController_update_v1"];
         trace?: never;
     };
     "/v1/documents/upload-signature": {
@@ -628,6 +1175,243 @@ export interface paths {
          * @description Requires a completed profile and every required document type attached. Not idempotent — resubmitting an already-submitted application is a conflict.
          */
         post: operations["ApplicationsController_submit_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List applications across every tenant, filterable by status and tenant */
+        get: operations["AdminApplicationsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/applications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One application, with its document-attachment gates */
+        get: operations["AdminApplicationsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/admins/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The full permission catalogue, for a create/edit form */
+        get: operations["AdminsController_listPermissions_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/admins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List every admin and their current permissions */
+        get: operations["AdminsController_list_v1"];
+        put?: never;
+        /**
+         * Create an admin
+         * @description The creating admin sets a real password directly, and assigns the new admin’s initial permission set. The new admin can change their password via the reset flow like anyone else.
+         */
+        post: operations["AdminsController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/admins/{id}/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Replace an admin’s permission set
+         * @description Sets the permission set to exactly the given list — not additive. An admin holding admins.manage may grant or revoke any permission key, including ones they do not themselves hold; there is no hierarchy check in this first slice.
+         */
+        patch: operations["AdminsController_updatePermissions_v1"];
+        trace?: never;
+    };
+    "/v1/admin/admins/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend an admin account */
+        post: operations["AdminsController_suspend_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/admins/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reactivate a suspended admin account */
+        post: operations["AdminsController_reactivate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List tenants, filterable by status */
+        get: operations["TenantsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One tenant */
+        get: operations["TenantsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a pending tenant
+         * @description Pending -> active only. This is what lifts the onboarding-links gate for the agency.
+         */
+        post: operations["TenantsController_approve_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suspend an active tenant
+         * @description Active -> suspended only.
+         */
+        post: operations["TenantsController_suspend_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reinstate a suspended tenant
+         * @description Suspended -> active only.
+         */
+        post: operations["TenantsController_reactivate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/dashboard/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Platform totals and status breakdowns, for the admin home screen */
+        get: operations["AdminDashboardController_getSummary_v1"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -827,6 +1611,92 @@ export interface components {
             pageCount: number;
         };
         Institution: Record<string, never>;
+        /** @enum {string} */
+        StudyLevel: "foundation" | "undergraduate" | "postgraduate" | "research";
+        /** @enum {string} */
+        StudyMode: "full_time" | "part_time" | "online" | "hybrid";
+        /** @enum {string} */
+        IntakeStatus: "open" | "closing_soon" | "closed";
+        IntakeDto: {
+            /** @example Sep */
+            month: string;
+            /** @example 2026 */
+            year: number;
+            /** Format: date */
+            applicationDeadline?: string;
+            status: components["schemas"]["IntakeStatus"];
+        };
+        CourseSummaryDto: {
+            id: string;
+            slug: string;
+            title: string;
+            level: components["schemas"]["StudyLevel"];
+            studyMode: components["schemas"]["StudyMode"];
+            disciplines: string[];
+            /** @description Absent where the source does not state it; never estimated. */
+            durationMonths?: number;
+            /**
+             * @description Null where a fee has not been recorded.
+             * @example 18500.00
+             */
+            tuitionAmount?: string;
+            /** @example GBP */
+            tuitionCurrency?: string;
+            /** @description The source calls the fee approximate, so it must be shown as one. */
+            tuitionIsEstimate: boolean;
+            fastTrackOffer: boolean;
+            intakes: components["schemas"]["IntakeDto"][];
+            institutionId: string;
+            institutionName: string;
+            institutionSlug: string;
+            country: string;
+            /** @example GB */
+            countryCode: string;
+        };
+        CourseListDto: {
+            items: components["schemas"]["CourseSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        /** @enum {string} */
+        TuitionPeriod: "year" | "course";
+        CourseDetailDto: {
+            id: string;
+            slug: string;
+            title: string;
+            level: components["schemas"]["StudyLevel"];
+            studyMode: components["schemas"]["StudyMode"];
+            disciplines: string[];
+            /** @description Absent where the source does not state it; never estimated. */
+            durationMonths?: number;
+            /**
+             * @description Null where a fee has not been recorded.
+             * @example 18500.00
+             */
+            tuitionAmount?: string;
+            /** @example GBP */
+            tuitionCurrency?: string;
+            /** @description The source calls the fee approximate, so it must be shown as one. */
+            tuitionIsEstimate: boolean;
+            fastTrackOffer: boolean;
+            intakes: components["schemas"]["IntakeDto"][];
+            institutionId: string;
+            institutionName: string;
+            institutionSlug: string;
+            country: string;
+            /** @example GB */
+            countryCode: string;
+            overview?: string;
+            highlights: string[];
+            careers?: string;
+            campus?: string;
+            tuitionPeriod: components["schemas"]["TuitionPeriod"];
+            entryRequirements: Record<string, never>[];
+            englishTests: Record<string, never>[];
+            scholarships: Record<string, never>[];
+            offerResponseWeeks?: number;
+        };
         ArticleSummaryDto: {
             id: string;
             slug: string;
@@ -866,6 +1736,321 @@ export interface components {
             body: string;
             source?: string;
             sourceUrl?: string;
+        };
+        CreateInstitutionDto: {
+            slug: string;
+            name: string;
+            country: string;
+            /** @example GB */
+            countryCode: string;
+            aka?: string[];
+            city?: string;
+            website?: string;
+            about?: string;
+        };
+        CampusDto: {
+            name: string;
+            city: string;
+            /** @example GB */
+            countryCode: string;
+        };
+        RequirementItemDto: {
+            name: string;
+            minPercentage?: number;
+            note?: string;
+        };
+        RequirementGroupDto: {
+            id: string;
+            label: string;
+            items: components["schemas"]["RequirementItemDto"][];
+        };
+        EnglishTestDto: {
+            /** @enum {string} */
+            test: "IELTS" | "TOEFL" | "PTE" | "Duolingo";
+            minScore: string;
+        };
+        FaqDto: {
+            question: string;
+            answer: string;
+        };
+        QualityRatingDto: {
+            scheme: string;
+            level: string;
+            year: number;
+        };
+        /** @enum {string} */
+        PublishStatus: "draft" | "published" | "suspended";
+        AdminInstitutionDetailDto: {
+            id: string;
+            slug: string;
+            name: string;
+            aka: string[];
+            country: string;
+            /** @example GB */
+            countryCode: string;
+            city?: string | null;
+            website?: string | null;
+            about?: string | null;
+            logoUrl?: string | null;
+            heroImageUrl?: string | null;
+            highlights: string[];
+            campuses: components["schemas"]["CampusDto"][];
+            requiredDocuments: components["schemas"]["RequirementGroupDto"][];
+            englishTests: components["schemas"]["EnglishTestDto"][];
+            faqs: components["schemas"]["FaqDto"][];
+            qualityRatings: components["schemas"]["QualityRatingDto"][];
+            employability?: string | null;
+            foundedYear?: number | null;
+            studentCount?: number | null;
+            overview?: string | null;
+            overviewSourceUrl?: string | null;
+            motto?: string | null;
+            memberships: string[];
+            tuitionFrom?: string | null;
+            tuitionCurrency?: string | null;
+            upcomingIntake?: string | null;
+            fastTrackOffer: boolean;
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminInstitutionSummaryDto: {
+            id: string;
+            slug: string;
+            name: string;
+            /** @example GB */
+            countryCode: string;
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminInstitutionListDto: {
+            items: components["schemas"]["AdminInstitutionSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        UpdateInstitutionDto: {
+            slug?: string;
+            name?: string;
+            aka?: string[];
+            country?: string;
+            /** @example GB */
+            countryCode?: string;
+            city?: string | null;
+            website?: string | null;
+            about?: string | null;
+            logoUrl?: string | null;
+            heroImageUrl?: string | null;
+            highlights?: string[];
+            campuses?: components["schemas"]["CampusDto"][];
+            requiredDocuments?: components["schemas"]["RequirementGroupDto"][];
+            englishTests?: components["schemas"]["EnglishTestDto"][];
+            faqs?: components["schemas"]["FaqDto"][];
+            qualityRatings?: components["schemas"]["QualityRatingDto"][];
+            employability?: string | null;
+            foundedYear?: number | null;
+            studentCount?: number | null;
+            overview?: string | null;
+            overviewSourceUrl?: string | null;
+            motto?: string | null;
+            memberships?: string[];
+            tuitionFrom?: string | null;
+            /** @example GBP */
+            tuitionCurrency?: string | null;
+            upcomingIntake?: string | null;
+            fastTrackOffer?: boolean;
+        };
+        CreateCourseDto: {
+            slug: string;
+            institutionId: string;
+            title: string;
+            level: components["schemas"]["StudyLevel"];
+            disciplines?: string[];
+        };
+        ScholarshipDto: {
+            name: string;
+            amount?: number;
+            currency?: string;
+            note?: string;
+        };
+        AdminCourseDetailDto: {
+            id: string;
+            slug: string;
+            institutionId: string;
+            title: string;
+            level: components["schemas"]["StudyLevel"];
+            disciplines: string[];
+            durationMonths?: number | null;
+            studyMode: components["schemas"]["StudyMode"];
+            campus?: string | null;
+            tuitionAmount?: string | null;
+            tuitionCurrency?: string | null;
+            tuitionPeriod: components["schemas"]["TuitionPeriod"];
+            tuitionIsEstimate: boolean;
+            tuitionIsInternational: boolean;
+            intakes: components["schemas"]["IntakeDto"][];
+            entryRequirements: components["schemas"]["RequirementGroupDto"][];
+            englishTests: components["schemas"]["EnglishTestDto"][];
+            scholarships: components["schemas"]["ScholarshipDto"][];
+            overview?: string | null;
+            highlights: string[];
+            careers?: string | null;
+            offerResponseWeeks?: number | null;
+            fastTrackOffer: boolean;
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminCourseSummaryDto: {
+            id: string;
+            slug: string;
+            title: string;
+            institutionId: string;
+            institutionName: string;
+            institutionSlug: string;
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminCourseListDto: {
+            items: components["schemas"]["AdminCourseSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        UpdateCourseDto: {
+            slug?: string;
+            institutionId?: string;
+            title?: string;
+            level?: components["schemas"]["StudyLevel"];
+            disciplines?: string[];
+            durationMonths?: number | null;
+            studyMode?: components["schemas"]["StudyMode"];
+            campus?: string | null;
+            tuitionAmount?: string | null;
+            /** @example GBP */
+            tuitionCurrency?: string | null;
+            tuitionPeriod?: components["schemas"]["TuitionPeriod"];
+            tuitionIsEstimate?: boolean;
+            tuitionIsInternational?: boolean;
+            intakes?: components["schemas"]["IntakeDto"][];
+            entryRequirements?: components["schemas"]["RequirementGroupDto"][];
+            englishTests?: components["schemas"]["EnglishTestDto"][];
+            scholarships?: components["schemas"]["ScholarshipDto"][];
+            overview?: string | null;
+            highlights?: string[];
+            careers?: string | null;
+            offerResponseWeeks?: number | null;
+            fastTrackOffer?: boolean;
+        };
+        CreateArticleDto: {
+            slug: string;
+            title: string;
+            body: string;
+            excerpt?: string;
+            heroImageUrl?: string;
+            /** @example GB */
+            countryCode?: string;
+            tags?: string[];
+            readMinutes?: number;
+            author?: string;
+            /** Format: date-time */
+            publishedAt?: string;
+        };
+        AdminArticleDetailDto: {
+            id: string;
+            slug: string;
+            title: string;
+            excerpt?: string | null;
+            body: string;
+            heroImageUrl?: string | null;
+            /** @example GB */
+            countryCode?: string | null;
+            tags: string[];
+            readMinutes?: number | null;
+            author?: string | null;
+            /** Format: date-time */
+            publishedAt?: string | null;
+            status: components["schemas"]["PublishStatus"];
+            source?: string | null;
+            sourceUrl?: string | null;
+        };
+        AdminArticleSummaryDto: {
+            id: string;
+            slug: string;
+            title: string;
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminArticleListDto: {
+            items: components["schemas"]["AdminArticleSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        UpdateArticleDto: {
+            slug?: string;
+            title?: string;
+            excerpt?: string | null;
+            body?: string;
+            heroImageUrl?: string | null;
+            /** @example GB */
+            countryCode?: string | null;
+            tags?: string[];
+            readMinutes?: number | null;
+            author?: string | null;
+            /** Format: date-time */
+            publishedAt?: string | null;
+        };
+        AdminCountryDto: {
+            /** @example GB */
+            code: string;
+            /** @example United Kingdom */
+            name: string;
+            isDestination: boolean;
+            /** @example 🇬🇧 */
+            flagEmoji: string;
+        };
+        AdminLoginDto: {
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        AdminSessionDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /**
+             * @example [
+             *       "tenants.view",
+             *       "tenants.approve"
+             *     ]
+             */
+            permissions: string[];
+        };
+        AdminAuthTokensDto: {
+            /** @description Short-lived JWT. Send as `Authorization: Bearer <token>`. */
+            accessToken: string;
+            /** @description Opaque, single-use. Rotated on every refresh. */
+            refreshToken: string;
+            /**
+             * @description Access token lifetime in seconds.
+             * @example 900
+             */
+            expiresIn: number;
+            admin: components["schemas"]["AdminSessionDto"];
+        };
+        AdminRefreshDto: {
+            /** @description The refresh token from the previous login or refresh. */
+            refreshToken: string;
+        };
+        RequestAdminPasswordResetDto: {
+            /** @example ada@rakuxon.com */
+            email: string;
+        };
+        ConfirmAdminPasswordResetDto: {
+            /** @description The token from the reset link. */
+            token: string;
+            /** @example a-brand-new-passphrase */
+            password: string;
         };
         IssueOnboardingLinkDto: {
             /**
@@ -938,8 +2123,6 @@ export interface components {
             endYear?: number;
             grade?: string;
         };
-        /** @enum {string} */
-        StudyLevel: "foundation" | "undergraduate" | "postgraduate" | "research";
         StudentProfileDto: {
             /** Format: uuid */
             id: string;
@@ -961,6 +2144,62 @@ export interface components {
             profileCompletedAt: string | null;
         };
         UpdateStudentProfileDto: {
+            /** @example 2001-04-12 */
+            dateOfBirth?: string;
+            /** @example NG */
+            nationality?: string;
+            /** @example +2348012345678 */
+            phone?: string;
+            passportNumber?: string;
+            address?: components["schemas"]["AddressDto"];
+            educationHistory?: components["schemas"]["EducationHistoryEntryDto"][];
+            intendedStudyLevel?: components["schemas"]["StudyLevel"];
+            /** @example GB */
+            intendedCountry?: string;
+            /** @example 2026-09 */
+            preferredIntake?: string;
+        };
+        AdminStudentSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            userId: string;
+            email: string;
+            fullName: string;
+            /** Format: uuid */
+            tenantId: string;
+            /** Format: date-time */
+            profileCompletedAt: string | null;
+        };
+        AdminStudentListDto: {
+            items: components["schemas"]["AdminStudentSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        AdminStudentDetailDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            tenantId: string;
+            email: string;
+            fullName: string;
+            /** Format: date */
+            dateOfBirth: string | null;
+            nationality: string | null;
+            phone: string | null;
+            passportNumber: string | null;
+            address: components["schemas"]["AddressDto"];
+            educationHistory: components["schemas"]["EducationHistoryEntryDto"][];
+            intendedStudyLevel: components["schemas"]["StudyLevel"] | null;
+            intendedCountry: string | null;
+            preferredIntake: string | null;
+            /** Format: date-time */
+            profileCompletedAt: string | null;
+        };
+        UpdateStudentAdminDto: {
             /** @example 2001-04-12 */
             dateOfBirth?: string;
             /** @example NG */
@@ -1039,6 +2278,154 @@ export interface components {
             readyToSubmit: boolean;
             /** Format: date-time */
             createdAt: string;
+        };
+        AdminApplicationSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenantId: string;
+            tenantName: string;
+            /** Format: uuid */
+            studentId: string;
+            studentName: string;
+            studentEmail: string;
+            /** Format: uuid */
+            courseId: string;
+            courseTitle: string;
+            /** Format: uuid */
+            institutionId: string;
+            institutionName: string;
+            status: components["schemas"]["ApplicationStatus"];
+            /** Format: date-time */
+            submittedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminApplicationListDto: {
+            items: components["schemas"]["AdminApplicationSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        AdminApplicationDetailDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenantId: string;
+            tenantName: string;
+            /** Format: uuid */
+            studentId: string;
+            studentName: string;
+            studentEmail: string;
+            /** Format: uuid */
+            courseId: string;
+            courseTitle: string;
+            /** Format: uuid */
+            institutionId: string;
+            institutionName: string;
+            status: components["schemas"]["ApplicationStatus"];
+            /** Format: date-time */
+            submittedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            attachedDocumentIds: string[];
+            missingDocumentTypes: components["schemas"]["DocumentType"][];
+            readyToSubmit: boolean;
+        };
+        PermissionDto: {
+            /** @example tenants.approve */
+            key: string;
+            /** @example Approve a pending tenant, or reinstate a suspended one. */
+            description: string;
+        };
+        CreateAdminDto: {
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /**
+             * @description Set directly by the creating admin. The new admin can change it via the password-reset flow.
+             * @example correct-horse-battery
+             */
+            password: string;
+            /**
+             * @description Permission keys to grant on creation.
+             * @example [
+             *       "tenants.view"
+             *     ]
+             */
+            permissionKeys: string[];
+        };
+        /** @enum {string} */
+        UserStatus: "invited" | "active" | "suspended";
+        AdminSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            status: components["schemas"]["UserStatus"];
+            /**
+             * @example [
+             *       "tenants.view",
+             *       "tenants.approve"
+             *     ]
+             */
+            permissions: string[];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminListDto: {
+            items: components["schemas"]["AdminSummaryDto"][];
+        };
+        UpdateAdminPermissionsDto: {
+            /**
+             * @description Replaces the admin’s permission set exactly with this list.
+             * @example [
+             *       "tenants.view",
+             *       "tenants.approve"
+             *     ]
+             */
+            permissionKeys: string[];
+        };
+        /** @enum {string} */
+        TenantStatus: "pending" | "active" | "suspended";
+        TenantDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+            status: components["schemas"]["TenantStatus"];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        TenantListDto: {
+            items: components["schemas"]["TenantDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        StatusCountDto: {
+            key: string;
+            count: number;
+        };
+        AdminDashboardSummaryDto: {
+            totalTenants: number;
+            totalInstitutions: number;
+            totalCourses: number;
+            totalArticles: number;
+            totalStudents: number;
+            totalApplications: number;
+            tenantsByStatus: components["schemas"]["StatusCountDto"][];
+            institutionsByStatus: components["schemas"]["StatusCountDto"][];
+            applicationsByStatus: components["schemas"]["StatusCountDto"][];
+            studentsWithCompleteProfile: number;
+            studentsWithIncompleteProfile: number;
         };
     };
     responses: never;
@@ -1483,6 +2870,65 @@ export interface operations {
             };
         };
     };
+    CatalogueController_listCourses_v1: {
+        parameters: {
+            query?: {
+                /** @description ISO 3166-1 alpha-2, the institution's. */
+                country?: string;
+                /** @description Free text over the course title and institution name. */
+                q?: string;
+                level?: components["schemas"]["StudyLevel"];
+                /** @description Matched against the discipline tags. */
+                discipline?: string;
+                /** @description Restrict to one institution. */
+                institutionSlug?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseListDto"];
+                };
+            };
+        };
+    };
+    CatalogueController_course_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailDto"];
+                };
+            };
+            /** @description No published course, at a published university, with that slug. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     CatalogueController_listArticles_v1: {
         parameters: {
             query?: {
@@ -1530,6 +2976,868 @@ export interface operations {
             };
             /** @description No published article with that slug. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_listInstitutions_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PublishStatus"];
+                country?: string;
+                /** @description Free text over the name. */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionListDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_createInstitution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInstitutionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionDetailDto"];
+                };
+            };
+            /** @description That slug is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_getInstitutionDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionDetailDto"];
+                };
+            };
+            /** @description No institution with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_getInstitution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionSummaryDto"];
+                };
+            };
+            /** @description No institution with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_updateInstitution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateInstitutionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionDetailDto"];
+                };
+            };
+            /** @description No institution with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description That slug is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_publishInstitution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionSummaryDto"];
+                };
+            };
+            /** @description Missing the catalogue.publish permission. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_suspendInstitution_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_revertInstitutionToDraft_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminInstitutionSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_listCourses_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PublishStatus"];
+                country?: string;
+                level?: components["schemas"]["StudyLevel"];
+                institutionSlug?: string;
+                /** @description Free text over the course title and institution name. */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseListDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_createCourse_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCourseDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseDetailDto"];
+                };
+            };
+            /** @description No institution with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description That slug is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_getCourseDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseDetailDto"];
+                };
+            };
+            /** @description No course with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_getCourse_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseSummaryDto"];
+                };
+            };
+            /** @description No course with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_updateCourse_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCourseDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseDetailDto"];
+                };
+            };
+            /** @description No course with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description That slug is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_publishCourse_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_suspendCourse_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_revertCourseToDraft_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCourseSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_listArticles_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PublishStatus"];
+                /** @description Free text over the title. */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleListDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_createArticle_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateArticleDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleDetailDto"];
+                };
+            };
+            /** @description That slug is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_getArticleDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleDetailDto"];
+                };
+            };
+            /** @description No article with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_getArticle_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleSummaryDto"];
+                };
+            };
+            /** @description No article with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_updateArticle_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateArticleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleDetailDto"];
+                };
+            };
+            /** @description No article with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description That slug is already taken. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_publishArticle_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_suspendArticle_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_revertArticleToDraft_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_listCountries_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCountryDto"][];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_activateCountry_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCountryDto"];
+                };
+            };
+            /** @description No country with that code. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_deactivateCountry_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCountryDto"];
+                };
+            };
+            /** @description No country with that code. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_login_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminLoginDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuthTokensDto"];
+                };
+            };
+            /** @description Credentials are not valid, or the account is inactive. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_refresh_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminRefreshDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuthTokensDto"];
+                };
+            };
+            /** @description Token unknown, expired, or already used. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_logout_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminRefreshDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_requestPasswordReset_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestAdminPasswordResetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_confirmPasswordReset_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmAdminPasswordResetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The link is unknown, expired or already used. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1722,6 +4030,90 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["StudentProfileDto"];
                 };
+            };
+        };
+    };
+    AdminStudentsController_list_v1: {
+        parameters: {
+            query?: {
+                /** @description Free text over the student’s name or email. */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentListDto"];
+                };
+            };
+        };
+    };
+    AdminStudentsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentDetailDto"];
+                };
+            };
+            /** @description No student with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminStudentsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStudentAdminDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentDetailDto"];
+                };
+            };
+            /** @description No student with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1935,6 +4327,335 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApplicationDto"];
+                };
+            };
+        };
+    };
+    AdminApplicationsController_list_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ApplicationStatus"];
+                tenantId?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationListDto"];
+                };
+            };
+        };
+    };
+    AdminApplicationsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+            /** @description No application with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminsController_listPermissions_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionDto"][];
+                };
+            };
+        };
+    };
+    AdminsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminListDto"];
+                };
+            };
+        };
+    };
+    AdminsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAdminDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSummaryDto"];
+                };
+            };
+            /** @description Missing the admins.manage permission. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminsController_updatePermissions_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAdminPermissionsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminsController_suspend_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminsController_reactivate_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSummaryDto"];
+                };
+            };
+        };
+    };
+    TenantsController_list_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["TenantStatus"];
+                /** @description Free text over name and slug. */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantListDto"];
+                };
+            };
+        };
+    };
+    TenantsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDto"];
+                };
+            };
+            /** @description No tenant with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TenantsController_approve_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDto"];
+                };
+            };
+            /** @description Missing the tenants.approve permission. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TenantsController_suspend_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDto"];
+                };
+            };
+        };
+    };
+    TenantsController_reactivate_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDto"];
+                };
+            };
+        };
+    };
+    AdminDashboardController_getSummary_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDashboardSummaryDto"];
                 };
             };
         };

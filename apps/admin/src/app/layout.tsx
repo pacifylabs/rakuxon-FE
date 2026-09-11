@@ -15,11 +15,24 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * The real Rakuxon artwork, the same asset base-site ships — see that app's
+ * `content/site.ts` for why two files (light/dark ink) rather than one.
+ * Without this, ThemeProvider has no `brand.logo` and Wordmark falls back to
+ * the drawn placeholder mark, which is what this app was shipping before.
+ */
+const BRAND_LOGO = {
+  logo: '/logo-light.png',
+  logoDark: '/logo-dark.png',
+  logoWidth: '1200',
+  logoHeight: '400',
+} as const;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body>
-        <ThemeProvider>
+        <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
           <SessionProvider>{children}</SessionProvider>
         </ThemeProvider>
       </body>

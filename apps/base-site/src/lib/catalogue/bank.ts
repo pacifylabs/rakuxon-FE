@@ -180,7 +180,7 @@ export const COURSES: readonly Course[] = [
       { test: 'TOEFL', minScore: '88 overall' },
     ],
     scholarships: [
-      { name: 'International merit award', amount: money(3_000), note: 'Applied automatically' },
+      { name: 'International merit award', amount: 3_000, currency: 'GBP', note: 'Applied automatically' },
     ],
     overview:
       'A general management degree for people moving into leadership. Core terms cover strategy, finance and operations; the final term is a consultancy project with a partner organisation.',
@@ -394,9 +394,7 @@ function badgesFor(institution: InstitutionDetail): string[] {
     .find((scholarship) => scholarship.amount);
 
   if (award?.amount) {
-    badges.push(
-      `Scholarships up to ${award.amount.currency} ${award.amount.amount.toLocaleString('en-GB')}`,
-    );
+    badges.push(`Scholarships up to ${award.currency} ${award.amount.toLocaleString('en-GB')}`);
   }
 
   return badges;

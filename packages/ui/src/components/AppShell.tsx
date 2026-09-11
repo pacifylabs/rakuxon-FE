@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, MessageCircle, Menu, X } from 'lucide-react';
+import { Bell, ChevronDown, MessageCircle, Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -12,9 +12,12 @@ import { Wordmark } from './Wordmark';
 import { initialsOf } from './TestimonialCard';
 
 export interface AppShellNavItem {
-  href: string;
+  /** Omit on a group item (one with `children`) that has no overview page of its own. */
+  href?: string;
   label: string;
   icon: LucideIcon;
+  /** Renders as a `<details>` disclosure instead of a plain link — a group, not a destination. */
+  children?: AppShellNavItem[];
 }
 
 export interface AppShellProps {
@@ -54,12 +57,44 @@ function SidebarContent({
 
       <nav aria-label="Primary" className="flex flex-1 flex-col gap-1 p-3">
         {navItems.map((item) => {
-          const active = pathname === item.href;
           const Icon = item.icon;
+
+          if (item.children && item.children.length > 0) {
+            const hasActiveChild = item.children.some((child) => pathname === child.href);
+            return (
+              <details key={item.label} className="group" open={hasActiveChild}>
+                <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md px-4 py-3 text-sm font-medium text-text hover:bg-surface-muted">
+                  <Icon aria-hidden="true" className="size-4 shrink-0" />
+                  <span className="flex-1">{item.label}</span>
+                  <ChevronDown aria-hidden="true" className="size-4 shrink-0 transition-transform duration-fast ease-standard group-open:rotate-180" />
+                </summary>
+                <div className="ml-4 mt-1 flex flex-col gap-1 border-l border-border pl-4">
+                  {item.children.map((child) => {
+                    const active = pathname === child.href;
+                    return (
+                      <AppLink
+                        key={child.href}
+                        href={child.href ?? '#'}
+                        onClick={onNavigate}
+                        aria-current={active ? 'page' : undefined}
+                        className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                          active ? 'bg-primary text-on-primary' : 'text-text hover:bg-surface-muted'
+                        }`}
+                      >
+                        {child.label}
+                      </AppLink>
+                    );
+                  })}
+                </div>
+              </details>
+            );
+          }
+
+          const active = pathname === item.href;
           return (
             <AppLink
               key={item.href}
-              href={item.href}
+              href={item.href ?? '#'}
               onClick={onNavigate}
               aria-current={active ? 'page' : undefined}
               className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition-colors ${

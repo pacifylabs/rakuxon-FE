@@ -1,5 +1,14 @@
 export { AppShell } from './AppShell';
 export type { AppShellNavItem, AppShellProps } from './AppShell';
+export { ApplicationStatusBadge } from './ApplicationStatusBadge';
+export { DataTable } from './DataTable';
+export type { DataTableColumn, DataTableProps } from './DataTable';
+export { Pagination } from './Pagination';
+export type { PaginationProps } from './Pagination';
+export { BarChart } from './BarChart';
+export type { BarChartDatum, BarChartProps } from './BarChart';
+export { PieChart } from './PieChart';
+export type { PieChartDatum, PieChartProps } from './PieChart';
 export { AuthCard } from './AuthCard';
 export { FormField } from './FormField';
 export type { FormFieldProps } from './FormField';

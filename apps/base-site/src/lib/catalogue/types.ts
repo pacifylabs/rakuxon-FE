@@ -82,7 +82,8 @@ export interface EnglishTest {
 
 export interface Scholarship {
   name: string;
-  amount?: Money;
+  amount?: number;
+  currency?: string;
   note?: string;
 }
 

@@ -5,10 +5,8 @@ import { useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { EmptyState } from '@rakuxon/ui';
+import { ApplicationStatusBadge, EmptyState } from '@rakuxon/ui';
 import type { Application } from '@rakuxon/contract';
-
-import { ApplicationStatusBadge } from '@/components/dashboard/ApplicationStatusBadge';
 
 export default function ApplicationsPage() {
   const client = useApiClient();

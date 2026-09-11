@@ -303,7 +303,11 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                     >
                       <p className="text-base font-semibold text-text">
                         {scholarship.name}
-                        {scholarship.amount && ` — ${formatMoney(scholarship.amount)}`}
+                        {/* Only paired with a currency: an amount alone would render in
+                            whatever currency formatMoney defaulted to, which is a guess. */}
+                        {scholarship.amount && scholarship.currency
+                          ? ` — ${formatMoney({ amount: scholarship.amount, currency: scholarship.currency })}`
+                          : null}
                       </p>
                       {scholarship.note && (
                         <p className="mt-1 text-sm text-text-muted">{scholarship.note}</p>

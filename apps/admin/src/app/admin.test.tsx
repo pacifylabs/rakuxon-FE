@@ -1,34 +1,34 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AuthProvider } from '@rakuxon/auth';
 import { ThemeProvider } from '@rakuxon/ui';
 
 const push = vi.fn();
 const replace = vi.fn();
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push, replace }) }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push, replace }), usePathname: () => '/dashboard' }));
 
+import { AdminAuthProvider } from '@/lib/admin-auth';
+import DashboardLayout from './dashboard/layout';
 import DashboardPage from './dashboard/page';
 import LoginPage from './login/page';
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
-const session = (role: string) => ({
+const adminSession = (permissions: string[] = []) => ({
   accessToken: 'a',
   refreshToken: 'r',
-  expiresIn: 900,
-  user: { id: 'u1', email: 'user@b.test', firstName: 'Test', lastName: 'User', role, tenantId: 't1' },
+  admin: { id: 'admin-1', email: 'admin@rakuxon.com', firstName: 'Test', lastName: 'Admin', permissions },
   expiresAt: Date.now() + 900_000,
 });
 
-const signedInAs = (role: string) =>
-  window.sessionStorage.setItem('rakuxon.session', JSON.stringify(session(role)));
+const signedInWith = (permissions: string[] = []) =>
+  window.sessionStorage.setItem('rakuxon.admin.session', JSON.stringify(adminSession(permissions)));
 
 const renderApp = (ui: React.ReactElement) =>
   render(
     <ThemeProvider>
-      <AuthProvider baseUrl="https://api.test">{ui}</AuthProvider>
+      <AdminAuthProvider baseUrl="https://api.test">{ui}</AdminAuthProvider>
     </ThemeProvider>,
   );
 
@@ -38,7 +38,24 @@ beforeEach(() => {
   replace.mockClear();
   vi.stubGlobal(
     'fetch',
-    vi.fn(async () => json(200, { status: 'ok', dependencies: { database: 'up' } })),
+    vi.fn(async (url: string) => {
+      if (url.includes('/dashboard/summary')) {
+        return json(200, {
+          totalTenants: 0,
+          totalInstitutions: 0,
+          totalCourses: 0,
+          totalArticles: 0,
+          totalStudents: 0,
+          totalApplications: 0,
+          tenantsByStatus: [],
+          institutionsByStatus: [],
+          applicationsByStatus: [],
+          studentsWithCompleteProfile: 0,
+          studentsWithIncompleteProfile: 0,
+        });
+      }
+      return json(200, { status: 'ok', dependencies: { database: 'up' } });
+    }),
   );
 });
 
@@ -62,41 +79,57 @@ describe('admin sign-in', () => {
 
 describe('admin dashboard', () => {
   it('sends a signed-out visitor to sign in, showing nothing protected', async () => {
-    renderApp(<DashboardPage />);
+    renderApp(
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>,
+    );
     await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
     expect(screen.queryByText('Platform administration')).not.toBeInTheDocument();
   });
 
-  it('admits a platform_admin', async () => {
-    signedInAs('platform_admin');
-    renderApp(<DashboardPage />);
-    expect(
-      await screen.findByRole('heading', { name: 'Platform administration' }),
-    ).toBeInTheDocument();
+  it('admits any signed-in admin, regardless of which permissions they hold', async () => {
+    signedInWith([]);
+    renderApp(
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>,
+    );
+    expect(await screen.findByRole('heading', { name: 'Platform administration' })).toBeInTheDocument();
   });
 
-  it.each(['agency_admin', 'counselor', 'institution_user'])(
-    'refuses a %s, who is signed in but out of scope',
-    async (role) => {
-      signedInAs(role);
-      renderApp(<DashboardPage />);
-
-      // Told, not bounced: sending a signed-in person back to a login form is
-      // a dead end they cannot resolve by signing in again.
-      expect(
-        await screen.findByRole('heading', { name: /not for your account/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByRole('heading', { name: 'Platform administration' }),
-      ).not.toBeInTheDocument();
-      expect(replace).not.toHaveBeenCalled();
-    },
-  );
+  it('shows the granted permissions', async () => {
+    signedInWith(['tenants.view', 'tenants.approve']);
+    renderApp(
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>,
+    );
+    expect(await screen.findByText('tenants.view')).toBeInTheDocument();
+    expect(screen.getByText('tenants.approve')).toBeInTheDocument();
+  });
 
   it('reports API health', async () => {
-    signedInAs('platform_admin');
-    renderApp(<DashboardPage />);
+    signedInWith([]);
+    renderApp(
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>,
+    );
     const badge = await screen.findByRole('status');
     await waitFor(() => expect(badge).toHaveAttribute('data-status', 'ok'));
+  });
+
+  it('navigates the dashboard nav, which stays visible regardless of permissions', async () => {
+    signedInWith([]);
+    renderApp(
+      <DashboardLayout>
+        <DashboardPage />
+      </DashboardLayout>,
+    );
+    await screen.findByRole('heading', { name: 'Platform administration' });
+    const nav = within(screen.getByRole('navigation', { name: 'Primary' }));
+    expect(nav.getByRole('link', { name: /tenants/i })).toBeInTheDocument();
+    expect(nav.getByRole('link', { name: /admins/i })).toBeInTheDocument();
   });
 });
