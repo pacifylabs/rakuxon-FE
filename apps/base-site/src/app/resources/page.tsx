@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { CtaBand, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { RESOURCES_CTA, RESOURCES_HEADER } from '@/content/resources';
+import { ROUTES } from '@/content/routes';
 import { fetchArticles, fetchCountries } from '@/lib/catalogue/api';
 
 import { ResourceBrowser } from './ResourceBrowser';
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
   title: 'Guidance',
   description:
     'Practical guidance on choosing a university, writing an application and meeting visa requirements, written by advisors and sourced to the authorities that set the rules.',
+  alternates: { canonical: ROUTES.resources },
 };
 
 type Search = Promise<Record<string, string | string[] | undefined>>;

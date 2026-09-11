@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { CtaBand, PageHeader, SectionBand } from '@rakuxon/ui';
 
+import { ROUTES } from '@/content/routes';
 import { UNIVERSITIES_CTA, UNIVERSITIES_HEADER } from '@/content/universities';
 import { fetchCountries, fetchInstitutions } from '@/lib/catalogue/api';
 
@@ -14,6 +15,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: 'Explore universities',
   description: 'Browse universities by country, level and subject. No account needed, no pressure.',
+  alternates: { canonical: ROUTES.universities },
 };
 
 type Search = Promise<Record<string, string | string[] | undefined>>;

@@ -6,6 +6,7 @@ import { Breadcrumbs, CtaBand, SectionBand } from '@rakuxon/ui';
 import { SERVICES, SERVICES_CTA } from '@/content/services';
 import { ROUTES, articleRoute, serviceRoute } from '@/content/routes';
 import { fetchArticle } from '@/lib/catalogue/api';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const dynamic = 'force-static';
 export const dynamicParams = false;
@@ -21,7 +22,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const service = SERVICES.find((entry) => entry.id === id);
   if (!service) return {};
 
-  return { title: service.metaTitle, description: service.metaDescription };
+  return {
+    title: service.metaTitle,
+    description: service.metaDescription,
+    alternates: { canonical: serviceRoute(service.id) },
+  };
 }
 
 export default async function ServicePage({ params }: Params) {
@@ -54,9 +59,24 @@ export default async function ServicePage({ params }: Params) {
             '@type': 'Service',
             name: service.title,
             description: service.description,
+            url: absoluteUrl(serviceRoute(service.id)),
             provider: { '@type': 'Organization', name: 'Rakuxon' },
             areaServed: 'Worldwide',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: service.summary },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Services', item: absoluteUrl(ROUTES.services) },
+              { '@type': 'ListItem', position: 2, name: service.title, item: absoluteUrl(serviceRoute(service.id)) },
+            ],
           }),
         }}
       />

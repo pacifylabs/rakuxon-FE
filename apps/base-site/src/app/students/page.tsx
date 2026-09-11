@@ -20,6 +20,7 @@ import {
   STUDENT_TESTIMONIALS,
   STUDENT_VALUE_PROPS,
 } from '@/content/students';
+import { ROUTES } from '@/content/routes';
 
 export const dynamic = 'force-static';
 
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   title: 'For students',
   description:
     'Apply to universities abroad with your documents checked, your deadlines tracked, and every decision visible in one place.',
+  alternates: { canonical: ROUTES.students },
 };
 
 export default function StudentsPage() {

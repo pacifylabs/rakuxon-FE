@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "admin",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@rakuxon/admin", "dev"],
+      "port": 3004
+    },
+    {
+      "name": "base-site",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@rakuxon/base-site", "dev"],
+      "port": 3000
+    }
+  ]
+}

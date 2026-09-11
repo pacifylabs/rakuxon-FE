@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { CtaBand, DestinationCard, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { DESTINATIONS_CTA, DESTINATIONS_INDEX, destinationCardContent } from '@/content/destinations';
+import { ROUTES } from '@/content/routes';
 import { fetchCountries } from '@/lib/catalogue/api';
 
 /* Revalidated: the destination list is now whatever the catalogue holds. */
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
   title: 'Study destinations',
   description:
     'Compare the UK, Canada, the US, Ireland, Australia and Germany on cost, course length, intakes and post-study work rights.',
+  alternates: { canonical: ROUTES.destinations },
 };
 
 export default async function DestinationsPage() {

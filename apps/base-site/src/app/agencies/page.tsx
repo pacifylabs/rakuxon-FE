@@ -9,6 +9,7 @@ import {
   AGENCY_VALUE_PROPS,
   AGENCY_WORKFLOW,
 } from '@/content/agencies';
+import { ROUTES } from '@/content/routes';
 
 export const dynamic = 'force-static';
 
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
   title: 'For agencies',
   description:
     'Run your whole student pipeline on one board, onboard students with a single link, and keep your commission. No platform fees.',
+  alternates: { canonical: ROUTES.agencies },
 };
 
 export default function AgenciesPage() {

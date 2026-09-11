@@ -8,6 +8,7 @@ import { Breadcrumbs, CountryFlag, CtaBand, SectionBand } from '@rakuxon/ui';
 import { ARTICLE_CTA } from '@/content/resources';
 import { ROUTES, articleRoute } from '@/content/routes';
 import { fetchArticle, fetchArticles } from '@/lib/catalogue/api';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: article.title,
     description: article.excerpt,
+    alternates: { canonical: articleRoute(article.slug) },
     openGraph: {
       title: article.title,
       description: article.excerpt,
@@ -84,6 +86,37 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: article.title,
+            description: article.excerpt,
+            url: absoluteUrl(articleRoute(article.slug)),
+            ...(article.publishedAt ? { datePublished: article.publishedAt } : {}),
+            ...(article.author ? { author: { '@type': 'Person', name: article.author } } : {}),
+            publisher: { '@type': 'Organization', name: 'Rakuxon' },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: absoluteUrl(ROUTES.home) },
+              { '@type': 'ListItem', position: 2, name: 'Guidance', item: absoluteUrl(ROUTES.resources) },
+              { '@type': 'ListItem', position: 3, name: article.title, item: absoluteUrl(articleRoute(article.slug)) },
+            ],
+          }),
+        }}
+      />
       <SectionBand labelledBy="article-heading">
         <Breadcrumbs
           trail={[

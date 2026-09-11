@@ -20,6 +20,7 @@ import type { CourseFee, CourseView } from '@/lib/catalogue/course-view';
 import { formatDate, formatDuration, formatIntake, formatMoney, summarise } from '@/lib/catalogue/format';
 import { STUDY_LEVEL_LABELS, STUDY_MODE_LABELS } from '@/lib/catalogue/types';
 import type { StudyLevel } from '@/lib/catalogue/types';
+import { absoluteUrl } from '@/lib/site-url';
 
 import { ApplyPanel } from './ApplyPanel';
 
@@ -120,10 +121,41 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
             '@type': 'Course',
             name: course.title,
             description: course.overview,
+            url: absoluteUrl(courseRoute(course.slug)),
             provider: {
               '@type': 'EducationalOrganization',
               name: course.institutionName,
+              url: absoluteUrl(universityRoute(course.institutionSlug)),
             },
+            ...(course.fee
+              ? {
+                  offers: {
+                    '@type': 'Offer',
+                    price: course.fee.amount,
+                    priceCurrency: course.fee.currency,
+                    category: course.fee.per === 'year' ? 'Annual tuition' : 'Total tuition',
+                  },
+                }
+              : {}),
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Explore', item: absoluteUrl(ROUTES.explore) },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: course.institutionName,
+                item: absoluteUrl(universityRoute(course.institutionSlug)),
+              },
+              { '@type': 'ListItem', position: 3, name: course.title, item: absoluteUrl(courseRoute(course.slug)) },
+            ],
           }),
         }}
       />

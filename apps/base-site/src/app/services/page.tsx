@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { CtaBand, SectionBand } from '@rakuxon/ui';
 
 import { SERVICES, SERVICES_CTA, SERVICES_HERO } from '@/content/services';
-import { serviceRoute } from '@/content/routes';
+import { ROUTES, serviceRoute } from '@/content/routes';
 
 export const dynamic = 'force-static';
 
@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: 'Services',
   description:
     'Free educational consultancy, university applications, visa support, travel, pre-departure and ongoing support: the six services Rakuxon Ltd has run for eleven years.',
+  alternates: { canonical: ROUTES.services },
 };
 
 export default function ServicesPage() {

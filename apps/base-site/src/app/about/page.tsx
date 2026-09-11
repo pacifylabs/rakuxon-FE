@@ -13,6 +13,7 @@ import {
   ABOUT_VISION_MISSION,
   ABOUT_VALUES,
 } from '@/content/about';
+import { ROUTES } from '@/content/routes';
 
 export const dynamic = 'force-static';
 
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   title: 'About',
   description:
     'Why we built Rakuxon: the information that decides an application is not secret, just scattered.',
+  alternates: { canonical: ROUTES.about },
 };
 
 const STAT_ICONS = [Users, Building2, GraduationCap, Globe2];

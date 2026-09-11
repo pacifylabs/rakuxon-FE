@@ -9,6 +9,7 @@ import { ROUTES, applyHref, articleRoute, courseRoute, universityRoute } from '@
 import { fetchArticles, fetchCourses, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
 import { cardFacts } from '@/lib/catalogue/course-view';
 import { formatLocation, formatMoney, summarise } from '@/lib/catalogue/format';
+import { absoluteUrl } from '@/lib/site-url';
 
 /*
  * Rendered on demand and then cached, not prebuilt.
@@ -146,6 +147,10 @@ export default async function UniversityPage({
       ? 'university-employability-heading'
       : 'university-faqs-heading';
 
+  const sameAs = [institution.website, institution.overviewSourceUrl].filter(
+    (value): value is string => Boolean(value),
+  );
+
   return (
     <>
       <script
@@ -156,11 +161,28 @@ export default async function UniversityPage({
             '@type': 'EducationalOrganization',
             name: institution.name,
             description: overviewParagraphs[0] ?? about,
+            url: absoluteUrl(universityRoute(institution.slug)),
+            ...(institution.logoUrl ? { logo: institution.logoUrl } : {}),
+            ...(heroImage ? { image: heroImage } : {}),
+            ...(sameAs.length > 0 ? { sameAs } : {}),
             address: {
               '@type': 'PostalAddress',
               addressLocality: institution.city,
               addressCountry: institution.countryCode,
             },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Universities', item: absoluteUrl(ROUTES.universities) },
+              { '@type': 'ListItem', position: 2, name: institution.name, item: absoluteUrl(universityRoute(institution.slug)) },
+            ],
           }),
         }}
       />

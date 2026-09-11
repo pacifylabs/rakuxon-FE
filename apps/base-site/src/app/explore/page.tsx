@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'Explore courses and universities',
   description:
     'Search courses, universities and guidance articles across the UK, Canada, the US, Ireland, Australia and Germany.',
+  alternates: { canonical: ROUTES.explore },
 };
 
 /** Revalidated rather than static: the catalogue behind it moves. */

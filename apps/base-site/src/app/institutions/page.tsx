@@ -9,6 +9,7 @@ import {
   INSTITUTION_VALUE_PROPS,
   INSTITUTION_WORKFLOW,
 } from '@/content/institutions';
+import { ROUTES } from '@/content/routes';
 
 export const dynamic = 'force-static';
 
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
   title: 'For institutions',
   description:
     'Reach qualified students through a vetted agency network, and review complete applications instead of chasing missing documents. No platform fee.',
+  alternates: { canonical: ROUTES.institutions },
 };
 
 export default function InstitutionsPage() {

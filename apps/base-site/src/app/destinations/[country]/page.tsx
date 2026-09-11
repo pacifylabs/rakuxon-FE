@@ -11,9 +11,10 @@ import {
 } from '@rakuxon/ui';
 
 import { COUNTRY_BY_SLUG, COUNTRIES, DESTINATIONS_CTA } from '@/content/destinations';
-import { ROUTES, SIGN_UP } from '@/content/routes';
+import { ROUTES, SIGN_UP, countryRoute } from '@/content/routes';
 import type { CountrySlug } from '@/content/routes';
 import { UNIVERSITIES } from '@/content/universities';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const dynamic = 'force-static';
 export const dynamicParams = false;
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: `Study in ${country.shortName}`,
     description: country.intro,
+    alternates: { canonical: countryRoute(slug as CountrySlug) },
   };
 }
 
@@ -47,6 +49,25 @@ export default async function CountryPage({ params }: Params) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Destinations', item: absoluteUrl(ROUTES.destinations) },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: country.shortName,
+                item: absoluteUrl(countryRoute(slug as CountrySlug)),
+              },
+            ],
+          }),
+        }}
+      />
       <ImageHero
         eyebrow="Study destination"
         title={`Study in ${country.shortName}`}

@@ -214,12 +214,14 @@ export const SERVICES: readonly ServiceContent[] = [
     description:
       'Affordable luxury travel packages, flight booking, hotel reservations, and vacation planning. Experience the world with our expertly crafted travel solutions.',
     strand: 'travel',
-    metaTitle: 'Travel Packages, Flights & Hotel Booking | Rakuxon Travels & Tourism',
+    metaTitle: 'Travel Packages, Flights, Hotels, Hajj & Umrah | Rakuxon Travels & Tourism',
     metaDescription:
-      'Flight booking, hotel reservations and crafted travel packages from Rakuxon\'s travel and tourism team, for holidays and not just study abroad journeys.',
+      'Flight booking, hotel reservations, Hajj and Umrah pilgrimage travel, and crafted holiday packages from Rakuxon\'s travel and tourism team, for pilgrimage, leisure and business trips alike.',
     whatsIncluded: [
       'Flight booking across your preferred dates and airlines',
       'Hotel reservations matched to your budget and itinerary',
+      'Hajj and Umrah pilgrimage travel, arranged from flights through to accommodation',
+      'Group tours, family holidays and business travel, not just solo trips',
       'Vacation planning, from a single city break to a multi-stop trip',
       'A travel package built around what you actually want to do, not a fixed template',
     ],
@@ -228,6 +230,11 @@ export const SERVICES: readonly ServiceContent[] = [
         question: 'Is this only for students travelling to study?',
         answer:
           'No. Travel and tourism is open to anyone planning a trip, whether or not it is connected to a study abroad journey.',
+      },
+      {
+        question: 'Do you arrange Hajj and Umrah travel?',
+        answer:
+          'Yes. We arrange Hajj and Umrah pilgrimage travel, including flights, accommodation and group logistics, alongside our regular holiday and business travel packages.',
       },
       {
         question: 'Can you plan a multi-destination trip?',

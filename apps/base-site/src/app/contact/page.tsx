@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { IconBubble, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { CONTACT_HEADER, CONTACT_IMAGE, CONTACT_ROUTES } from '@/content/contact';
+import { ROUTES } from '@/content/routes';
 import { CONTACT_EMAIL } from '@/content/site';
 
 import { ContactPanel } from './ContactPanel';
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
   title: 'Contact',
   description:
     'Get in touch with Rakuxon, whether you are a student, a recruitment partner, or an institution.',
+  alternates: { canonical: ROUTES.contact },
 };
 
 export default function ContactPage() {
