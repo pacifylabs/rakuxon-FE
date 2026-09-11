@@ -159,7 +159,7 @@ export default function ProfilePage() {
         Profile
       </h1>
       <p className="mt-2 max-w-prose text-base text-text-muted">
-        The details admissions teams need to process your application. Save as you go — nothing
+        The details admissions teams need to process your application. Save as you go: nothing
         here has to be finished in one sitting.
       </p>
 

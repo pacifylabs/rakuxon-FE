@@ -9,7 +9,7 @@ export const ABOUT_HERO = {
   eyebrow: 'About Rakuxon Ltd',
   title: 'Transforming dreams into global reality.',
   subcopy:
-    'A global education consultancy headquartered in London, with operations across Nigeria, Ghana, Kenya and Qatar. Eleven years connecting students with accredited universities in the UK, USA, Canada and Europe — from the first consultation to the visa in hand.',
+    'A global education consultancy headquartered in London, with operations across Nigeria, Ghana, Kenya and Qatar. Eleven years connecting students with accredited universities in the UK, USA, Canada and Europe, from the first consultation to the visa in hand.',
   image: {
     src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&q=80',
     alt: 'Team working together in an office',
@@ -19,7 +19,7 @@ export const ABOUT_HERO = {
 
 export const ABOUT_STORY = {
   heading: 'Our story',
-  body: 'Rakuxon Ltd is a leading global education consultancy headquartered in London, UK, with established operations across Nigeria, Ghana, Kenya and Qatar. Eleven years in, the approach has not changed: student-centric, end to end, and starting with a consultation that costs nothing. The platform came later, built on the same observation that made the consultancy work — the information that decides an application is not secret, just scattered.',
+  body: 'Rakuxon Ltd is a leading global education consultancy headquartered in London, UK, with established operations across Nigeria, Ghana, Kenya and Qatar. Eleven years in, the approach has not changed: student-centric, end to end, and starting with a consultation that costs nothing. The platform came later, built on the same observation that made the consultancy work: the information that decides an application is not secret, just scattered.',
   points: [
     'Headquartered in London, operating across four countries',
     'Student-centric from consultation through to visa',

@@ -67,7 +67,7 @@ export const COUNTRIES: readonly CountryContent[] = [
       'Taught masters usually complete in twelve months',
       'Graduate Route: two years of post-study work for most masters graduates',
       'No language barrier outside the classroom either',
-      'Dense university network — you are rarely far from another campus',
+      'Dense university network, so you are rarely far from another campus',
     ],
     facts: [
       {
@@ -126,14 +126,14 @@ export const COUNTRIES: readonly CountryContent[] = [
     ),
     tagline: 'A study permit that leads somewhere, if you plan it properly.',
     intro:
-      'Canada is chosen less for the degree itself than for what follows it. The post-graduation work permit and the residency pathways behind it are the actual draw — and they depend on choices you make before you apply.',
+      'Canada is chosen less for the degree itself than for what follows it. The post-graduation work permit and the residency pathways behind it are the actual draw, and they depend on choices you make before you apply.',
     whyHeading: 'Why students choose Canada',
     why: 'Tuition sits below comparable US institutions, the post-graduation work permit can run up to three years, and there is a well-trodden route from work experience to permanent residency. The catch is that not every programme and not every institution qualifies.',
     whyPoints: [
       'Post-graduation work permit of up to three years',
       'Recognised pathways from work experience toward residency',
       'Lower tuition than comparable institutions in the United States',
-      'Designated Learning Institution status matters — check it before you commit',
+      'Designated Learning Institution status matters: check it before you commit',
     ],
     facts: [
       {
@@ -170,7 +170,7 @@ export const COUNTRIES: readonly CountryContent[] = [
     universities: ['Westbrook College', 'Lakeside Institute', 'Fairhaven University'],
     helpPoints: [
       'Confirm the programme carries Designated Learning Institution status',
-      'Get proof-of-funds documentation right first time — it is the most common permit delay',
+      'Get proof-of-funds documentation right first time: it is the most common permit delay',
       'Line applications up across both the September and January intakes',
     ],
   },
@@ -192,7 +192,7 @@ export const COUNTRIES: readonly CountryContent[] = [
     ),
     tagline: 'The widest choice, and the longest lead time.',
     intro:
-      'No country offers more variety — in institution, funding model, or location. It also asks the most of you up front: standardised tests, essays, recommendations, and a visa interview.',
+      'No country offers more variety, in institution, funding model, or location. It also asks the most of you up front: standardised tests, essays, recommendations, and a visa interview.',
     whyHeading: 'Why students choose the United States',
     why: 'Scale. There are thousands of accredited institutions, from community colleges to research universities, and funding for international students genuinely exists at many of them. Optional Practical Training extends significantly for STEM graduates.',
     whyPoints: [
@@ -231,7 +231,7 @@ export const COUNTRIES: readonly CountryContent[] = [
     ],
     universities: ['Northfield University', 'Fairhaven University', 'Lakeside Institute'],
     helpPoints: [
-      'Separate the admission deadline from the funding deadline — they are rarely the same',
+      'Separate the admission deadline from the funding deadline: they are rarely the same',
       'Keep test scores, recommendations and transcripts in one place across many applications',
       'Prepare the I-20 and financial documentation before the visa interview',
     ],
@@ -279,7 +279,7 @@ export const COUNTRIES: readonly CountryContent[] = [
       {
         label: 'Apply by',
         value: 'Jan – Jul',
-        hint: 'Housing is scarcer than places — apply early for both.',
+        hint: 'Housing is scarcer than places, so apply early for both.',
       },
       {
         label: 'Language proof',
@@ -348,7 +348,7 @@ export const COUNTRIES: readonly CountryContent[] = [
     universities: ['Lakeside Institute', 'Westbrook College'],
     helpPoints: [
       'Check your intended occupation against the skilled lists before choosing a course',
-      'Budget OSHC into the total cost — it is mandatory, not optional',
+      'Budget OSHC into the total cost: it is mandatory, not optional',
       'Use both intakes: a July start is not a fallback, it is a real option',
     ],
   },
@@ -413,7 +413,7 @@ export const COUNTRIES: readonly CountryContent[] = [
     ],
     universities: ['Kingsbridge University', 'Ardenmoor College'],
     helpPoints: [
-      'Get certified translations of your transcripts early — uni-assist will require them',
+      'Get certified translations of your transcripts early: uni-assist will require them',
       'Open the blocked account well before the visa appointment',
       'Confirm whether your programme is taught in English or German before applying',
     ],

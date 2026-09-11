@@ -59,7 +59,7 @@ export default function ApplicationsPage() {
           <EmptyState
             icon={Sparkles}
             title="This is where it all comes together"
-            description="Find a course you like and select “Apply” to start your first application — track it here from draft through submission."
+            description="Find a course you like and select “Apply” to start your first application. Track it here from draft through submission."
             action={
               <a
                 href="/dashboard/schools"

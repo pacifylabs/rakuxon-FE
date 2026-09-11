@@ -46,7 +46,7 @@ async function Results({ tab, country, query }: { tab: TabKey; country: string; 
     return (
       <SignUpPrompt
         heading="Guidance, written for your application"
-        body="Course guides and country guidance are being written with our counsellors. Create an account and we will send them as they land — along with the deadlines that matter for the courses you save."
+        body="Course guides and country guidance are being written with our counsellors. Create an account and we will send them as they land, along with the deadlines that matter for the courses you save."
         ctaLabel="Create a free account"
         ctaHref={SIGN_UP}
         secondaryLabel="Book a free consultation"

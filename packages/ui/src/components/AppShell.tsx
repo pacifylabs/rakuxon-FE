@@ -34,6 +34,13 @@ export interface AppShellNotificationsSlot {
   onOpen: (id: string) => void;
 }
 
+export interface AppShellAccountMenu {
+  profileHref?: string;
+  profileLabel?: string;
+  securityHref?: string;
+  securityLabel?: string;
+}
+
 export interface AppShellProps {
   navItems: AppShellNavItem[];
   /** Where the wordmark links to — typically the shell's own home. */
@@ -48,6 +55,16 @@ export interface AppShellProps {
    * the static "nothing here yet" panel it always has.
    */
   notifications?: AppShellNotificationsSlot;
+  /** A small pill next to the wordmark — "Admin", say — so the shell reads as a distinct area at a glance. */
+  badge?: string;
+  /**
+   * Moves the name/avatar out of the sidebar and into a header dropdown that
+   * also carries profile/security links and sign-out — the layout a person
+   * already expects from every other admin tool. Omitted (base-site's case
+   * today), the shell keeps its original sidebar-top profile block
+   * unchanged, so this is purely additive for whichever app opts in.
+   */
+  accountMenu?: AppShellAccountMenu;
   children: ReactNode;
 }
 
@@ -57,23 +74,26 @@ function SidebarContent({
   userEmail,
   onSignOut,
   signOutLabel = 'Sign out',
+  accountMenu,
   onNavigate,
 }: Omit<AppShellProps, 'children' | 'homeHref'> & { onNavigate?: () => void }) {
   const pathname = usePathname() ?? '';
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b border-border p-5">
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-on-primary">
-          {userName ? initialsOf(userName) : '?'}
-        </span>
-        <div className="min-w-0">
-          <p className="truncate font-heading text-sm font-semibold text-text">
-            {userName ?? 'Your account'}
-          </p>
-          <p className="truncate text-sm text-text-muted">{userEmail ?? ''}</p>
+      {!accountMenu && (
+        <div className="flex items-center gap-3 border-b border-border p-5">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-on-primary">
+            {userName ? initialsOf(userName) : '?'}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate font-heading text-sm font-semibold text-text">
+              {userName ?? 'Your account'}
+            </p>
+            <p className="truncate text-sm text-text-muted">{userEmail ?? ''}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <nav aria-label="Primary" className="flex flex-1 flex-col gap-1 p-3">
         {navItems.map((item) => {
@@ -128,15 +148,17 @@ function SidebarContent({
         })}
       </nav>
 
-      <div className="border-t border-border p-3">
-        <button
-          type="button"
-          onClick={onSignOut}
-          className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-text-muted hover:bg-surface-muted"
-        >
-          {signOutLabel}
-        </button>
-      </div>
+      {!accountMenu && (
+        <div className="border-t border-border p-3">
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-text-muted hover:bg-surface-muted"
+          >
+            {signOutLabel}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -209,6 +231,100 @@ function HeaderMenuButton({
   );
 }
 
+/** The name/avatar trigger, opening a menu with profile/security links and sign-out — what `accountMenu` turns on. */
+function AccountMenuButton({
+  userName,
+  userEmail,
+  onSignOut,
+  signOutLabel = 'Sign out',
+  accountMenu,
+}: {
+  userName?: string;
+  userEmail?: string;
+  onSignOut: () => void;
+  signOutLabel?: string;
+  accountMenu: AppShellAccountMenu;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function onPointerDown(event: PointerEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false);
+    }
+
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        aria-label={`Account menu for ${userName ?? 'your account'}`}
+        aria-expanded={open}
+        className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-surface-muted"
+      >
+        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-on-primary">
+          {userName ? initialsOf(userName) : '?'}
+        </span>
+        <span className="hidden max-w-[10rem] truncate text-sm font-medium text-text sm:block">
+          {userName ?? 'Your account'}
+        </span>
+        <ChevronDown aria-hidden="true" className="hidden size-4 shrink-0 text-text-muted sm:block" />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 z-30 mt-2 w-[16rem] rounded-lg border border-border bg-surface p-2 shadow-lg">
+          <div className="border-b border-border px-3 pb-3 pt-1">
+            <p className="truncate text-sm font-semibold text-text">{userName ?? 'Your account'}</p>
+            <p className="truncate text-sm text-text-muted">{userEmail ?? ''}</p>
+          </div>
+          <div className="flex flex-col gap-0.5 py-2">
+            {accountMenu.profileHref && (
+              <AppLink
+                href={accountMenu.profileHref}
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-text hover:bg-surface-muted"
+              >
+                {accountMenu.profileLabel ?? 'Profile settings'}
+              </AppLink>
+            )}
+            {accountMenu.securityHref && (
+              <AppLink
+                href={accountMenu.securityHref}
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-text hover:bg-surface-muted"
+              >
+                {accountMenu.securityLabel ?? 'Security'}
+              </AppLink>
+            )}
+          </div>
+          <div className="border-t border-border pt-2">
+            <button
+              type="button"
+              onClick={onSignOut}
+              className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-text-muted hover:bg-surface-muted"
+            >
+              {signOutLabel}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /**
  * The shell every authenticated, signed-in-user surface shares: a full-width
  * header, a sidebar on desktop (a slide-in overlay on mobile, opened from the
@@ -228,6 +344,8 @@ export function AppShell({
   onSignOut,
   signOutLabel,
   notifications,
+  badge,
+  accountMenu,
   children,
 }: AppShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -239,7 +357,7 @@ export function AppShell({
     setMobileNavOpen(false);
   }, [pathname]);
 
-  const sidebarProps = { navItems, homeHref, userName, userEmail, onSignOut, signOutLabel };
+  const sidebarProps = { navItems, homeHref, userName, userEmail, onSignOut, signOutLabel, accountMenu };
 
   /* undefined (not an empty fragment) when there's nothing real to show, so
      HeaderMenuButton falls back to its own default "nothing here yet" panel
@@ -278,6 +396,11 @@ export function AppShell({
             <Menu aria-hidden="true" className="size-5" />
           </button>
           <Wordmark href={homeHref} />
+          {badge && (
+            <span className="hidden rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-primary sm:inline-block">
+              {badge}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1">
@@ -296,6 +419,18 @@ export function AppShell({
             panelTitle="No messages yet"
             panelDescription="Messages from your counsellor and admissions teams will show up here."
           />
+          {accountMenu && (
+            <>
+              <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
+              <AccountMenuButton
+                userName={userName}
+                userEmail={userEmail}
+                onSignOut={onSignOut}
+                signOutLabel={signOutLabel}
+                accountMenu={accountMenu}
+              />
+            </>
+          )}
         </div>
       </header>
 

@@ -77,7 +77,7 @@ export default function VerifyEmailPage() {
       }
     >
       <p role="status" className="text-base text-text-muted">
-        You're all set — nothing else to do here.
+        You're all set. Nothing else to do here.
       </p>
     </AuthCard>
   );

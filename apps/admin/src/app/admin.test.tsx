@@ -98,15 +98,17 @@ describe('admin dashboard', () => {
     expect(await screen.findByRole('heading', { name: 'Platform administration' })).toBeInTheDocument();
   });
 
-  it('shows the granted permissions', async () => {
+  it('marks the shell as Admin and puts the signed-in name in a header account menu', async () => {
     signedInWith(['tenants.view', 'tenants.approve']);
     renderApp(
       <DashboardLayout>
         <DashboardPage />
       </DashboardLayout>,
     );
-    expect(await screen.findByText('tenants.view')).toBeInTheDocument();
-    expect(screen.getByText('tenants.approve')).toBeInTheDocument();
+    await screen.findByRole('heading', { name: 'Platform administration' });
+
+    expect(screen.getByText('Admin')).toBeInTheDocument();
+    expect(screen.getByLabelText('Account menu for Test Admin')).toBeInTheDocument();
   });
 
   it('reports API health', async () => {

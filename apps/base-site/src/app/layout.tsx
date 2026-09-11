@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 const description =
-  'Research, plan, apply, and track your international education — all in one place. Apply with confidence and turn your goals into offers.';
+  'Research, plan, apply, and track your international education, all in one place. Apply with confidence and turn your goals into offers.';
 
 export const metadata: Metadata = {
   title: {

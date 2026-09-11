@@ -58,8 +58,19 @@ export type AdminLoginRequest = Schemas['AdminLoginDto'];
 export type AdminRefreshRequest = Schemas['AdminRefreshDto'];
 export type AdminSession = Schemas['AdminSessionDto'];
 export type AdminAuthTokens = Schemas['AdminAuthTokensDto'];
+export type AdminLoginChallenge = Schemas['AdminLoginChallengeDto'];
+export type AdminLoginResult = AdminAuthTokens | AdminLoginChallenge;
+export type VerifyAdminTotpLoginRequest = Schemas['VerifyAdminTotpLoginDto'];
 export type RequestAdminPasswordResetRequest = Schemas['RequestAdminPasswordResetDto'];
 export type ConfirmAdminPasswordResetRequest = Schemas['ConfirmAdminPasswordResetDto'];
+
+export type AdminAccount = Schemas['AdminAccountDto'];
+export type UpdateAdminProfileRequest = Schemas['UpdateAdminProfileDto'];
+export type ChangeAdminPasswordRequest = Schemas['ChangeAdminPasswordDto'];
+export type TotpSetup = Schemas['TotpSetupDto'];
+export type VerifyTotpRequest = Schemas['VerifyTotpDto'];
+export type TotpEnabled = Schemas['TotpEnabledDto'];
+export type DisableTotpRequest = Schemas['DisableTotpDto'];
 
 export type Permission = Schemas['PermissionDto'];
 export type CreateAdminRequest = Schemas['CreateAdminDto'];

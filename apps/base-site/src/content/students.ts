@@ -7,7 +7,7 @@ import { ROUTES, SIGN_UP } from './routes';
 
 export const STUDENTS_HERO = {
   eyebrow: 'For students',
-  title: 'Find your perfect program — and get in.',
+  title: 'Find your perfect program and get in.',
   subcopy:
     'Most people do not lose a place because they aimed too high. They lose it to a missing transcript, a deadline in another timezone, or a personal statement nobody checked. Rakuxon closes those gaps.',
   primaryCta: { label: 'Create a student account', href: SIGN_UP },
@@ -32,7 +32,7 @@ export const STUDENT_VALUE_PROPS = [
     tone: 'tone2' as const,
     title: 'Document checks before you submit',
     description:
-      'We flag the things that get applications returned — an unsigned transcript, a passport that expires mid-course, a name that does not match across documents.',
+      'We flag the things that get applications returned: an unsigned transcript, a passport that expires mid-course, a name that does not match across documents.',
   },
   {
     icon: LineChart,
@@ -46,14 +46,14 @@ export const STUDENT_VALUE_PROPS = [
     tone: 'tone4' as const,
     title: 'Scholarship and budget guidance',
     description:
-      'Understand the real cost — tuition, living, visa, deposits — and which funding you actually qualify for before you commit.',
+      'Understand the real cost: tuition, living, visa, deposits, and which funding you actually qualify for before you commit.',
   },
 ];
 
 export const STUDENT_PREVIEW = {
   eyebrow: 'Your upload centre',
   heading: 'Everything in one place, so nothing goes missing',
-  body: 'Upload a document once and it is available to every application that needs it. You can see what is still outstanding, what is under review, and what has been accepted — without keeping a spreadsheet of your own life.',
+  body: 'Upload a document once and it is available to every application that needs it. You can see what is still outstanding, what is under review, and what has been accepted, without keeping a spreadsheet of your own life.',
   points: [
     'One checklist per application, always current',
     'Clear "under review" and "accepted" states, not silence',

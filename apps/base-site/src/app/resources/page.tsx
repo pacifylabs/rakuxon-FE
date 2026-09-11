@@ -14,7 +14,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: 'Guidance',
   description:
-    'Practical guidance on choosing a university, writing an application and meeting visa requirements — written by advisors, sourced to the authorities that set the rules.',
+    'Practical guidance on choosing a university, writing an application and meeting visa requirements, written by advisors and sourced to the authorities that set the rules.',
 };
 
 type Search = Promise<Record<string, string | string[] | undefined>>;

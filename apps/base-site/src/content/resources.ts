@@ -12,7 +12,7 @@ export const RESOURCES_HEADER = {
   eyebrow: 'Guidance',
   title: 'The parts nobody explains until you get them wrong',
   subcopy:
-    'Written by our advisors from the applications they actually handle. Where a figure matters — fees, funds, deadlines — we point you at the authority that publishes it rather than quoting a number that changes every year.',
+    'Written by our advisors from the applications they actually handle. Where a figure matters (fees, funds, deadlines) we point you at the authority that publishes it rather than quoting a number that changes every year.',
 } as const;
 
 /** Shown when a tag filter matches nothing, so the page is never just blank. */
@@ -24,7 +24,7 @@ export const RESOURCES_EMPTY = {
 export const RESOURCES_CTA = {
   heading: 'Reading is not the same as being advised',
   subline:
-    'These articles cover what is true in general. An advisor can tell you what is true for your grades, your budget and your passport — and that conversation costs nothing.',
+    'These articles cover what is true in general. An advisor can tell you what is true for your grades, your budget and your passport, and that conversation costs nothing.',
   cta: { label: 'Book a free consultation', href: ROUTES.contact },
   reassurance: 'No obligation. No fee for the first conversation.',
 } as const;

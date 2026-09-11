@@ -54,12 +54,12 @@ export const SERVICES: readonly ServiceContent[] = [
     strand: 'education',
     metaTitle: 'Free Study Abroad Consultation | Rakuxon Educational Consultancy',
     metaDescription:
-      'Book a free educational consultancy with Rakuxon. Get expert, no-obligation guidance on universities and courses that fit your goals and budget — before you commit to anything.',
+      'Book a free educational consultancy with Rakuxon. Get expert, no-obligation guidance on universities and courses that fit your goals and budget, before you commit to anything.',
     whatsIncluded: [
       'A one-to-one conversation about your academic goals, budget and preferred destinations',
       'A shortlist of universities and courses matched to your grades and interests',
       'Honest guidance on whether you are ready to apply now or should build your profile first',
-      'No obligation to apply anywhere — the consultation stands on its own',
+      'No obligation to apply anywhere: the consultation stands on its own',
     ],
     faqs: [
       {
@@ -70,12 +70,12 @@ export const SERVICES: readonly ServiceContent[] = [
       {
         question: 'What should I bring to a consultation?',
         answer:
-          'Nothing formal is required — a rough idea of your grades, budget and preferred subject or destination is enough to start with. We fill in the gaps together.',
+          'Nothing formal is required. A rough idea of your grades, budget and preferred subject or destination is enough to start with. We fill in the gaps together.',
       },
       {
         question: 'Do I have to apply through Rakuxon afterwards?',
         answer:
-          'No. The consultancy is advice, not a commitment — you decide what to do with it.',
+          'No. The consultancy is advice, not a commitment. You decide what to do with it.',
       },
     ],
     relatedArticleSlugs: ['how-to-choose-a-university-abroad'],
@@ -90,7 +90,7 @@ export const SERVICES: readonly ServiceContent[] = [
     strand: 'education',
     metaTitle: 'University Application Support & Guidance | Rakuxon',
     metaDescription:
-      'End-to-end university application support: shortlisting institutions, preparing your documents, and managing submissions — so nothing is missed and nothing is late.',
+      'End-to-end university application support: shortlisting institutions, preparing your documents, and managing submissions, so nothing is missed and nothing is late.',
     whatsIncluded: [
       'Help shortlisting universities and courses that match your profile',
       'Review of your personal statement, transcripts and supporting documents',
@@ -101,12 +101,12 @@ export const SERVICES: readonly ServiceContent[] = [
       {
         question: 'How many universities can I apply to?',
         answer:
-          'As many as make sense for your profile and goals — we help you decide on a realistic shortlist rather than applying everywhere at once.',
+          'As many as make sense for your profile and goals. We help you decide on a realistic shortlist rather than applying everywhere at once.',
       },
       {
         question: 'Do you write my personal statement for me?',
         answer:
-          'No — it has to be yours. We review it, ask the questions an admissions officer would, and help you sharpen it.',
+          'No. It has to be yours. We review it, ask the questions an admissions officer would, and help you sharpen it.',
       },
     ],
     relatedArticleSlugs: ['how-to-choose-a-university-abroad', 'personal-statement-that-is-about-you'],
@@ -137,7 +137,7 @@ export const SERVICES: readonly ServiceContent[] = [
       {
         question: 'Can you guarantee my visa will be approved?',
         answer:
-          'No one can — the decision is the visa office\'s alone. What we do is make sure your application is complete, accurate and submitted on time, which is the part within your control.',
+          'No one can. The decision is the visa office\'s alone. What we do is make sure your application is complete, accurate and submitted on time, which is the part within your control.',
       },
     ],
     relatedArticleSlugs: [
@@ -156,7 +156,7 @@ export const SERVICES: readonly ServiceContent[] = [
     strand: 'education',
     metaTitle: 'Pre-Departure & Arrival Support for International Students | Rakuxon',
     metaDescription:
-      'From accommodation and airport transfers to workplace and cultural orientation — Rakuxon\'s pre-departure and arrival support helps you land settled, not scrambling.',
+      'From accommodation and airport transfers to workplace and cultural orientation, Rakuxon\'s pre-departure and arrival support helps you land settled, not scrambling.',
     whatsIncluded: [
       'Accommodation guidance before you leave, so you are not searching on arrival',
       'Airport transfer arrangements for your first day',
@@ -167,12 +167,12 @@ export const SERVICES: readonly ServiceContent[] = [
       {
         question: 'When should I start pre-departure planning?',
         answer:
-          'As soon as your visa is approved — accommodation and travel arrangements are easier to sort with weeks of lead time rather than days.',
+          'As soon as your visa is approved. Accommodation and travel arrangements are easier to sort with weeks of lead time rather than days.',
       },
       {
         question: 'Do you help with accommodation directly, or just advice?',
         answer:
-          'Both — guidance on what to look for and where, plus hands-on help making arrangements before you travel.',
+          'Both: guidance on what to look for and where, plus hands-on help making arrangements before you travel.',
       },
     ],
   },
@@ -197,12 +197,12 @@ export const SERVICES: readonly ServiceContent[] = [
       {
         question: 'How long does ongoing support last?',
         answer:
-          'For as long as you need it during your studies or time abroad — it is not limited to a fixed period after enrolment.',
+          'For as long as you need it during your studies or time abroad. It is not limited to a fixed period after enrolment.',
       },
       {
         question: 'What kind of issues can you help with?',
         answer:
-          'Anything from a document renewal to a change in circumstances — if it is unclear what to do next, that is exactly what this service is for.',
+          'Anything from a document renewal to a change in circumstances. If it is unclear what to do next, that is exactly what this service is for.',
       },
     ],
   },
@@ -216,7 +216,7 @@ export const SERVICES: readonly ServiceContent[] = [
     strand: 'travel',
     metaTitle: 'Travel Packages, Flights & Hotel Booking | Rakuxon Travels & Tourism',
     metaDescription:
-      'Flight booking, hotel reservations and crafted travel packages from Rakuxon\'s travel and tourism team — for holidays, not just study abroad journeys.',
+      'Flight booking, hotel reservations and crafted travel packages from Rakuxon\'s travel and tourism team, for holidays and not just study abroad journeys.',
     whatsIncluded: [
       'Flight booking across your preferred dates and airlines',
       'Hotel reservations matched to your budget and itinerary',
@@ -227,11 +227,11 @@ export const SERVICES: readonly ServiceContent[] = [
       {
         question: 'Is this only for students travelling to study?',
         answer:
-          'No — travel and tourism is open to anyone planning a trip, whether or not it is connected to a study abroad journey.',
+          'No. Travel and tourism is open to anyone planning a trip, whether or not it is connected to a study abroad journey.',
       },
       {
         question: 'Can you plan a multi-destination trip?',
-        answer: 'Yes — tell us the destinations and dates you have in mind and we will put together an itinerary.',
+        answer: 'Yes. Tell us the destinations and dates you have in mind and we will put together an itinerary.',
       },
     ],
   },
@@ -241,7 +241,7 @@ export const SERVICES_HERO = {
   eyebrow: 'Our services',
   title: 'From the first question to the first day on campus.',
   subcopy:
-    'Eleven years of guiding students and travellers — consultancy, applications, visas, travel, arrival and everything after. The consultancy is free, and it is where almost everyone starts.',
+    'Eleven years of guiding students and travellers: consultancy, applications, visas, travel, arrival and everything after. The consultancy is free, and it is where almost everyone starts.',
 } as const;
 
 export const SERVICES_CTA = {

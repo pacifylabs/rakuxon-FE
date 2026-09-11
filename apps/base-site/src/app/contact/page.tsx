@@ -14,7 +14,7 @@ export const dynamic = 'force-static';
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Get in touch with Rakuxon — whether you are a student, a recruitment partner, or an institution.',
+    'Get in touch with Rakuxon, whether you are a student, a recruitment partner, or an institution.',
 };
 
 export default function ContactPage() {

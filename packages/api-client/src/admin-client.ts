@@ -1,4 +1,5 @@
 import type {
+  AdminAccount,
   AdminApplicationDetail,
   AdminApplicationList,
   AdminArticleDetail,
@@ -15,26 +16,34 @@ import type {
   AdminInstitutionSummary,
   AdminList,
   AdminLoginRequest,
+  AdminLoginResult,
   AdminStudentDetail,
   AdminStudentList,
   AdminSummary,
+  ChangeAdminPasswordRequest,
   ConfirmAdminPasswordResetRequest,
   ConfirmDocumentUploadRequest,
   CreateAdminRequest,
   CreateArticleRequest,
   CreateCourseRequest,
   CreateInstitutionRequest,
+  DisableTotpRequest,
   Permission,
   RejectDocumentRequest,
   StudentDocument,
   Tenant,
   TenantList,
+  TotpEnabled,
+  TotpSetup,
+  UpdateAdminProfileRequest,
   UpdateArticleRequest,
   UpdateCourseRequest,
   UpdateInstitutionRequest,
   UpdateStudentAdminRequest,
   UploadSignature,
   UploadSignatureRequest,
+  VerifyAdminTotpLoginRequest,
+  VerifyTotpRequest,
 } from '@rakuxon/contract';
 
 import { ApiError, NetworkError } from './errors';
@@ -125,8 +134,12 @@ export class AdminApiClient {
 
   /* ------------------------------------------------------------- endpoints */
 
-  login(body: AdminLoginRequest): Promise<AdminAuthTokens> {
-    return this.request<AdminAuthTokens>('/v1/admin-auth/login', { method: 'POST', body });
+  login(body: AdminLoginRequest): Promise<AdminLoginResult> {
+    return this.request<AdminLoginResult>('/v1/admin-auth/login', { method: 'POST', body });
+  }
+
+  verifyTotpLogin(body: VerifyAdminTotpLoginRequest): Promise<AdminAuthTokens> {
+    return this.request<AdminAuthTokens>('/v1/admin-auth/login/verify-totp', { method: 'POST', body });
   }
 
   refresh(refreshToken: string): Promise<AdminAuthTokens> {
@@ -424,6 +437,32 @@ export class AdminApiClient {
       body,
       auth: true,
     });
+  }
+
+  /* ---------------------------------------------------------------- account */
+
+  getAccount(): Promise<AdminAccount> {
+    return this.request<AdminAccount>('/v1/admin/account/me', { auth: true });
+  }
+
+  updateAccountProfile(body: UpdateAdminProfileRequest): Promise<AdminAccount> {
+    return this.request<AdminAccount>('/v1/admin/account/me', { method: 'PATCH', body, auth: true });
+  }
+
+  changeAccountPassword(body: ChangeAdminPasswordRequest): Promise<void> {
+    return this.request<void>('/v1/admin/account/me/password', { method: 'POST', body, auth: true });
+  }
+
+  setupTotp(): Promise<TotpSetup> {
+    return this.request<TotpSetup>('/v1/admin/account/me/2fa/setup', { method: 'POST', auth: true });
+  }
+
+  enableTotp(body: VerifyTotpRequest): Promise<TotpEnabled> {
+    return this.request<TotpEnabled>('/v1/admin/account/me/2fa/enable', { method: 'POST', body, auth: true });
+  }
+
+  disableTotp(body: DisableTotpRequest): Promise<void> {
+    return this.request<void>('/v1/admin/account/me/2fa/disable', { method: 'POST', body, auth: true });
   }
 }
 

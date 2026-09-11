@@ -91,7 +91,7 @@ export default async function CountryPage({ params }: Params) {
           Costs, intakes and timing
         </h2>
         <p className="mt-4 max-w-prose text-base text-text-muted">
-          Indicative public ranges to help you plan. They are not quotes — your actual cost depends
+          Indicative public ranges to help you plan. They are not quotes: your actual cost depends
           on the institution, the city and the course.
         </p>
         <FactGrid className="mt-10" facts={country.facts} columns={3} sample />

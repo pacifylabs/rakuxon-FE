@@ -1,5 +1,6 @@
 export { AppShell } from './AppShell';
 export type {
+  AppShellAccountMenu,
   AppShellNavItem,
   AppShellNotificationItem,
   AppShellNotificationsSlot,

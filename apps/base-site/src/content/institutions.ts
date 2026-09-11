@@ -46,7 +46,7 @@ export const INSTITUTION_VALUE_PROPS = [
     tone: 'tone4' as const,
     title: 'Set your own requirements and intakes',
     description:
-      'Entry requirements, intakes and document checklists are yours to configure — what your admissions team actually asks for, not a generic template.',
+      'Entry requirements, intakes and document checklists are yours to configure: what your admissions team actually asks for, not a generic template.',
   },
   {
     icon: Users,
@@ -67,7 +67,7 @@ export const INSTITUTION_VALUE_PROPS = [
 export const INSTITUTION_WORKFLOW = {
   eyebrow: 'The institution workspace',
   heading: 'Decisions on complete files, not incomplete ones',
-  body: 'A student profile and its documents are built once, on the student\'s side, and carried into every application. Your admissions team reviews what is actually there — not a placeholder waiting on a transcript.',
+  body: 'A student profile and its documents are built once, on the student\'s side, and carried into every application. Your admissions team reviews what is actually there, not a placeholder waiting on a transcript.',
   points: [
     'Requirements and intakes configured by your team, not ours',
     'Every application traceable to the agency and student behind it',

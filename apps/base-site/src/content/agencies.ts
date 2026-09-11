@@ -7,7 +7,7 @@ import { ROUTES, SIGN_UP } from './routes';
 
 export const AGENCIES_HERO = {
   eyebrow: 'For recruitment partners',
-  title: 'Grow your recruitment business — no platform fees.',
+  title: 'Grow your recruitment business, no platform fees.',
   subcopy:
     'You already know how to place students. What slows you down is chasing documents over WhatsApp, rebuilding the same profile for each university, and never quite knowing which applications are stuck. That is the part we take.',
   primaryCta: { label: 'Become a partner', href: SIGN_UP },

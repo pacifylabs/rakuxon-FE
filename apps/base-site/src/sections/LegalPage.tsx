@@ -23,7 +23,7 @@ export function LegalPage({ content, titleId }: { content: LegalPageContent; tit
           className="rounded-lg border border-warning bg-surface p-6"
         >
           <p className="font-heading text-lg font-semibold text-text">
-            Awaiting legal review — this is not a published document
+            Awaiting legal review: this is not a published document
           </p>
           <p className="mt-3 max-w-prose text-base text-text-muted">
             Nothing on this page is binding, and it should not be relied on. Each heading below

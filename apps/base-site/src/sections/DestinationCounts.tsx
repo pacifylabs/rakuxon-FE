@@ -22,7 +22,7 @@ export async function DestinationCounts() {
       </h2>
       <p className="mx-auto mt-4 max-w-prose text-center text-base text-text-muted">
         Registered education organisations per destination, counted live from the open Research
-        Organization Registry — not a number we made up.
+        Organization Registry. Not a number we made up.
       </p>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">

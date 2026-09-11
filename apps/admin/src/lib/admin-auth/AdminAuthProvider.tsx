@@ -12,7 +12,7 @@ import {
 import type { ReactNode } from 'react';
 
 import { AdminApiClient, ApiError } from '@rakuxon/api-client';
-import type { AdminLoginRequest, AdminSession } from '@rakuxon/contract';
+import type { AdminLoginChallenge, AdminLoginRequest, AdminSession } from '@rakuxon/contract';
 
 import {
   adminSessionFromTokens,
@@ -26,7 +26,14 @@ export interface AdminAuthContextValue {
   admin: AdminSession | null;
   /** False only until the stored session has been read on the client. */
   ready: boolean;
-  signIn: (credentials: AdminLoginRequest) => Promise<void>;
+  /**
+   * Resolves to the login challenge when the account has 2FA on — no
+   * session is established yet, so the caller should collect a code and
+   * call `verifyTotp`. Resolves to `undefined` on a normal, completed login.
+   */
+  signIn: (credentials: AdminLoginRequest) => Promise<AdminLoginChallenge | undefined>;
+  /** Trades a 2FA challenge plus a code for a real session. */
+  verifyTotp: (challengeToken: string, code: string) => Promise<void>;
   signOut: () => Promise<void>;
   hasPermission: (...keys: string[]) => boolean;
   /** The same bearer-token-aware client every method here uses internally. */
@@ -97,7 +104,18 @@ export function AdminAuthProvider({ baseUrl, children }: { baseUrl: string; chil
 
   const signIn = useCallback(
     async (credentials: AdminLoginRequest) => {
-      apply(adminSessionFromTokens(await client.login(credentials)));
+      const result = await client.login(credentials);
+      if ('requiresTotp' in result) return result;
+
+      apply(adminSessionFromTokens(result));
+      return undefined;
+    },
+    [client, apply],
+  );
+
+  const verifyTotp = useCallback(
+    async (challengeToken: string, code: string) => {
+      apply(adminSessionFromTokens(await client.verifyTotpLogin({ challengeToken, code })));
     },
     [client, apply],
   );
@@ -119,11 +137,12 @@ export function AdminAuthProvider({ baseUrl, children }: { baseUrl: string; chil
       admin: session?.admin ?? null,
       ready,
       signIn,
+      verifyTotp,
       signOut,
       hasPermission: (...keys) => (session ? keys.every((key) => session.admin.permissions.includes(key)) : false),
       apiClient: client,
     }),
-    [session, ready, signIn, signOut, client],
+    [session, ready, signIn, verifyTotp, signOut, client],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

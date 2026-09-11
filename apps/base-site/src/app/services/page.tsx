@@ -10,7 +10,7 @@ export const dynamic = 'force-static';
 export const metadata: Metadata = {
   title: 'Services',
   description:
-    'Free educational consultancy, university applications, visa support, travel, pre-departure and ongoing support — the six services Rakuxon Ltd has run for eleven years.',
+    'Free educational consultancy, university applications, visa support, travel, pre-departure and ongoing support: the six services Rakuxon Ltd has run for eleven years.',
 };
 
 export default function ServicesPage() {

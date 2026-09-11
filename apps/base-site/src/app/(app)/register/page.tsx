@@ -72,7 +72,7 @@ function RegisterForm() {
   return (
     <AuthCard
       title="Create your account"
-      subtitle="Search, shortlist and apply — all from one dashboard."
+      subtitle="Search, shortlist and apply, all from one dashboard."
       ownsMainLandmark={false}
       footer={
         <>

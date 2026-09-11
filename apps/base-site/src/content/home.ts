@@ -39,7 +39,7 @@ export const HERO = {
   headlineLine1: 'Your degree abroad,',
   headlineLine2: 'guided end to end.',
   subcopy:
-    'Eleven years guiding students from Lagos, Accra, Nairobi and Doha to universities worldwide — now with the platform to match. Search courses, apply, and track every step.',
+    'Eleven years guiding students from Lagos, Accra, Nairobi and Doha to universities worldwide, now with the platform to match. Search courses, apply, and track every step.',
   primaryCta: { label: 'Get started', href: SIGN_UP },
   secondaryCta: { label: 'How it works', href: '#how-it-works' },
   /* Real figure (§ 0: 2,500+ students & travellers), not the invented 100,000+. */
@@ -417,7 +417,7 @@ export const COURSE_PATHS: readonly CoursePath[] = [
   {
     title: 'Fund it',
     description:
-      'Understand the real cost — tuition, living, visa, deposits — and what funding you qualify for.',
+      'Understand the real cost: tuition, living, visa, deposits, and what funding you qualify for.',
     query: 'tab=articles&q=scholarship',
     src: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80',
     alt: 'Stacks of coins with a young plant growing from them',

@@ -792,9 +792,29 @@ export interface paths {
         put?: never;
         /**
          * Exchange admin credentials for a token pair
-         * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered.
+         * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered. When the account has 2FA on, this returns `{ requiresTotp: true, challengeToken }` instead of tokens — call `/admin-auth/login/verify-totp` next.
          */
         post: operations["AdminAuthController_login_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/login/verify-totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish a 2FA login
+         * @description Trades the challenge token from `/admin-auth/login` plus a TOTP or backup code for a real session.
+         */
+        post: operations["AdminAuthController_verifyTotpLogin_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1423,6 +1443,98 @@ export interface paths {
         put?: never;
         /** Reactivate a suspended admin account */
         post: operations["AdminsController_reactivate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/account/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own account */
+        get: operations["AdminAccountController_getAccount_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the caller's own name */
+        patch: operations["AdminAccountController_updateProfile_v1"];
+        trace?: never;
+    };
+    "/v1/admin/account/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change the caller's own password */
+        post: operations["AdminAccountController_changePassword_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/account/me/2fa/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start 2FA setup
+         * @description Generates a secret and returns a QR code to scan. 2FA is not on yet — call .../2fa/enable with a code from the app to confirm it.
+         */
+        post: operations["AdminAccountController_setupTotp_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/account/me/2fa/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm 2FA setup and turn it on
+         * @description Returns one-time backup codes — shown only this once.
+         */
+        post: operations["AdminAccountController_enableTotp_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/account/me/2fa/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Turn 2FA off */
+        post: operations["AdminAccountController_disableTotp_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2125,12 +2237,6 @@ export interface components {
             /** @example 🇬🇧 */
             flagEmoji: string;
         };
-        AdminLoginDto: {
-            /** @example ada@rakuxon.com */
-            email: string;
-            /** @example correct-horse-battery */
-            password: string;
-        };
         AdminSessionDto: {
             /** Format: uuid */
             id: string;
@@ -2159,6 +2265,27 @@ export interface components {
              */
             expiresIn: number;
             admin: components["schemas"]["AdminSessionDto"];
+        };
+        AdminLoginChallengeDto: {
+            /** @enum {boolean} */
+            requiresTotp: true;
+            /** @description Trade this, plus a TOTP or backup code, for a real session. Expires in 5 minutes. */
+            challengeToken: string;
+        };
+        AdminLoginDto: {
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        VerifyAdminTotpLoginDto: {
+            /** @description From the `requiresTotp` login response. */
+            challengeToken: string;
+            /**
+             * @description A 6-digit authenticator code, or an unused backup code.
+             * @example 123456
+             */
+            code: string;
         };
         AdminRefreshDto: {
             /** @description The refresh token from the previous login or refresh. */
@@ -2534,6 +2661,46 @@ export interface components {
              *     ]
              */
             permissionKeys: string[];
+        };
+        AdminAccountDto: {
+            /** Format: uuid */
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
+            /** @description Whether 2FA is currently on for this account. */
+            totpEnabled: boolean;
+        };
+        UpdateAdminProfileDto: {
+            /** @example Ada */
+            firstName?: string;
+            /** @example Lovelace */
+            lastName?: string;
+        };
+        ChangeAdminPasswordDto: {
+            currentPassword: string;
+            /** @example a-brand-new-passphrase */
+            newPassword: string;
+        };
+        TotpSetupDto: {
+            /** @description The base32 secret, shown as a fallback to typing it in by hand. */
+            secret: string;
+            /** @description otpauth:// URI encoded in the QR code — most apps can also take this directly. */
+            otpauthUrl: string;
+            /** @description A data: URI PNG. Render it directly as an <img> src. */
+            qrCodeDataUrl: string;
+        };
+        VerifyTotpDto: {
+            /** @example 123456 */
+            code: string;
+        };
+        TotpEnabledDto: {
+            /** @description Shown once, right after enabling — store them somewhere safe. Each works exactly one time in place of an authenticator code. */
+            backupCodes: string[];
+        };
+        DisableTotpDto: {
+            /** @description Re-confirms the account before turning 2FA off. */
+            password: string;
         };
         /** @enum {string} */
         TenantStatus: "pending" | "active" | "suspended";
@@ -3875,10 +4042,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminAuthTokensDto"];
+                    "application/json": components["schemas"]["AdminAuthTokensDto"] | components["schemas"]["AdminLoginChallengeDto"];
                 };
             };
             /** @description Credentials are not valid, or the account is inactive. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_verifyTotpLogin_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyAdminTotpLoginDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuthTokensDto"];
+                };
+            };
+            /** @description The challenge has expired, or the code is not valid. */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -4812,6 +5009,153 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminSummaryDto"];
                 };
+            };
+        };
+    };
+    AdminAccountController_getAccount_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAccountDto"];
+                };
+            };
+        };
+    };
+    AdminAccountController_updateProfile_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAdminProfileDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAccountDto"];
+                };
+            };
+        };
+    };
+    AdminAccountController_changePassword_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeAdminPasswordDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The current password is not correct. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAccountController_setupTotp_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TotpSetupDto"];
+                };
+            };
+        };
+    };
+    AdminAccountController_enableTotp_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyTotpDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TotpEnabledDto"];
+                };
+            };
+            /** @description The code is not valid. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAccountController_disableTotp_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisableTotpDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The current password is not correct. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

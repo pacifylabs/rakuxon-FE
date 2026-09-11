@@ -64,6 +64,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           await signOut();
           router.push('/login');
         }}
+        badge="Admin"
+        accountMenu={{
+          profileHref: '/dashboard/settings/profile',
+          securityHref: '/dashboard/settings/security',
+        }}
       >
         {children}
       </AppShell>

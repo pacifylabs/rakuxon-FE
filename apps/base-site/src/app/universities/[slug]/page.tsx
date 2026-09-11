@@ -326,7 +326,7 @@ export default async function UniversityPage({
             ) : (
               <p className="text-base text-text-muted">
                 {about ??
-                  `We are still writing up ${institution.name}. Our advisors know it — ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
+                  `We are still writing up ${institution.name}. Our advisors know it: ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
               </p>
             )}
           </div>
