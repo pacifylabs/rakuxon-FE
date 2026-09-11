@@ -12,3 +12,7 @@ coverage/
 .DS_Store
 *.log
 .vercel
+
+# Production credentials stay on the server.
+.env.*
+!.env.example
