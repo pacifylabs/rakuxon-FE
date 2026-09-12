@@ -9,6 +9,7 @@ import { ROUTES, applyHref, articleRoute, courseRoute, universityRoute } from '@
 import { fetchArticles, fetchCourses, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
 import { cardFacts } from '@/lib/catalogue/course-view';
 import { formatLocation, formatMoney, summarise } from '@/lib/catalogue/format';
+import { campusPhoto, commonsFilePage } from '@/lib/catalogue/hero-image';
 import { absoluteUrl } from '@/lib/site-url';
 
 /*
@@ -127,12 +128,12 @@ export default async function UniversityPage({
    * attribution. We do not hold the photographer's name per image, and the
    * file page does — so the credit links there rather than inventing one.
    * Logos are deliberately not treated this way: those are trademarks and a
-   * licence on the file does not grant use of the mark.
+   * licence on the file does not grant use of the mark, which is why
+   * campusPhoto drops the several hundred records whose only Wikidata image
+   * is one.
    */
-  const heroImage = institution.heroImageUrl ?? null;
-  const heroCreditUrl = heroImage?.includes('/Special:FilePath/')
-    ? `https://commons.wikimedia.org/wiki/File:${heroImage.split('/Special:FilePath/')[1]?.split('?')[0] ?? ''}`
-    : null;
+  const heroImage = campusPhoto(institution.heroImageUrl);
+  const heroCreditUrl = heroImage ? commonsFilePage(heroImage) : null;
 
   const hasDocuments = (institution.requiredDocuments ?? []).length > 0;
   const hasFaqs = (institution.faqs ?? []).length > 0;
@@ -391,22 +392,6 @@ export default async function UniversityPage({
           </ul>
         )}
 
-        {(institution.highlights ?? []).length > 0 && (
-          <>
-            <h3 className="mt-10 font-heading text-lg font-semibold text-text">Highlights</h3>
-            <ul className="mt-4 flex flex-col gap-3">
-              {(institution.highlights ?? []).map((highlight) => (
-                <li key={highlight} className="flex gap-3 text-base text-text-muted">
-                  <span
-                    aria-hidden="true"
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
-                  />
-                  {highlight}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
       </SectionBand>
 
       {courses.length > 0 && (

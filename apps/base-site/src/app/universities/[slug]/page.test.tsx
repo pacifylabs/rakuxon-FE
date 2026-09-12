@@ -160,12 +160,36 @@ describe('/universities/[slug]', () => {
     );
   });
 
+  it('drops a hero that is the institution mark rather than cropping it', async () => {
+    // Wikidata's only image for A.T. Still University is its wordmark, and the
+    // banner cropped it into a wall of cut-off letterforms. It is also a
+    // trademark, which the licence on the file does not cover.
+    stubApi({
+      heroImageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/ATSU%20logo.svg?width=1200',
+    });
+    await render();
+
+    expect(screen.queryByRole('img', { name: /campus/i })).toBeNull();
+    expect(screen.queryByRole('link', { name: /Photo: Wikimedia Commons/ })).toBeNull();
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+  });
+
   it('shows highlights beside the overview', async () => {
     stubApi();
     await render();
 
     const highlights = within(screen.getByRole('complementary', { name: /highlights/i }));
     expect(highlights.getByText('Member of the Russell Group')).toBeInTheDocument();
+  });
+
+  it('lists each highlight once', async () => {
+    // The band rendered the same list twice — once beside the overview and
+    // again beneath it — so every university read as if it were stammering.
+    stubApi();
+    await render();
+
+    expect(screen.getAllByText('Member of the Russell Group')).toHaveLength(1);
+    expect(screen.getAllByRole('heading', { name: /^highlights$/i })).toHaveLength(1);
   });
 
   it('falls back to the one-line description when there is no overview', async () => {
