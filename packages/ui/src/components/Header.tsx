@@ -5,6 +5,7 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from './Button';
+import { CountryFlag } from './CountryFlag';
 import { ThemeToggle } from './ThemeToggle';
 import { Wordmark } from './Wordmark';
 
@@ -13,6 +14,11 @@ export interface NavLink {
   href: string;
   /** Rendered as a dropdown on desktop and a disclosure on mobile, instead of a plain link. */
   children?: readonly NavLink[];
+  /**
+   * ISO-2, for a destination. The flag makes a country menu scannable by shape
+   * before it is read, which a list of seven country names is not.
+   */
+  countryCode?: string;
 }
 
 export interface HeaderProps {
@@ -77,8 +83,9 @@ function NavDropdown({ link }: { link: NavLink }) {
               <a
                 href={child.href}
                 onClick={() => setOpen(false)}
-                className="block rounded-md px-3 py-2 text-sm font-medium text-text transition-colors duration-fast ease-standard hover:bg-accent-soft hover:text-primary motion-reduce:transition-none"
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-text transition-colors duration-fast ease-standard hover:bg-accent-soft hover:text-primary motion-reduce:transition-none"
               >
+                {child.countryCode && <CountryFlag countryCode={child.countryCode} size="sm" />}
                 {child.label}
               </a>
             </li>
@@ -125,7 +132,12 @@ function MobileNavItem({ link, onNavigate }: { link: NavLink; onNavigate: () => 
           </li>
           {link.children.map((child) => (
             <li key={child.label}>
-              <a href={child.href} className={NAV_LINK_CLASSES} onClick={onNavigate}>
+              <a
+                href={child.href}
+                className={clsx(NAV_LINK_CLASSES, 'flex items-center gap-2')}
+                onClick={onNavigate}
+              >
+                {child.countryCode && <CountryFlag countryCode={child.countryCode} size="sm" />}
                 {child.label}
               </a>
             </li>

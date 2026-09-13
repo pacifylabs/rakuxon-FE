@@ -5,28 +5,46 @@ import { SERVICES } from './services';
 
 /** Global shell content (docs/04b § 2), shared by every page. */
 
+/**
+ * The country menu, with the flag beside each name.
+ *
+ * These are the six destinations that have a page; the ISO code is carried
+ * here rather than on CountryContent because the flag is a navigation affair —
+ * the country pages themselves are titled, not flagged.
+ */
+const DESTINATION_LINKS: readonly NavLink[] = [
+  { label: 'United Kingdom', href: countryRoute('uk'), countryCode: 'GB' },
+  { label: 'United States', href: countryRoute('usa'), countryCode: 'US' },
+  { label: 'Canada', href: countryRoute('canada'), countryCode: 'CA' },
+  { label: 'Australia', href: countryRoute('australia'), countryCode: 'AU' },
+  { label: 'Ireland', href: countryRoute('ireland'), countryCode: 'IE' },
+  { label: 'Germany', href: countryRoute('germany'), countryCode: 'DE' },
+  { label: 'All destinations', href: ROUTES.destinations },
+];
+
 export const NAV_LINKS: readonly NavLink[] = [
-  /* Universities is the catalogue listing; Destinations is the same catalogue
-     grouped by country. Explore — a third entry point into the same
-     catalogue — used to sit here too; it's dropped from top-level nav since
-     the homepage's own search bar already opens it, and a visitor who wants
-     it can still search from there. */
+  /*
+   * Universities is the catalogue listing; Destinations is the same catalogue
+   * chosen by country, which is how most applicants start. Courses are not a
+   * top-level entry: a course belongs to a university, so the way in is the
+   * university page or the search bar, not a third door into the same rows.
+   *
+   * Students and Agents are the two audiences who arrive cold and need a page
+   * written for them. Institutions is in the footer instead — that audience
+   * arrives through a conversation or a direct link, not by browsing a menu.
+   */
   { label: 'Universities', href: ROUTES.universities },
-  { label: 'Destinations', href: ROUTES.destinations },
-  { label: 'Guidance', href: ROUTES.resources },
-  {
-    label: 'Students',
-    href: ROUTES.students,
-    children: [
-      { label: 'Agencies', href: ROUTES.agencies },
-      { label: 'Institutions', href: ROUTES.institutions },
-    ],
-  },
+  { label: 'Destinations', href: ROUTES.destinations, children: DESTINATION_LINKS },
+  { label: 'Students', href: ROUTES.students },
+  { label: 'Agents', href: ROUTES.agencies },
   {
     label: 'Services',
     href: ROUTES.services,
     children: SERVICES.map((service) => ({ label: service.title, href: serviceRoute(service.id) })),
   },
+  /* "Guidance" named the shelf rather than what is on it; these are articles a
+     student reads before applying. */
+  { label: 'Study guides', href: ROUTES.resources },
   { label: 'About', href: ROUTES.about },
 ];
 
@@ -84,7 +102,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
       { label: 'Agencies', href: ROUTES.agencies },
       { label: 'Institutions', href: ROUTES.institutions },
       { label: 'Explore courses', href: ROUTES.explore },
-      { label: 'Guidance', href: ROUTES.resources },
+      { label: 'Study guides', href: ROUTES.resources },
     ],
   },
 ];
