@@ -12,7 +12,7 @@ import {
   feeFromApi,
   firstOpenIntake,
   formatFee,
-  formatSubject,
+  formatDiscipline,
   fromApiCourse,
   fromBankCourse,
 } from '@/lib/catalogue/course-view';
@@ -104,7 +104,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
   const intake = firstOpenIntake(course.intakes);
   const related = await loadRelated(loaded);
   const hasRequirements = course.entryRequirements.length > 0 || course.englishTests.length > 0;
-  const subject = course.disciplines[0];
+  const discipline = course.disciplines[0];
 
   return (
     <>
@@ -378,7 +378,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                 ? [{ label: 'Mode of study', value: STUDY_MODE_LABELS[course.studyMode] }]
                 : []),
               { label: 'Level', value: STUDY_LEVEL_LABELS[course.level] },
-              ...(subject ? [{ label: 'Subject', value: formatSubject(subject) }] : []),
+              ...(discipline ? [{ label: 'Discipline', value: formatDiscipline(discipline) }] : []),
             ]}
             offerResponseWeeks={course.offerResponseWeeks}
           />

@@ -28,6 +28,16 @@ const detail = {
   overviewSourceUrl: 'https://en.wikipedia.org/wiki/Cardiff_University',
   heroImageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cardiff.jpg?width=1200',
   highlights: ['Member of the Russell Group', 'Around 30,930 students enrolled'],
+  /* The filters this university can offer, which the API derives from its own
+     courses — not the 605 disciplines the whole catalogue holds. */
+  courseLevels: [
+    { value: 'undergraduate', count: 200 },
+    { value: 'postgraduate', count: 63 },
+  ],
+  courseDisciplines: [
+    { value: 'data-sciences-and-big-data', count: 12 },
+    { value: 'business', count: 8 },
+  ],
 };
 
 const neighbours = {
@@ -122,8 +132,13 @@ function stubApi(
   );
 }
 
-const render = async () =>
-  renderPage(await UniversityPage({ params: Promise.resolve({ slug: 'cardiff-university' }) }));
+const render = async (query: Record<string, string> = {}) =>
+  renderPage(
+    await UniversityPage({
+      params: Promise.resolve({ slug: 'cardiff-university' }),
+      searchParams: Promise.resolve(query),
+    }),
+  );
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -254,8 +269,8 @@ describe('/universities/[slug]', () => {
     await render();
 
     const main = within(screen.getByRole('main'));
-    expect(main.getByText('Courses listed')).toBeInTheDocument();
-    expect(main.getByText('263')).toBeInTheDocument();
+    // Scoped to the fact card: the level tabs carry the same number.
+    expect(main.getByText('Courses listed').closest('div')).toHaveTextContent('263');
     expect(main.getByRole('link', { name: 'MSc Data Science' })).toHaveAttribute(
       'href',
       '/courses/msc-data-science-cardiff',
@@ -263,6 +278,52 @@ describe('/universities/[slug]', () => {
     // The feed calls its figure approximate, so the card must too.
     expect(main.getByText('approx. £ 24,800')).toBeInTheDocument();
     expect(main.getByText('Data sciences and big data')).toBeInTheDocument();
+  });
+
+  it('offers a tab per level it teaches, carrying its count', async () => {
+    stubApi({ courseCount: 263, courses: courseList });
+    await render();
+
+    const tabs = within(screen.getByRole('navigation', { name: 'Study level' }));
+    expect(tabs.getByRole('link', { name: /Postgraduate/ })).toHaveAttribute(
+      'href',
+      '/universities/cardiff-university?level=postgraduate#courses',
+    );
+    expect(tabs.getByRole('link', { name: /Postgraduate/ })).toHaveTextContent('63');
+    expect(tabs.getByRole('link', { name: /All levels/ })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('lists only the disciplines this university teaches', async () => {
+    // The catalogue holds 605 of them; offering all would mostly lead nowhere.
+    stubApi({ courseCount: 263, courses: courseList });
+    await render();
+
+    const select = screen.getByLabelText('Discipline');
+    expect(within(select).getByRole('option', { name: 'Data sciences and big data (12)' })).toBeInTheDocument();
+    expect(within(select).queryByRole('option', { name: /Archaeology/ })).toBeNull();
+  });
+
+  it('ignores a filter the university does not teach', async () => {
+    // A stale or hand-edited link should show the whole list, not an empty one
+    // filtered by something the page cannot even name.
+    stubApi({ courseCount: 263, courses: courseList });
+    await render({ level: 'doctorate' });
+
+    const tabs = within(screen.getByRole('navigation', { name: 'Study level' }));
+    expect(tabs.getByRole('link', { name: /All levels/ })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('keeps a way back when a filter matches nothing', async () => {
+    stubApi({ courseCount: 263, courses: noCourses });
+    await render({ level: 'postgraduate' });
+
+    expect(screen.getByText('No courses here match that filter.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Show all 263 courses/ })).toHaveAttribute(
+      'href',
+      '/universities/cardiff-university#courses',
+    );
+    // The controls stay: a filter that hides its own escape hatch is a trap.
+    expect(screen.getByRole('navigation', { name: 'Study level' })).toBeInTheDocument();
   });
 
   it('pages through a long course list with shareable links', async () => {

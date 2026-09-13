@@ -76,7 +76,7 @@ export function formatFee(fee: CourseFee): string {
 }
 
 /** "data-sciences-and-big-data" -> "Data sciences and big data". */
-export function formatSubject(slug: string): string {
+export function formatDiscipline(slug: string): string {
   const words = slug.split('-').filter(Boolean).join(' ');
   return words ? `${words.charAt(0).toUpperCase()}${words.slice(1)}` : slug;
 }
@@ -157,7 +157,7 @@ export function fromBankCourse(course: Course): CourseView {
 export function cardFacts(course: ApiCourse): { label: string; value: string; urgent?: boolean }[] {
   const fee = feeFromApi(course);
   const intake = firstOpenIntake(course.intakes ?? []);
-  const subject = course.disciplines[0];
+  const discipline = course.disciplines[0];
 
   const facts: { label: string; value: string; urgent?: boolean }[] = [
     { label: 'Fee', value: fee ? formatFee(fee) : 'Ask an advisor' },
@@ -167,7 +167,7 @@ export function cardFacts(course: ApiCourse): { label: string; value: string; ur
     facts.push({ label: 'Next intake', value: formatIntake(intake), urgent: intake.status === 'closing_soon' });
   }
   if (course.durationMonths) facts.push({ label: 'Duration', value: formatDuration(course.durationMonths) });
-  if (subject) facts.push({ label: 'Subject', value: formatSubject(subject) });
+  if (discipline) facts.push({ label: 'Discipline', value: formatDiscipline(discipline) });
 
   return facts.slice(0, 4);
 }

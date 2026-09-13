@@ -3,14 +3,18 @@ import { notFound } from 'next/navigation';
 
 import { Award, Building2, CalendarDays, Globe2, GraduationCap, Users, Wallet } from 'lucide-react';
 
-import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
+import { CountryFlag, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
-import { ROUTES, applyHref, articleRoute, courseRoute, universityRoute } from '@/content/routes';
+import { ROUTES, applyHref, articleRoute, universityRoute } from '@/content/routes';
 import { fetchArticles, fetchCourses, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
-import { cardFacts } from '@/lib/catalogue/course-view';
+import { formatDiscipline } from '@/lib/catalogue/course-view';
 import { formatLocation, formatMoney, summarise } from '@/lib/catalogue/format';
 import { campusPhoto, commonsFilePage } from '@/lib/catalogue/hero-image';
+import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
+import type { StudyLevel } from '@/lib/catalogue/types';
 import { absoluteUrl } from '@/lib/site-url';
+
+import { CourseBrowser } from './CourseBrowser';
 
 /*
  * Rendered on demand and then cached, not prebuilt.
@@ -22,8 +26,12 @@ import { absoluteUrl } from '@/lib/site-url';
  */
 export const revalidate = 300;
 
-/** Enough to compare, few enough to scan; Kaplan alone lists 526. */
+/** Enough to compare, few enough to scan; Kaplan alone lists 887. */
 const COURSES_PER_PAGE = 12;
+
+/** One value of a search parameter, whichever way Next hands it over. */
+const single = (value: string | string[] | undefined): string | undefined =>
+  (Array.isArray(value) ? value[0] : value)?.trim() || undefined;
 
 export async function generateMetadata({
   params,
@@ -62,7 +70,24 @@ export default async function UniversityPage({
   if (!institution) notFound();
 
   const query = (await searchParams) ?? {};
-  const coursePage = Number(Array.isArray(query.courses) ? query.courses[0] : query.courses) || 1;
+  const coursePage = Number(single(query.courses)) || 1;
+
+  /*
+   * Course filters come from the record, not from the URL alone: a level or a
+   * discipline this university does not teach is dropped rather than passed
+   * through, so a stale or hand-edited link shows the whole list instead of an
+   * empty one with a filter the page cannot even name.
+   */
+  const levels = institution.courseLevels ?? [];
+  const disciplines = institution.courseDisciplines ?? [];
+
+  const levelParam = single(query.level);
+  const level = levels.some((entry) => entry.value === levelParam) ? levelParam : undefined;
+
+  const disciplineParam = single(query.discipline);
+  const discipline = disciplines.some((entry) => entry.value === disciplineParam)
+    ? disciplineParam
+    : undefined;
 
   /*
    * Everything else the page can honestly say about this institution, fetched
@@ -80,12 +105,30 @@ export default async function UniversityPage({
       limit: 7,
     }),
     fetchArticles({ country: institution.countryCode, limit: 3 }),
-    fetchCourses({ institutionSlug: institution.slug, page: coursePage, limit: COURSES_PER_PAGE }),
+    fetchCourses({
+      institutionSlug: institution.slug,
+      page: coursePage,
+      limit: COURSES_PER_PAGE,
+      level,
+      discipline,
+    }),
   ]);
 
   const courses = courseResult.items;
   /* The API's published count; the list total covers an API that predates it. */
   const courseCount = institution.courseCount ?? courseResult.total;
+  const filtered = Boolean(level || discipline);
+
+  /** A link back into the course list, carrying whichever filters still apply. */
+  const coursesHref = (next: { level?: string; discipline?: string; page?: number }) => {
+    const params = new URLSearchParams();
+    if (next.level) params.set('level', next.level);
+    if (next.discipline) params.set('discipline', next.discipline);
+    if (next.page && next.page > 1) params.set('courses', String(next.page));
+    const search = params.toString();
+
+    return `${universityRoute(institution.slug)}${search ? `?${search}` : ''}#courses`;
+  };
 
   const neighbours = nearby.items.filter((entry) => entry.slug !== institution.slug).slice(0, 6);
 
@@ -394,7 +437,12 @@ export default async function UniversityPage({
 
       </SectionBand>
 
-      {courses.length > 0 && (
+      {/*
+        Keyed on the university's own count, not on this page of results: a
+        filter that matches nothing must still leave its own controls on screen,
+        or the visitor who set it has no way back.
+      */}
+      {courseCount > 0 && (
         <SectionBand tone="muted" labelledBy="university-courses-heading">
           <div id="courses" className="flex flex-wrap items-baseline justify-between gap-3">
             <h2
@@ -404,24 +452,98 @@ export default async function UniversityPage({
               Courses at {institution.name}
             </h2>
             <p className="text-sm text-text-muted">
-              {`${courseResult.total.toLocaleString('en-GB')} course${courseResult.total === 1 ? '' : 's'}`}
+              {filtered
+                ? `${courseResult.total.toLocaleString('en-GB')} of ${courseCount.toLocaleString('en-GB')} courses`
+                : `${courseCount.toLocaleString('en-GB')} course${courseCount === 1 ? '' : 's'}`}
             </p>
           </div>
-          <ul className="mt-6 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
-              <li key={course.id} className="h-full">
-                <CourseCard
-                  title={course.title}
-                  institution={course.institutionName}
-                  countryCode={course.countryCode}
-                  href={courseRoute(course.slug)}
-                  applyHref={applyHref({ course: course.slug })}
-                  badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
-                  facts={cardFacts(course)}
-                />
-              </li>
-            ))}
-          </ul>
+
+          {/* Only where there is a choice to make: one level is not a filter. */}
+          {levels.length > 1 && (
+            <nav
+              aria-label="Study level"
+              className="mt-6 flex flex-wrap gap-1 border-b border-border"
+            >
+              {[{ value: undefined, count: courseCount }, ...levels].map((tab) => {
+                const current = tab.value === level;
+
+                return (
+                  <a
+                    key={tab.value ?? 'all'}
+                    href={coursesHref({ level: tab.value, discipline })}
+                    aria-current={current ? 'page' : undefined}
+                    className={`inline-flex min-h-12 items-baseline gap-2 border-b-2 px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 ${
+                      current
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-text-muted hover:text-primary'
+                    }`}
+                  >
+                    {tab.value ? STUDY_LEVEL_LABELS[tab.value as StudyLevel] : 'All levels'}
+                    <span className="text-xs font-medium tabular-nums">
+                      {tab.count.toLocaleString('en-GB')}
+                    </span>
+                  </a>
+                );
+              })}
+            </nav>
+          )}
+
+          {/*
+            A plain GET form, like every other filter on the site: it works
+            without JavaScript and the result is a shareable URL. A select
+            rather than chips because Exeter alone teaches 132 disciplines.
+          */}
+          {disciplines.length > 1 && (
+            <form
+              method="get"
+              action={universityRoute(institution.slug)}
+              className="mt-4 flex flex-wrap items-end gap-3"
+            >
+              {level && <input type="hidden" name="level" value={level} />}
+              <label className="flex flex-col gap-1 text-sm font-medium text-text-muted">
+                Discipline
+                <select
+                  name="discipline"
+                  defaultValue={discipline ?? ''}
+                  className="min-h-12 rounded-md border border-border bg-surface px-3 text-base text-text focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                >
+                  <option value="">All disciplines</option>
+                  {disciplines.map((entry) => (
+                    <option key={entry.value} value={entry.value}>
+                      {/* The count is across every level this university teaches,
+                          so it is dropped once a level narrows the list —
+                          "Business (63)" above a list of 16 contradicts itself. */}
+                      {level
+                        ? formatDiscipline(entry.value)
+                        : `${formatDiscipline(entry.value)} (${entry.count})`}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="submit"
+                className="inline-flex min-h-12 items-center rounded-md border border-border bg-surface px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+              >
+                Apply
+              </button>
+            </form>
+          )}
+
+          {courses.length > 0 ? (
+            <CourseBrowser courses={courses} />
+          ) : (
+            <p className="mt-6 rounded-lg border border-border bg-surface p-8 text-center text-base text-text-muted">
+              <span className="block font-semibold text-text">
+                No courses here match that filter.
+              </span>
+              <a
+                href={coursesHref({})}
+                className="mt-2 inline-block rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+              >
+                Show all {courseCount.toLocaleString('en-GB')} courses
+              </a>
+            </p>
+          )}
 
           {courseResult.pageCount > 1 && (
             <nav aria-label="Course pages" className="mt-6 flex items-center justify-between gap-4">
@@ -429,8 +551,8 @@ export default async function UniversityPage({
                   and the back button should work. */}
               {courseResult.page > 1 ? (
                 <a
-                  href={`${universityRoute(institution.slug)}?courses=${courseResult.page - 1}#courses`}
-                  className="inline-flex min-h-11 items-center rounded-md border border-border px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                  href={coursesHref({ level, discipline, page: courseResult.page - 1 })}
+                  className="inline-flex min-h-12 items-center rounded-md border border-border px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
                 >
                   ← Previous
                 </a>
@@ -442,8 +564,8 @@ export default async function UniversityPage({
               </p>
               {courseResult.page < courseResult.pageCount ? (
                 <a
-                  href={`${universityRoute(institution.slug)}?courses=${courseResult.page + 1}#courses`}
-                  className="inline-flex min-h-11 items-center rounded-md border border-border px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                  href={coursesHref({ level, discipline, page: courseResult.page + 1 })}
+                  className="inline-flex min-h-12 items-center rounded-md border border-border px-5 text-sm font-semibold text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
                 >
                   Next →
                 </a>

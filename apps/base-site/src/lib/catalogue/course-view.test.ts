@@ -6,7 +6,7 @@ import {
   cardFacts,
   feeFromApi,
   formatFee,
-  formatSubject,
+  formatDiscipline,
   fromApiCourse,
   fromBankCourse,
 } from './course-view';
@@ -96,7 +96,7 @@ describe('cardFacts', () => {
     expect(cardFacts(imported)).toEqual([
       { label: 'Fee', value: 'approx. £ 24,800' },
       { label: 'Study level', value: 'Postgraduate' },
-      { label: 'Subject', value: 'Data sciences and big data' },
+      { label: 'Discipline', value: 'Data sciences and big data' },
     ]);
   });
 
@@ -120,9 +120,9 @@ describe('cardFacts', () => {
   });
 });
 
-describe('formatSubject', () => {
-  it('turns a subject slug into words', () => {
-    expect(formatSubject('data-sciences-and-big-data')).toBe('Data sciences and big data');
-    expect(formatSubject('psychology')).toBe('Psychology');
+describe('formatDiscipline', () => {
+  it('turns a discipline slug into words', () => {
+    expect(formatDiscipline('data-sciences-and-big-data')).toBe('Data sciences and big data');
+    expect(formatDiscipline('psychology')).toBe('Psychology');
   });
 });

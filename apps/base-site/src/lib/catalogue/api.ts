@@ -65,7 +65,21 @@ export interface ApiInstitution {
  * has names, locations and acronyms, not fee tables — so every consumer has to
  * treat them as absent rather than assume.
  */
+/**
+ * One value a course filter can take, with how many courses carry it.
+ *
+ * The count ships with the value so a filter cannot promise a list that turns
+ * out to be empty — "Archaeology (47)" is a decision, "Archaeology" is a guess.
+ */
+export interface ApiCourseFacet {
+  value: string;
+  count: number;
+}
+
 export interface ApiInstitutionDetail extends ApiInstitution {
+  /** Only the levels and disciplines this university actually teaches. */
+  courseLevels?: ApiCourseFacet[];
+  courseDisciplines?: ApiCourseFacet[];
   about?: string | null;
   highlights?: string[];
   campuses?: { name: string; city: string; countryCode: string }[];
