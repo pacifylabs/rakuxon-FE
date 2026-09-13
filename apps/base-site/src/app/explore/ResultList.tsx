@@ -5,6 +5,7 @@ import { formatLocation } from '@/lib/catalogue/format';
 import type { CatalogueResult } from '@/lib/catalogue/types';
 import type { ApiCourse, ApiInstitution } from '@/lib/catalogue/api';
 import { cardFacts } from '@/lib/catalogue/course-view';
+import { institutionCardFacts } from '@/lib/catalogue/institution-view';
 
 /**
  * Empty and error states are first-class here: this page depends on upstream
@@ -60,13 +61,7 @@ export function InstitutionResults({
               href={universityRoute(institution.slug)}
               applyHref={applyHref({ university: institution.slug })}
               badge={institution.fastTrackOffer ? 'Fast-track offer' : undefined}
-              facts={[
-                {
-                  label: 'Courses listed',
-                  value: institution.courseCount ? String(institution.courseCount) : 'Ask an advisor',
-                },
-                { label: 'Destination', value: institution.country },
-              ]}
+              facts={institutionCardFacts(institution)}
             />
           </li>
         ))}

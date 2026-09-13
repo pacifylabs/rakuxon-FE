@@ -77,13 +77,21 @@ export function InstitutionCard({
         </div>
 
         {facts.length > 0 && (
-          <dl className="mt-4 grid grid-cols-2 overflow-hidden rounded-md border border-border">
+          /* Columns follow the facts, not the other way round: a single fact in
+             a two-column grid leaves an empty cell, which reads as a value that
+             failed to load rather than one we never claimed to have. */
+          <dl
+            className={clsx(
+              'mt-4 grid overflow-hidden rounded-md border border-border',
+              facts.length === 1 ? 'grid-cols-1' : 'grid-cols-2',
+            )}
+          >
             {facts.map((fact, index) => (
               <div
                 key={fact.label}
                 className={clsx(
                   'p-3',
-                  index % 2 === 0 && 'border-r border-border',
+                  facts.length > 1 && index % 2 === 0 && 'border-r border-border',
                   index >= 2 && 'border-t border-border',
                 )}
               >

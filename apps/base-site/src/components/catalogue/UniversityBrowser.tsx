@@ -2,6 +2,7 @@ import { InstitutionCard, SearchField, SignUpPrompt } from '@rakuxon/ui';
 
 import { ROUTES, applyHref, universityRoute } from '@/content/routes';
 import { formatLocation } from '@/lib/catalogue/format';
+import { institutionCardFacts } from '@/lib/catalogue/institution-view';
 import type { ApiCountry, ApiInstitution } from '@/lib/catalogue/api';
 import type { CatalogueResult } from '@/lib/catalogue/types';
 
@@ -135,15 +136,7 @@ export function UniversityBrowser({
                   href={universityRoute(institution.slug)}
                   applyHref={applyHref({ university: institution.slug })}
                   badge={institution.fastTrackOffer ? 'Fast-track offer' : undefined}
-                  facts={[
-                    {
-                      label: 'Courses listed',
-                      value: institution.courseCount
-                        ? String(institution.courseCount)
-                        : 'Ask an advisor',
-                    },
-                    { label: 'Destination', value: institution.country },
-                  ]}
+                  facts={institutionCardFacts(institution)}
                 />
               </li>
             ))}
