@@ -106,27 +106,48 @@ const courseList = {
   pageCount: 22,
 };
 
+/** Courses at a different university, for the suggestion band. */
+const elsewhereList = {
+  ...courseList,
+  items: [
+    {
+      ...courseList.items[0]!,
+      id: 'c9',
+      slug: 'msc-data-science-swansea',
+      institutionName: 'Swansea University',
+      institutionSlug: 'swansea-university',
+    },
+  ],
+  total: 500,
+};
+
 function stubApi(
   overrides: Partial<typeof detail> & {
     drop?: (keyof typeof detail)[];
     courses?: typeof courseList | typeof noCourses;
+    elsewhere?: typeof elsewhereList | typeof noCourses;
   } = {},
 ) {
   const record: Record<string, unknown> = { ...detail, ...overrides };
   for (const key of overrides.drop ?? []) delete record[key];
   delete record.drop;
   delete record.courses;
+  delete record.elsewhere;
 
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string) => {
+      /* Two course calls reach this: the university's own list, and the
+         country-wide one the page falls back to when it has none. */
       const body = url.includes('/courses')
-        ? (overrides.courses ?? noCourses)
+        ? url.includes('institutionSlug')
+          ? (overrides.courses ?? noCourses)
+          : (overrides.elsewhere ?? noCourses)
         : url.includes('/articles')
-        ? articles
-        : url.includes('/institutions?')
-          ? neighbours
-          : record;
+          ? articles
+          : url.includes('/institutions?')
+            ? neighbours
+            : record;
       return { ok: true, status: 200, json: async () => body } as unknown as Response;
     }),
   );
@@ -180,7 +201,8 @@ describe('/universities/[slug]', () => {
     // banner cropped it into a wall of cut-off letterforms. It is also a
     // trademark, which the licence on the file does not cover.
     stubApi({
-      heroImageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/ATSU%20logo.svg?width=1200',
+      heroImageUrl:
+        'https://commons.wikimedia.org/wiki/Special:FilePath/ATSU%20logo.svg?width=1200',
     });
     await render();
 
@@ -212,7 +234,9 @@ describe('/universities/[slug]', () => {
     await render();
 
     expect(
-      screen.getByText('Cardiff University is a public research university in Cardiff, United Kingdom.'),
+      screen.getByText(
+        'Cardiff University is a public research university in Cardiff, United Kingdom.',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -299,7 +323,9 @@ describe('/universities/[slug]', () => {
     await render();
 
     const select = screen.getByLabelText('Discipline');
-    expect(within(select).getByRole('option', { name: 'Data sciences and big data (12)' })).toBeInTheDocument();
+    expect(
+      within(select).getByRole('option', { name: 'Data sciences and big data (12)' }),
+    ).toBeInTheDocument();
     expect(within(select).queryByRole('option', { name: /Archaeology/ })).toBeNull();
   });
 
@@ -336,6 +362,76 @@ describe('/universities/[slug]', () => {
     );
   });
 
+  describe('a university whose courses we do not hold', () => {
+    it('suggests courses elsewhere in the country, named as other universities', async () => {
+      // The feed covers 367 of 6,665 institutions. The rest can still tell a
+      // visitor what is studiable in the destination they just chose.
+      stubApi({ courseCount: 0, elsewhere: elsewhereList });
+      await render();
+
+      expect(
+        screen.getByRole('heading', { name: 'Courses at other universities in United Kingdom' }),
+      ).toBeInTheDocument();
+      // The card names the university that actually teaches it.
+      expect(screen.getByText('Swansea University')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'MSc Data Science' })).toHaveAttribute(
+        'href',
+        '/courses/msc-data-science-swansea',
+      );
+    });
+
+    it('offers the whole country and an advisor as the ways on', async () => {
+      stubApi({ courseCount: 0, elsewhere: elsewhereList });
+      await render();
+
+      expect(
+        screen.getByRole('link', { name: 'Browse every course in United Kingdom' }),
+      ).toHaveAttribute('href', '/explore?tab=courses&country=GB');
+      expect(
+        screen.getByRole('link', { name: 'Ask an advisor about Cardiff University' }),
+      ).toHaveAttribute('href', '/contact');
+    });
+
+    it('suggests nothing when the country has no courses either', async () => {
+      stubApi({ courseCount: 0, elsewhere: noCourses });
+      await render();
+
+      expect(screen.queryByText(/Courses at other universities/)).toBeNull();
+    });
+
+    it('never suggests other universities to one that has its own courses', async () => {
+      stubApi({ courseCount: 263, courses: courseList, elsewhere: elsewhereList });
+      await render();
+
+      expect(screen.queryByText(/Courses at other universities/)).toBeNull();
+    });
+  });
+
+  describe('a record with nothing written about it', () => {
+    /* The two bands whose order is in question. The sign-up prompt at the foot
+       is also headed "Applying to …", so these are matched exactly. */
+    const bands = ['About Cardiff University', 'Applying to United Kingdom'];
+    const headingOrder = () =>
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent ?? '')
+        .filter((text) => bands.includes(text));
+
+    it('leads with the guidance rather than with "we have not written this up"', async () => {
+      stubApi({ drop: ['overview', 'overviewSourceUrl', 'about'] });
+      await render();
+
+      expect(headingOrder()).toEqual(['Applying to United Kingdom', 'About Cardiff University']);
+    });
+
+    it('leads with the overview where there is one', async () => {
+      stubApi();
+      await render();
+
+      expect(headingOrder()).toEqual(['About Cardiff University', 'Applying to United Kingdom']);
+    });
+  });
+
   it('shows no course section for a university with none', async () => {
     stubApi();
     await render();
@@ -345,7 +441,8 @@ describe('/universities/[slug]', () => {
   });
 
   describe('metadata', () => {
-    const meta = () => generateMetadata({ params: Promise.resolve({ slug: 'cardiff-university' }) });
+    const meta = () =>
+      generateMetadata({ params: Promise.resolve({ slug: 'cardiff-university' }) });
 
     it('describes the page from the overview, not the one-line fragment', async () => {
       stubApi();

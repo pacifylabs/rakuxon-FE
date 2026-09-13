@@ -3,14 +3,20 @@ import { notFound } from 'next/navigation';
 
 import { Award, Building2, CalendarDays, Globe2, GraduationCap, Users, Wallet } from 'lucide-react';
 
-import { CountryFlag, SectionBand, SignUpPrompt } from '@rakuxon/ui';
+import { CountryFlag, CourseCard, SectionBand, SignUpPrompt } from '@rakuxon/ui';
 
-import { ROUTES, applyHref, articleRoute, universityRoute } from '@/content/routes';
-import { fetchArticles, fetchCourses, fetchInstitution, fetchInstitutions } from '@/lib/catalogue/api';
-import { formatDiscipline } from '@/lib/catalogue/course-view';
+import { ROUTES, applyHref, articleRoute, courseRoute, universityRoute } from '@/content/routes';
+import {
+  fetchArticles,
+  fetchCourses,
+  fetchInstitution,
+  fetchInstitutions,
+} from '@/lib/catalogue/api';
+import type { ApiCourse } from '@/lib/catalogue/api';
+import { cardFacts, formatDiscipline } from '@/lib/catalogue/course-view';
 import { formatLocation, formatMoney, summarise } from '@/lib/catalogue/format';
 import { campusPhoto, commonsFilePage } from '@/lib/catalogue/hero-image';
-import { STUDY_LEVEL_LABELS } from '@/lib/catalogue/types';
+import { STUDY_LEVEL_LABELS, emptyResult } from '@/lib/catalogue/types';
 import type { StudyLevel } from '@/lib/catalogue/types';
 import { absoluteUrl } from '@/lib/site-url';
 
@@ -28,6 +34,9 @@ export const revalidate = 300;
 
 /** Enough to compare, few enough to scan; Kaplan alone lists 887. */
 const COURSES_PER_PAGE = 12;
+
+/** Someone else's courses are a suggestion, not the page's subject. */
+const COURSES_ELSEWHERE = 6;
 
 /** One value of a search parameter, whichever way Next hands it over. */
 const single = (value: string | string[] | undefined): string | undefined =>
@@ -96,7 +105,7 @@ export default async function UniversityPage({
    * neighbours and destination guidance are all real rows we hold; inventing
    * prose to fill the space would not be.
    */
-  const [nearby, guidance, courseResult] = await Promise.all([
+  const [nearby, guidance, courseResult, elsewhere] = await Promise.all([
     /* Same city where we know it, same country otherwise. The browse filter
        matches city as well as name, which is what makes this one call. */
     fetchInstitutions({
@@ -112,6 +121,16 @@ export default async function UniversityPage({
       level,
       discipline,
     }),
+    /*
+     * Courses at other universities in the same country, fetched only where
+     * this one has none of its own. Our course feed reaches 367 of 6,665
+     * institutions, so most pages would otherwise say nothing at all about
+     * what a visitor could study in the destination they just chose. They are
+     * always labelled as other universities' — see the heading below.
+     */
+    (institution.courseCount ?? 0) === 0
+      ? fetchCourses({ country: institution.countryCode, limit: COURSES_ELSEWHERE })
+      : Promise.resolve(emptyResult<ApiCourse>('bank')),
   ]);
 
   const courses = courseResult.items;
@@ -165,6 +184,13 @@ export default async function UniversityPage({
     .filter(Boolean);
 
   /*
+   * A record with nothing written about it — neither a Wikipedia overview nor
+   * a Wikidata description. Its About band says only that we have not written
+   * it up yet, which is no way to open a page, so it moves down.
+   */
+  const thin = overviewParagraphs.length === 0 && !about;
+
+  /*
    * Campus photo, with a link back to the file page.
    *
    * Commons images are freely licensed but most are CC BY-SA, which obliges
@@ -193,6 +219,97 @@ export default async function UniversityPage({
 
   const sameAs = [institution.website, institution.overviewSourceUrl].filter(
     (value): value is string => Boolean(value),
+  );
+
+  /*
+   * Where the record carries no prose of its own, this band leads with "We are
+   * still writing up X" — the weakest thing on the page. It moves below the
+   * guidance and the courses instead, so a thin record opens on something a
+   * visitor can act on.
+   */
+  const aboutBand = (
+    <SectionBand labelledBy="university-about-heading">
+      <h2 id="university-about-heading" className="font-heading text-2xl font-bold text-text">
+        About {institution.name}
+      </h2>
+
+      {/*
+            Two columns: the overview reads at a normal measure and the
+            highlights sit beside it rather than under it, which is what stops
+            the band being one short line across a 1,200px page.
+          */}
+      <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          {overviewParagraphs.length > 0 ? (
+            <>
+              {overviewParagraphs.map((paragraph) => (
+                <p key={paragraph.slice(0, 40)} className="mb-4 text-base text-text">
+                  {paragraph}
+                </p>
+              ))}
+
+              {/* Required by the licence, not decoration. */}
+              {institution.overviewSourceUrl && (
+                <p className="mt-6 text-sm text-text-muted">
+                  Overview adapted from{' '}
+                  <a
+                    href={institution.overviewSourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                  >
+                    Wikipedia
+                  </a>
+                  , available under CC BY-SA.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-base text-text-muted">
+              {about ??
+                `We are still writing up ${institution.name}. Our advisors know it: ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
+            </p>
+          )}
+        </div>
+
+        {(institution.highlights ?? []).length > 0 && (
+          <aside aria-labelledby="university-highlights-heading">
+            <h3
+              id="university-highlights-heading"
+              className="text-sm font-semibold uppercase tracking-[0.08em] text-text-muted"
+            >
+              Highlights
+            </h3>
+            <ul className="mt-4 flex flex-col gap-3">
+              {(institution.highlights ?? []).map((line) => (
+                <li
+                  key={line}
+                  className="rounded-md border border-border bg-surface px-4 py-3 text-sm text-text"
+                >
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
+      </div>
+
+      {(institution.qualityRatings ?? []).length > 0 && (
+        <ul className="mt-6 flex flex-wrap gap-3">
+          {(institution.qualityRatings ?? []).map((rating) => (
+            <li
+              key={`${rating.scheme}-${rating.year}`}
+              className="rounded-md border border-border bg-surface px-4 py-2 text-sm text-text-muted"
+            >
+              <span className="font-semibold text-text">
+                {rating.scheme} {rating.level}
+              </span>{' '}
+              ({rating.year})
+            </li>
+          ))}
+        </ul>
+      )}
+    </SectionBand>
   );
 
   return (
@@ -224,8 +341,18 @@ export default async function UniversityPage({
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Universities', item: absoluteUrl(ROUTES.universities) },
-              { '@type': 'ListItem', position: 2, name: institution.name, item: absoluteUrl(universityRoute(institution.slug)) },
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Universities',
+                item: absoluteUrl(ROUTES.universities),
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: institution.name,
+                item: absoluteUrl(universityRoute(institution.slug)),
+              },
             ],
           }),
         }}
@@ -294,10 +421,11 @@ export default async function UniversityPage({
           nothing except that the page is empty; showing two real ones is a
           better page than four placeholders.
         */}
-        {/* auto-fit, not a fixed four: the number of cards depends on what
-            this institution actually has, and a fixed track leaves a visible
-            hole in the row whenever that is three. */}
-        <dl className="mt-8 grid gap-4 grid-cols-[repeat(auto-fit,minmax(15rem,1fr))]">
+        {/* auto-fill, not auto-fit or a fixed four: the number of cards depends
+            on what this institution actually has. A fixed track leaves a hole
+            in the row whenever that is three, and auto-fit stretches a lone
+            card across the whole page, which reads as a layout accident. */}
+        <dl className="mt-8 grid gap-4 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))]">
           {(
             [
               institution.foundedYear && {
@@ -353,89 +481,7 @@ export default async function UniversityPage({
         </dl>
       </SectionBand>
 
-      <SectionBand labelledBy="university-about-heading">
-        <h2 id="university-about-heading" className="font-heading text-2xl font-bold text-text">
-          About {institution.name}
-        </h2>
-
-        {/*
-          Two columns: the overview reads at a normal measure and the
-          highlights sit beside it rather than under it, which is what stops
-          the band being one short line across a 1,200px page.
-        */}
-        <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-          <div className="min-w-0">
-            {overviewParagraphs.length > 0 ? (
-              <>
-                {overviewParagraphs.map((paragraph) => (
-                  <p key={paragraph.slice(0, 40)} className="mb-4 text-base text-text">
-                    {paragraph}
-                  </p>
-                ))}
-
-                {/* Required by the licence, not decoration. */}
-                {institution.overviewSourceUrl && (
-                  <p className="mt-6 text-sm text-text-muted">
-                    Overview adapted from{' '}
-                    <a
-                      href={institution.overviewSourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
-                    >
-                      Wikipedia
-                    </a>
-                    , available under CC BY-SA.
-                  </p>
-                )}
-              </>
-            ) : (
-              <p className="text-base text-text-muted">
-                {about ??
-                  `We are still writing up ${institution.name}. Our advisors know it: ask them anything about entry requirements, fees or the application, and they will answer from experience rather than a brochure.`}
-              </p>
-            )}
-          </div>
-
-          {(institution.highlights ?? []).length > 0 && (
-            <aside aria-labelledby="university-highlights-heading">
-              <h3
-                id="university-highlights-heading"
-                className="text-sm font-semibold uppercase tracking-[0.08em] text-text-muted"
-              >
-                Highlights
-              </h3>
-              <ul className="mt-4 flex flex-col gap-3">
-                {(institution.highlights ?? []).map((line) => (
-                  <li
-                    key={line}
-                    className="rounded-md border border-border bg-surface px-4 py-3 text-sm text-text"
-                  >
-                    {line}
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          )}
-        </div>
-
-        {(institution.qualityRatings ?? []).length > 0 && (
-          <ul className="mt-6 flex flex-wrap gap-3">
-            {(institution.qualityRatings ?? []).map((rating) => (
-              <li
-                key={`${rating.scheme}-${rating.year}`}
-                className="rounded-md border border-border bg-surface px-4 py-2 text-sm text-text-muted"
-              >
-                <span className="font-semibold text-text">
-                  {rating.scheme} {rating.level}
-                </span>{' '}
-                ({rating.year})
-              </li>
-            ))}
-          </ul>
-        )}
-
-      </SectionBand>
+      {!thin && aboutBand}
 
       {/*
         Keyed on the university's own count, not on this page of results: a
@@ -578,76 +624,143 @@ export default async function UniversityPage({
       )}
 
       {/*
+        What a visitor can study here, when we cannot yet say what this
+        university teaches.
+
+        The heading names the other universities before the cards do, and each
+        card carries its own institution — a suggestion that could be mistaken
+        for this university's own prospectus would be worse than an empty page.
+      */}
+      {courseCount === 0 && elsewhere.items.length > 0 && (
+        <SectionBand tone="muted" labelledBy="university-elsewhere-heading">
+          <h2
+            id="university-elsewhere-heading"
+            className="font-heading text-2xl font-bold text-text"
+          >
+            Courses at other universities in {institution.country}
+          </h2>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            We do not list {institution.name}&rsquo;s own courses yet. These are courses elsewhere
+            in {institution.country}, and an advisor can tell you what {institution.name} offers.
+          </p>
+
+          <ul className="mt-6 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {elsewhere.items.map((course) => (
+              <li key={course.id} className="h-full">
+                <CourseCard
+                  title={course.title}
+                  institution={course.institutionName}
+                  countryCode={course.countryCode}
+                  href={courseRoute(course.slug)}
+                  applyHref={applyHref({ course: course.slug })}
+                  badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
+                  facts={cardFacts(course)}
+                />
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-6 flex flex-wrap items-center gap-6 text-sm">
+            <a
+              href={`${ROUTES.explore}?tab=courses&country=${institution.countryCode}`}
+              className="rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+            >
+              Browse every course in {institution.country}
+            </a>
+            <a
+              href={ROUTES.contact}
+              className="rounded-sm text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+            >
+              Ask an advisor about {institution.name}
+            </a>
+          </p>
+        </SectionBand>
+      )}
+
+      {/*
         Hidden entirely for imported records rather than shown empty. A
         "Required documents" heading with nothing under it does not read as
         "we have not filled this in" — it reads as "no documents required",
         which is the opposite of true.
       */}
       {hasApplicationDetail && (
-      <SectionBand labelledBy={docsBandLabel}>
-        {(institution.requiredDocuments ?? []).length > 0 && (
-        <>
-        <h2 id="university-docs-heading" className="font-heading text-2xl font-bold text-text">
-          Required documents
-        </h2>
-        <div className="mt-6 flex flex-col gap-6">
-          {(institution.requiredDocuments ?? []).map((group) => (
-            <section key={group.id} aria-labelledby={`doc-${group.id}`}>
-              <h3
-                id={`doc-${group.id}`}
-                className="text-sm font-semibold uppercase tracking-[0.08em] text-text-muted"
+        <SectionBand labelledBy={docsBandLabel}>
+          {(institution.requiredDocuments ?? []).length > 0 && (
+            <>
+              <h2
+                id="university-docs-heading"
+                className="font-heading text-2xl font-bold text-text"
               >
-                {group.label}
-              </h3>
-              <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-                {group.items.map((item) => (
-                  <li key={item.name} className="rounded-md border border-border bg-surface p-4">
-                    <p className="text-sm font-medium text-text">{item.name}</p>
-                    {item.minPercentage !== undefined && (
-                      <p className="mt-1 text-sm text-text-muted">Minimum {item.minPercentage}%</p>
-                    )}
-                  </li>
+                Required documents
+              </h2>
+              <div className="mt-6 flex flex-col gap-6">
+                {(institution.requiredDocuments ?? []).map((group) => (
+                  <section key={group.id} aria-labelledby={`doc-${group.id}`}>
+                    <h3
+                      id={`doc-${group.id}`}
+                      className="text-sm font-semibold uppercase tracking-[0.08em] text-text-muted"
+                    >
+                      {group.label}
+                    </h3>
+                    <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {group.items.map((item) => (
+                        <li
+                          key={item.name}
+                          className="rounded-md border border-border bg-surface p-4"
+                        >
+                          <p className="text-sm font-medium text-text">{item.name}</p>
+                          {item.minPercentage !== undefined && (
+                            <p className="mt-1 text-sm text-text-muted">
+                              Minimum {item.minPercentage}%
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 ))}
-              </ul>
-            </section>
-          ))}
-        </div>
-        </>
-        )}
+              </div>
+            </>
+          )}
 
-        {institution.employability && (
-          <>
-            <h2
-              id="university-employability-heading"
-              className="mt-12 font-heading text-2xl font-bold text-text"
-            >
-              Employability
-            </h2>
-            <p className="mt-4 max-w-prose text-base text-text-muted">
-              {institution.employability}
-            </p>
-          </>
-        )}
+          {institution.employability && (
+            <>
+              <h2
+                id="university-employability-heading"
+                className="mt-12 font-heading text-2xl font-bold text-text"
+              >
+                Employability
+              </h2>
+              <p className="mt-4 max-w-prose text-base text-text-muted">
+                {institution.employability}
+              </p>
+            </>
+          )}
 
-        {(institution.faqs ?? []).length > 0 && (
-          <>
-            <h2
-              id="university-faqs-heading"
-              className="mt-12 font-heading text-2xl font-bold text-text"
-            >
-              Frequently asked questions
-            </h2>
-            <dl className="mt-6 flex flex-col gap-4">
-              {(institution.faqs ?? []).map((faq) => (
-                <div key={faq.question} className="rounded-lg border border-border bg-surface p-5">
-                  <dt className="font-heading text-base font-semibold text-text">{faq.question}</dt>
-                  <dd className="mt-2 text-base text-text-muted">{faq.answer}</dd>
-                </div>
-              ))}
-            </dl>
-          </>
-        )}
-      </SectionBand>
+          {(institution.faqs ?? []).length > 0 && (
+            <>
+              <h2
+                id="university-faqs-heading"
+                className="mt-12 font-heading text-2xl font-bold text-text"
+              >
+                Frequently asked questions
+              </h2>
+              <dl className="mt-6 flex flex-col gap-4">
+                {(institution.faqs ?? []).map((faq) => (
+                  <div
+                    key={faq.question}
+                    className="rounded-lg border border-border bg-surface p-5"
+                  >
+                    <dt className="font-heading text-base font-semibold text-text">
+                      {faq.question}
+                    </dt>
+                    <dd className="mt-2 text-base text-text-muted">{faq.answer}</dd>
+                  </div>
+                ))}
+              </dl>
+            </>
+          )}
+        </SectionBand>
       )}
 
       {guidance.items.length > 0 && (
@@ -684,6 +797,8 @@ export default async function UniversityPage({
           </ul>
         </SectionBand>
       )}
+
+      {thin && aboutBand}
 
       {neighbours.length > 0 && (
         <SectionBand labelledBy="university-nearby-heading">
