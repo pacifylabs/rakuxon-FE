@@ -29,6 +29,22 @@ vi.mock('@/sections/PopularDestinations', () => ({
   PopularDestinations: () => null,
 }));
 
+/* Testimonials and StudentTestimonials are likewise async Server Components
+   now, fetching admin-authored content instead of a hardcoded array. Same
+   reasoning, same stub. */
+vi.mock('@/sections/Testimonials', () => ({
+  Testimonials: () => null,
+}));
+vi.mock('@/sections/StudentTestimonials', () => ({
+  StudentTestimonials: () => null,
+}));
+
+/* MeetInstitutions now fetches admin-featured institutions instead of
+   rendering three fictional sample-bank names. Same reasoning. */
+vi.mock('@/sections/MeetInstitutions', () => ({
+  MeetInstitutions: () => null,
+}));
+
 import NotFound from './not-found';
 import AboutPage from './about/page';
 import AgenciesPage from './agencies/page';

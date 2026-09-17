@@ -6,7 +6,6 @@ import {
   MediaSection,
   SectionBand,
   StepItem,
-  TestimonialMarquee,
   TrustBadge,
   ValueProps,
 } from '@rakuxon/ui';
@@ -17,10 +16,10 @@ import {
   STUDENT_PREVIEW,
   STUDENT_REASSURANCE,
   STUDENT_STEPS,
-  STUDENT_TESTIMONIALS,
   STUDENT_VALUE_PROPS,
 } from '@/content/students';
 import { ROUTES } from '@/content/routes';
+import { StudentTestimonials } from '@/sections/StudentTestimonials';
 
 export const dynamic = 'force-static';
 
@@ -89,15 +88,7 @@ export default function StudentsPage() {
         </ol>
       </SectionBand>
 
-      <SectionBand labelledBy="students-testimonials-heading">
-        <h2
-          id="students-testimonials-heading"
-          className="text-center font-heading text-2xl font-bold text-text md:text-3xl"
-        >
-          Students who have been through it
-        </h2>
-        <TestimonialMarquee className="mt-12" testimonials={STUDENT_TESTIMONIALS} sample />
-      </SectionBand>
+      <StudentTestimonials />
 
       <SectionBand tone="surface" labelledBy="students-cta-heading">
         <CtaBand

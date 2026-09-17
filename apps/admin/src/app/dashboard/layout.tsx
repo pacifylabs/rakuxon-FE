@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, BookOpen, GraduationCap, Globe2, Landmark, LayoutGrid, ShieldCheck, Users, Wrench } from 'lucide-react';
+import { Building2, BookOpen, CalendarDays, GraduationCap, Globe2, Landmark, LayoutGrid, MessageSquareQuote, ShieldCheck, Users, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -21,13 +21,23 @@ const NAV_ITEMS: AppShellNavItem[] = [
       { href: '/dashboard/catalogue/articles', label: 'Articles', icon: BookOpen },
     ],
   },
+  {
+    label: 'Content',
+    icon: MessageSquareQuote,
+    children: [
+      { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+    ],
+  },
   { href: '/dashboard/applications', label: 'Applications', icon: Users },
   { href: '/dashboard/students', label: 'Students', icon: GraduationCap },
   { href: '/dashboard/admins', label: 'Admins', icon: Users },
   {
     label: 'Utilities',
     icon: Wrench,
-    children: [{ href: '/dashboard/utilities/countries', label: 'Countries', icon: Globe2 }],
+    children: [
+      { href: '/dashboard/utilities/countries', label: 'Countries', icon: Globe2 },
+      { href: '/dashboard/utilities/intake-terms', label: 'Intake terms', icon: CalendarDays },
+    ],
   },
 ];
 

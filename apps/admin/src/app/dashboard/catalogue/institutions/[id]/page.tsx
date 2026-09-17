@@ -42,6 +42,7 @@ interface FormState {
   tuitionCurrency: string;
   upcomingIntake: string;
   fastTrackOffer: boolean;
+  homepageFeaturedOrder: string;
   aka: string[];
   highlights: string[];
   memberships: string[];
@@ -72,6 +73,7 @@ const BLANK: FormState = {
   tuitionCurrency: '',
   upcomingIntake: '',
   fastTrackOffer: false,
+  homepageFeaturedOrder: '',
   aka: [],
   highlights: [],
   memberships: [],
@@ -103,6 +105,7 @@ function fromDetail(detail: AdminInstitutionDetail): FormState {
     tuitionCurrency: detail.tuitionCurrency ?? '',
     upcomingIntake: detail.upcomingIntake ?? '',
     fastTrackOffer: detail.fastTrackOffer,
+    homepageFeaturedOrder: detail.homepageFeaturedOrder?.toString() ?? '',
     aka: detail.aka,
     highlights: detail.highlights,
     memberships: detail.memberships,
@@ -187,6 +190,7 @@ function InstitutionEditor() {
           tuitionCurrency: form.tuitionCurrency || null,
           upcomingIntake: form.upcomingIntake || null,
           fastTrackOffer: form.fastTrackOffer,
+          homepageFeaturedOrder: form.homepageFeaturedOrder ? Number(form.homepageFeaturedOrder) : null,
           aka: form.aka.filter((v) => v.trim()),
           highlights: form.highlights.filter((v) => v.trim()),
           memberships: form.memberships.filter((v) => v.trim()),
@@ -254,6 +258,15 @@ function InstitutionEditor() {
               <input type="checkbox" checked={form.fastTrackOffer} onChange={(e) => set('fastTrackOffer', e.target.checked)} />
               Fast-track offer partner
             </label>
+
+            <FormField
+              label="Homepage position"
+              name="homepageFeaturedOrder"
+              type="number"
+              hint="Leave blank to keep this institution off the homepage showcase. A number sets its position there."
+              defaultValue={form.homepageFeaturedOrder}
+              onChange={(e) => set('homepageFeaturedOrder', e.target.value)}
+            />
 
             <div className="flex flex-col gap-2">
               <label htmlFor="about" className="text-sm font-medium text-text">

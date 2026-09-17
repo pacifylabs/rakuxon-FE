@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GraduationCap, Search, ShieldCheck } from 'lucide-react';
+import { CalendarDays, GraduationCap, Search, ShieldCheck } from 'lucide-react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ThemeProvider } from '../theme/ThemeProvider';
@@ -14,6 +14,7 @@ import { EyebrowPill } from './EyebrowPill';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { HeroFloatingCard } from './HeroFloatingCard';
+import { InstitutionCard } from './InstitutionCard';
 import { LogoBar } from './LogoBar';
 import { ProgressRing } from './ProgressRing';
 import { SectionBand } from './SectionBand';
@@ -397,6 +398,57 @@ describe('image cards', () => {
     expect(container.querySelector('blockquote')).toBeInTheDocument();
     expect(container.querySelector('figcaption')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Portrait of a smiling student' })).toBeInTheDocument();
+  });
+});
+
+describe('<InstitutionCard/>', () => {
+  const baseProps = {
+    name: 'Northfield University',
+    location: 'Northfield, United Kingdom',
+    countryCode: 'GB',
+    href: '/universities/northfield-university',
+    applyHref: '/register?university=northfield-university',
+  };
+
+  it('links its name and "View details" to the same detail page', () => {
+    render(<InstitutionCard {...baseProps} />);
+    expect(screen.getByRole('link', { name: 'Northfield University' })).toHaveAttribute(
+      'href',
+      '/universities/northfield-university',
+    );
+    expect(screen.getByRole('link', { name: 'View details' })).toHaveAttribute(
+      'href',
+      '/universities/northfield-university',
+    );
+  });
+
+  it('sends "Proceed to apply" to the apply link, not the university', () => {
+    render(<InstitutionCard {...baseProps} />);
+    expect(screen.getByRole('link', { name: 'Proceed to apply' })).toHaveAttribute(
+      'href',
+      '/register?university=northfield-university',
+    );
+  });
+
+  it('renders no fact chips when the record has nothing to back them with', () => {
+    render(<InstitutionCard {...baseProps} />);
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
+  });
+
+  it('renders each fact given, with its icon', () => {
+    render(
+      <InstitutionCard
+        {...baseProps}
+        facts={[{ icon: CalendarDays, text: 'Founded 1824' }, { text: '11,000 students' }]}
+      />,
+    );
+    expect(screen.getByText('Founded 1824')).toBeInTheDocument();
+    expect(screen.getByText('11,000 students')).toBeInTheDocument();
+  });
+
+  it('floats the fast-track badge rather than crowding the name', () => {
+    render(<InstitutionCard {...baseProps} badge="Fast-track offer" />);
+    expect(screen.getByText('Fast-track offer')).toBeInTheDocument();
   });
 });
 

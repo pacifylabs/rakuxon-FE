@@ -17,7 +17,11 @@ const nextConfig = {
   ],
   images: {
     // Marketing photography is hotlinked from Unsplash/Pexels per
-    // docs/04b-multipage-site-spec.md § 12. Narrowed to the exact image CDN
+    // docs/04b-multipage-site-spec.md § 12, plus Wikimedia Commons for real
+    // institution photos the Wikidata enrichment pipeline sources (the
+    // homepage's featured-institutions showcase and, in principle, any other
+    // grid of them — a single one-off hero uses a plain `<img>` instead,
+    // see the university detail page). Narrowed to the exact image CDN
     // hosts and their path prefixes — not a wildcard on the whole domain.
     remotePatterns: [
       {
@@ -29,6 +33,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.pexels.com',
         pathname: '/photos/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'commons.wikimedia.org',
+        pathname: '/wiki/Special:FilePath/**',
       },
     ],
   },

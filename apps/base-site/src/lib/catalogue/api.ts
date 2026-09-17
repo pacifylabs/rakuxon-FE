@@ -50,6 +50,10 @@ export interface ApiInstitution {
   city?: string;
   website?: string;
   logoUrl?: string;
+  /** From Wikidata. Absent for institutions it does not cover. */
+  heroImageUrl?: string | null;
+  foundedYear?: number | null;
+  studentCount?: number | null;
   fastTrackOffer: boolean;
   courseCount: number;
 }
@@ -112,6 +116,8 @@ export interface ApiCountry {
   countryCode: string;
   country: string;
   institutions: number;
+  /** Only set when reading the featured list. */
+  flagEmoji?: string;
 }
 
 interface Paged<T> {
@@ -167,8 +173,13 @@ async function getJson<T>(path: string, revalidate: number): Promise<T> {
   }
 }
 
-/** Destinations for the country menu, with the count behind each one. */
-export async function fetchCountries(): Promise<ApiCountry[]> {
+/**
+ * Destinations for the country menu, with the count behind each one. Pass
+ * `featured: true` for the homepage's curated row instead — an admin-set
+ * subset, in their set order, each carrying its flag.
+ */
+export async function fetchCountries(options: { featured?: boolean } = {}): Promise<ApiCountry[]> {
+  const path = options.featured ? '/countries?featured=true' : '/countries';
   try {
     /*
      * Five minutes, not an hour.
@@ -179,9 +190,9 @@ export async function fetchCountries(): Promise<ApiCountry[]> {
      * a product decision, and five minutes is the longest that still feels
      * like the toggle did something.
      */
-    return await getJson<ApiCountry[]>('/countries', 300);
+    return await getJson<ApiCountry[]>(path, 300);
   } catch (error) {
-    reportFailure('/countries', error);
+    reportFailure(path, error);
     /* The header must still render. An empty menu is a degraded page; a thrown
        error is no page at all. */
     return [];
@@ -193,6 +204,8 @@ export interface BrowseOptions {
   q?: string;
   page?: number;
   limit?: number;
+  /** Only institutions an admin has featured on the homepage, in their set order. */
+  featured?: boolean;
 }
 
 export async function fetchInstitutions(
@@ -203,6 +216,7 @@ export async function fetchInstitutions(
   if (options.q?.trim()) params.set('q', options.q.trim());
   if (options.page) params.set('page', String(options.page));
   if (options.limit) params.set('limit', String(options.limit));
+  if (options.featured) params.set('featured', 'true');
 
   try {
     const paged = await getJson<Paged<ApiInstitution>>(

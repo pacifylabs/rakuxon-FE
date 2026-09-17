@@ -1,20 +1,14 @@
 import { describe, expect, it } from 'vitest';
-
 import { institutionCardFacts } from './institution-view';
-
 describe('institutionCardFacts', () => {
   it('shows the count where we hold courses', () => {
-    expect(institutionCardFacts({ courseCount: 915, country: 'Australia' })).toEqual([
-      { label: 'Courses listed', value: '915' },
-      { label: 'Destination', value: 'Australia' },
-    ]);
+    expect(institutionCardFacts({ courseCount: 915 }).map(fact => fact.text)).toEqual(['915 courses']);
   });
-
-  it('omits the count rather than promising an advisor knows it', () => {
-    // We hold courses for 367 of 6,665 universities. "Ask an advisor" under
-    // "Courses listed" answered a different question than the one asked.
-    expect(institutionCardFacts({ courseCount: 0, country: 'United States' })).toEqual([
-      { label: 'Destination', value: 'United States' },
-    ]);
+  it('omits unavailable facts rather than inventing an advisor service', () => {
+    expect(institutionCardFacts({ courseCount: 0 })).toEqual([]);
+  });
+  it('shows sourced founding and student facts', () => {
+    expect(institutionCardFacts({ courseCount: 1, foundedYear: 1900, studentCount: 1500 }).map(fact => fact.text))
+      .toEqual(['Founded 1900', '1,500 students', '1 course']);
   });
 });

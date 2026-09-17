@@ -1,5 +1,5 @@
-import { FormField, SelectField } from '@rakuxon/ui';
-import type { ReferenceCountry, StudentProfile } from '@rakuxon/contract';
+import { SelectField } from '@rakuxon/ui';
+import type { IntakeTerm, ReferenceCountry, StudentProfile } from '@rakuxon/contract';
 
 import { toDestinationOptions } from './countryOptions';
 import { STUDY_LEVELS } from './studyLevels';
@@ -8,10 +8,12 @@ import type { UpdateProfileField } from './types';
 export function StudyPreferencesSection({
   profile,
   countries,
+  intakeTerms,
   onChange,
 }: {
   profile: StudentProfile;
   countries: ReferenceCountry[];
+  intakeTerms: IntakeTerm[];
   onChange: UpdateProfileField;
 }) {
   return (
@@ -38,12 +40,13 @@ export function StudyPreferencesSection({
           value={profile.intendedCountry ?? ''}
           onChange={(value) => onChange('intendedCountry', value || null)}
         />
-        <FormField
+        <SelectField
           label="Preferred intake"
           name="preferredIntake"
-          placeholder="e.g. 2026-09"
-          defaultValue={profile.preferredIntake ?? ''}
-          onChange={(event) => onChange('preferredIntake', event.target.value)}
+          placeholder="Select an intake"
+          options={intakeTerms.map((term) => ({ value: term.label, label: term.label }))}
+          value={profile.preferredIntake ?? ''}
+          onChange={(value) => onChange('preferredIntake', value || null)}
         />
       </div>
     </div>

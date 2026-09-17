@@ -1,14 +1,27 @@
 import { Reveal, SectionBand, UniversityCard } from '@rakuxon/ui';
 
-import { INSTITUTIONS } from '@/content/home';
+import { fetchInstitutions } from '@/lib/catalogue/api';
 
 /**
  * docs/04b § 3.7 — campus cards.
  *
- * Institution names are illustrative until real partners are signed, so the
- * list is marked `data-sample` rather than reading as a customer roster.
+ * Used to be three fictional sample-bank institutions ("Northfield
+ * University" and friends) shown to visitors as if they were real. Now reads
+ * whichever real institutions an admin has featured, each needing a real
+ * `heroImageUrl` — UniversityCard's photo is not optional, and inventing one
+ * for a real institution would be the same misrepresentation the fictional
+ * placeholders already were. An institution an admin features without
+ * Wikidata photo coverage simply will not appear here until it has one.
  */
-export function MeetInstitutions() {
+export async function MeetInstitutions() {
+  const { items } = await fetchInstitutions({ featured: true, limit: 6 });
+  const withPhotos = items.filter(
+    (institution): institution is typeof institution & { heroImageUrl: string } =>
+      Boolean(institution.heroImageUrl),
+  );
+
+  if (withPhotos.length === 0) return null;
+
   return (
     <SectionBand id="institutions" labelledBy="institutions-heading">
       <h2
@@ -18,18 +31,15 @@ export function MeetInstitutions() {
         Explore leading institutions
       </h2>
 
-      <ul
-        data-sample="true"
-        className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {INSTITUTIONS.map((institution, index) => (
-          <li key={institution.name} className="h-full">
+      <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {withPhotos.map((institution, index) => (
+          <li key={institution.id} className="h-full">
             <Reveal delay={index * 70}>
               <UniversityCard
                 name={institution.name}
                 country={institution.country}
-                src={institution.src}
-                alt={institution.alt}
+                src={institution.heroImageUrl}
+                alt={`${institution.name} campus`}
               />
             </Reveal>
           </li>

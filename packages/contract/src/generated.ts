@@ -295,6 +295,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/catalogue/intake-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preferred-intake dropdown options */
+        get: operations["CatalogueController_intakeTerms_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/catalogue/institutions": {
         parameters: {
             query?: never;
@@ -779,6 +796,58 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/countries/{code}/homepage-featured": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Set or clear a country's position in the homepage destinations row */
+        patch: operations["AdminCatalogueController_setCountryHomepageFeatured_v1"];
+        trace?: never;
+    };
+    "/v1/admin/catalogue/intake-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every intake term, including inactive ones */
+        get: operations["AdminCatalogueController_listIntakeTerms_v1"];
+        put?: never;
+        /** Add a new intake term */
+        post: operations["AdminCatalogueController_createIntakeTerm_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/catalogue/intake-terms/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit, activate or deactivate an intake term */
+        patch: operations["AdminCatalogueController_updateIntakeTerm_v1"];
         trace?: never;
     };
     "/v1/admin-auth/login": {
@@ -1652,6 +1721,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/testimonials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List published testimonials for a page placement */
+        get: operations["TestimonialsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/testimonials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List testimonials, including drafts and suspended records */
+        get: operations["AdminTestimonialsController_list_v1"];
+        put?: never;
+        /**
+         * Create a testimonial
+         * @description Starts life as draft.
+         */
+        post: operations["AdminTestimonialsController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/testimonials/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminTestimonialsController_getDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminTestimonialsController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/testimonials/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminTestimonialsController_publish_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/testimonials/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminTestimonialsController_suspend_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/testimonials/{id}/revert-to-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminTestimonialsController_revertToDraft_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1810,6 +1981,11 @@ export interface components {
             country: string;
             /** @example 456 */
             institutions: number;
+            /**
+             * @description Only set when reading the featured list.
+             * @example 🇬🇧
+             */
+            flagEmoji?: string;
         };
         CountryDto: {
             /** @example GB */
@@ -1820,6 +1996,11 @@ export interface components {
             isDestination: boolean;
             /** @example 🇬🇧 */
             flagEmoji: string;
+        };
+        IntakeTermDto: {
+            id: string;
+            /** @example September 2026 */
+            label: string;
         };
         InstitutionSummaryDto: {
             id: string;
@@ -1834,6 +2015,11 @@ export interface components {
             website?: string;
             /** @description Only where licensed; the flag is the fallback. */
             logoUrl?: string;
+            /** @description From Wikidata. Absent for institutions it does not cover. */
+            heroImageUrl?: string;
+            /** @description From Wikidata. Absent for institutions it does not cover. */
+            foundedYear?: number;
+            studentCount?: number;
             fastTrackOffer: boolean;
             /** @description Published courses at this institution. */
             courseCount: number;
@@ -2044,6 +2230,8 @@ export interface components {
             tuitionCurrency?: string | null;
             upcomingIntake?: string | null;
             fastTrackOffer: boolean;
+            /** @description Null: not in the homepage showcase. A number: its position there. */
+            homepageFeaturedOrder?: number | null;
             status: components["schemas"]["PublishStatus"];
         };
         AdminInstitutionSummaryDto: {
@@ -2090,6 +2278,7 @@ export interface components {
             tuitionCurrency?: string | null;
             upcomingIntake?: string | null;
             fastTrackOffer?: boolean;
+            homepageFeaturedOrder?: number | null;
         };
         CreateCourseDto: {
             slug: string;
@@ -2236,6 +2425,27 @@ export interface components {
             isDestination: boolean;
             /** @example 🇬🇧 */
             flagEmoji: string;
+            /** @description Null: not on the homepage. A number: its position there. */
+            homepageFeaturedOrder?: number | null;
+        };
+        SetCountryHomepageFeaturedDto: {
+            homepageFeaturedOrder: number | null;
+        };
+        AdminIntakeTermDto: {
+            id: string;
+            label: string;
+            sortOrder: number;
+            active: boolean;
+        };
+        CreateIntakeTermDto: {
+            /** @example September 2026 */
+            label: string;
+            sortOrder?: number;
+        };
+        UpdateIntakeTermDto: {
+            label?: string;
+            sortOrder?: number;
+            active?: boolean;
         };
         AdminSessionDto: {
             /** Format: uuid */
@@ -2364,9 +2574,12 @@ export interface components {
             /** @example NG */
             countryCode?: string;
         };
+        /** @enum {string} */
+        QualificationLevel: "secondary" | "foundation" | "undergraduate" | "postgraduate" | "research";
         EducationHistoryEntryDto: {
             institutionName: string;
             qualification: string;
+            level?: components["schemas"]["QualificationLevel"];
             fieldOfStudy?: string;
             startYear?: number;
             endYear?: number;
@@ -2480,7 +2693,7 @@ export interface components {
             count: number;
         };
         /** @enum {string} */
-        DocumentType: "academic_certificate" | "english_test" | "identity" | "medical" | "secondary_marksheet" | "senior_secondary_marksheet";
+        DocumentType: "academic_certificate" | "english_test" | "identity" | "medical" | "secondary_marksheet" | "senior_secondary_marksheet" | "academic_transcript" | "cv_resume" | "recommendation_letter" | "research_proposal";
         UploadSignatureRequestDto: {
             type: components["schemas"]["DocumentType"];
             /** @example transcript.pdf */
@@ -2735,6 +2948,55 @@ export interface components {
             applicationsByStatus: components["schemas"]["StatusCountDto"][];
             studentsWithCompleteProfile: number;
             studentsWithIncompleteProfile: number;
+        };
+        TestimonialDto: {
+            id: string;
+            quote: string;
+            authorName: string;
+            detail: string;
+            photoUrl?: string | null;
+        };
+        CreateTestimonialDto: {
+            quote: string;
+            authorName: string;
+            detail: string;
+            photoUrl?: string;
+            consentGiven?: boolean;
+            placement?: ("home" | "students")[];
+            displayOrder?: number;
+        };
+        AdminTestimonialDetailDto: {
+            id: string;
+            quote: string;
+            authorName: string;
+            detail: string;
+            photoUrl?: string | null;
+            consentGiven: boolean;
+            placement: ("home" | "students")[];
+            status: components["schemas"]["PublishStatus"];
+            displayOrder: number;
+        };
+        AdminTestimonialSummaryDto: {
+            id: string;
+            authorName: string;
+            detail: string;
+            hasPhoto: boolean;
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminTestimonialListDto: {
+            items: components["schemas"]["AdminTestimonialSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        UpdateTestimonialDto: {
+            quote?: string;
+            authorName?: string;
+            detail?: string;
+            photoUrl?: string | null;
+            consentGiven?: boolean;
+            placement?: ("home" | "students")[];
+            displayOrder?: number;
         };
     };
     responses: never;
@@ -3088,7 +3350,9 @@ export interface operations {
     };
     CatalogueController_countries_v1: {
         parameters: {
-            query?: never;
+            query: {
+                featured: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3124,6 +3388,25 @@ export interface operations {
             };
         };
     };
+    CatalogueController_intakeTerms_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeTermDto"][];
+                };
+            };
+        };
+    };
     CatalogueController_listInstitutions_v1: {
         parameters: {
             query?: {
@@ -3131,6 +3414,8 @@ export interface operations {
                 country?: string;
                 /** @description Free text over name, acronyms and city. */
                 q?: string;
+                /** @description Only institutions featured on the homepage, in their set order. */
+                featured?: boolean;
                 page?: number;
                 limit?: number;
                 sort?: "name" | "city";
@@ -4016,6 +4301,112 @@ export interface operations {
                 };
             };
             /** @description No country with that code. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_setCountryHomepageFeatured_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetCountryHomepageFeaturedDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCountryDto"];
+                };
+            };
+            /** @description No country with that code. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCatalogueController_listIntakeTerms_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminIntakeTermDto"][];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_createIntakeTerm_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateIntakeTermDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminIntakeTermDto"];
+                };
+            };
+        };
+    };
+    AdminCatalogueController_updateIntakeTerm_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateIntakeTermDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminIntakeTermDto"];
+                };
+            };
+            /** @description No intake term with that id. */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -5297,6 +5688,183 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminDashboardSummaryDto"];
+                };
+            };
+        };
+    };
+    TestimonialsController_list_v1: {
+        parameters: {
+            query?: {
+                placement?: "home" | "students";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestimonialDto"][];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_list_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PublishStatus"];
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialListDto"];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTestimonialDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialDetailDto"];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_getDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialDetailDto"];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTestimonialDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialDetailDto"];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_publish_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_suspend_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminTestimonialsController_revertToDraft_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTestimonialSummaryDto"];
                 };
             };
         };

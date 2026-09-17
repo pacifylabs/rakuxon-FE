@@ -1,16 +1,36 @@
 import { DestinationCard, Reveal, SectionBand } from '@rakuxon/ui';
 
 import { DESTINATIONS } from '@/content/home';
-import { fetchCountryCounts } from '@/lib/catalogue/institutions';
+import { fetchCountries } from '@/lib/catalogue/api';
 
-/** docs/04b § 3.6 — six country cards linking to the destination pages. */
+/**
+ * docs/04b § 3.6 — country cards linking to the destination pages.
+ *
+ * Membership and order are admin-set (Countries screen, "Homepage position")
+ * rather than a fixed six, and counts come from Rakuxon's own catalogue
+ * instead of the external ror.org registry this used to call — one fewer
+ * runtime dependency, and a count that always agrees with what publishing
+ * actually changed.
+ *
+ * The photography stays curated in `DESTINATIONS` rather than becoming
+ * admin-uploaded: there is no image-hosting path in this product for
+ * marketing photos (Cloudinary here is document uploads only), so a country
+ * an admin features without a matching curated photo simply does not appear
+ * — the same "only show what we actually have" rule the rest of the
+ * catalogue follows.
+ */
 export async function PopularDestinations() {
-  /* Same live registry count DestinationCounts uses further down the page —
-     matched by name, since DESTINATIONS predates that endpoint and never
-     carried an ISO code. Falls back to no count rather than failing the
-     section if the registry is unreachable. */
-  const counts = await fetchCountryCounts();
-  const countByName = new Map(counts.items.map((entry) => [entry.country, entry.institutions]));
+  const featured = await fetchCountries({ featured: true });
+  const imageByCountry = new Map(DESTINATIONS.map((destination) => [destination.country, destination]));
+
+  const cards = featured
+    .map((entry) => {
+      const image = imageByCountry.get(entry.country);
+      return image ? { ...image, count: entry.institutions } : null;
+    })
+    .filter((card): card is NonNullable<typeof card> => card !== null);
+
+  if (cards.length === 0) return null;
 
   return (
     <SectionBand tone="muted" id="destinations" labelledBy="destinations-heading">
@@ -25,27 +45,23 @@ export async function PopularDestinations() {
       </p>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {DESTINATIONS.map((destination, index) => {
-          const count = countByName.get(destination.country);
-
-          return (
-            <li key={destination.country} className="h-full">
-              <Reveal delay={index * 70}>
-                <DestinationCard
-                  country={destination.country}
-                  href={destination.href}
-                  src={destination.src}
-                  alt={destination.alt}
-                  description={
-                    count
-                      ? `${count.toLocaleString('en-GB')} universit${count === 1 ? 'y' : 'ies'} in the catalogue.`
-                      : undefined
-                  }
-                />
-              </Reveal>
-            </li>
-          );
-        })}
+        {cards.map((card, index) => (
+          <li key={card.country} className="h-full">
+            <Reveal delay={index * 70}>
+              <DestinationCard
+                country={card.country}
+                href={card.href}
+                src={card.src}
+                alt={card.alt}
+                description={
+                  card.count
+                    ? `${card.count.toLocaleString('en-GB')} universit${card.count === 1 ? 'y' : 'ies'} in the catalogue.`
+                    : undefined
+                }
+              />
+            </Reveal>
+          </li>
+        ))}
       </ul>
     </SectionBand>
   );

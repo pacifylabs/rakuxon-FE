@@ -1,0 +1,198 @@
+'use client';
+
+import { MessageSquareQuote } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { ApiError, NetworkError } from '@rakuxon/api-client';
+import { Button, DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import type { DataTableColumn } from '@rakuxon/ui';
+import type { AdminTestimonialSummary, PublishStatus } from '@rakuxon/contract';
+
+import { PublishStatusBadge } from '@/components/dashboard/PublishStatusBadge';
+import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
+
+const STATUS_FILTERS: Array<{ value: PublishStatus | 'all'; label: string }> = [
+  { value: 'all', label: 'All' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'published', label: 'Published' },
+  { value: 'suspended', label: 'Suspended' },
+];
+
+function TestimonialsList() {
+  const client = useAdminApiClient();
+  const { hasPermission } = useAdminAuth();
+  const [items, setItems] = useState<AdminTestimonialSummary[] | null>(null);
+  const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
+  const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<PublishStatus | 'all'>('all');
+  const [page, setPage] = useState(1);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const result = await client.listAdminTestimonials({
+        status: statusFilter === 'all' ? undefined : statusFilter,
+        page,
+      });
+      setItems(result.items);
+      setPageInfo({ page: result.page, pageCount: result.pageCount });
+      setError(null);
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not load testimonials. Please try again.',
+      );
+    }
+  }, [client, statusFilter, page]);
+
+  useEffect(() => {
+    setItems(null);
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
+
+  async function runAction(row: AdminTestimonialSummary, action: 'publish' | 'suspend' | 'revert') {
+    setPendingId(row.id);
+    try {
+      const updated =
+        action === 'publish'
+          ? await client.publishTestimonial(row.id)
+          : action === 'suspend'
+            ? await client.suspendTestimonial(row.id)
+            : await client.revertTestimonialToDraft(row.id);
+
+      setItems((current) => current?.map((entry) => (entry.id === updated.id ? updated : entry)) ?? null);
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'That action could not be completed. Please try again.',
+      );
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  const columns: DataTableColumn<AdminTestimonialSummary>[] = [
+    {
+      header: 'Author',
+      cell: (row) => <p className="font-heading text-sm font-semibold text-text">{row.authorName}</p>,
+    },
+    { header: 'Detail', cell: (row) => <p className="text-sm text-text-muted">{row.detail}</p> },
+    { header: 'Photo', cell: (row) => (row.hasPhoto ? 'Yes' : 'No') },
+    { header: 'Status', cell: (row) => <PublishStatusBadge status={row.status} /> },
+    {
+      header: 'Actions',
+      className: 'text-right',
+      cell: (row) => (
+        <div className="flex justify-end gap-3">
+          <a
+            href={`/dashboard/content/testimonials/${row.id}`}
+            className="rounded-sm text-sm font-semibold text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+          >
+            Edit
+          </a>
+          {row.status !== 'published' && hasPermission('content.manage') && (
+            <Button variant="primary" size="md" disabled={pendingId === row.id} onClick={() => runAction(row, 'publish')}>
+              Publish
+            </Button>
+          )}
+          {row.status === 'published' && hasPermission('content.manage') && (
+            <Button variant="ghost" size="md" disabled={pendingId === row.id} onClick={() => runAction(row, 'suspend')}>
+              Suspend
+            </Button>
+          )}
+          {row.status !== 'draft' && hasPermission('content.manage') && (
+            <Button variant="ghost" size="md" disabled={pendingId === row.id} onClick={() => runAction(row, 'revert')}>
+              Revert to draft
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <section aria-labelledby="testimonials-heading">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 id="testimonials-heading" className="font-heading text-3xl font-bold text-text">
+            Testimonials
+          </h1>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            What shows in the homepage and students-page testimonial sections. A photo requires
+            recorded consent from the person it shows.
+          </p>
+        </div>
+        {hasPermission('content.manage') && (
+          <Button variant="primary" size="md" onClick={() => window.location.assign('/dashboard/content/testimonials/new')}>
+            New testimonial
+          </Button>
+        )}
+      </div>
+
+      <div role="group" aria-label="Filter by status" className="mt-6 flex flex-wrap gap-2">
+        {STATUS_FILTERS.map((filter) => (
+          <button
+            key={filter.value}
+            type="button"
+            onClick={() => setStatusFilter(filter.value)}
+            aria-pressed={statusFilter === filter.value}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              statusFilter === filter.value
+                ? 'bg-primary text-on-primary'
+                : 'bg-surface-muted text-text-muted hover:bg-accent-soft'
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
+      {error && (
+        <p role="alert" className="mt-6 text-base text-danger">
+          {error}
+        </p>
+      )}
+
+      {!items && !error && (
+        <p role="status" className="mt-6 text-base text-text-muted">
+          Loading…
+        </p>
+      )}
+
+      {items && (
+        <div className="mt-6">
+          <DataTable
+            columns={columns}
+            rows={items}
+            getRowKey={(row) => row.id}
+            emptyState={
+              <EmptyState
+                icon={MessageSquareQuote}
+                title="No testimonials match this filter"
+                description="Try a different status."
+              />
+            }
+          />
+          <Pagination page={pageInfo.page} pageCount={pageInfo.pageCount} onPageChange={setPage} />
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default function TestimonialsPage() {
+  return (
+    <RequirePermission
+      permissions={['content.view']}
+      denied={<p className="text-base text-text-muted">Your account does not have permission to view content.</p>}
+    >
+      <TestimonialsList />
+    </RequirePermission>
+  );
+}

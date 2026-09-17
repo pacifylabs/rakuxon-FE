@@ -95,36 +95,6 @@ export const STUDENT_REASSURANCE = [
   { icon: FileCheck2, label: 'Checked before submission' },
 ];
 
-export const STUDENT_TESTIMONIALS = [
-  {
-    quote:
-      'I applied to five universities in three countries and genuinely could not have kept it straight on my own. The thing that saved me was seeing what was still missing, in one list, every time I logged in.',
-    name: 'Ifeoma A.',
-    detail: 'Nigeria → Ireland, MSc Data Science',
-    src: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
-    alt: 'Portrait of a student outdoors',
-    searchTerm: 'young man portrait',
-  },
-  {
-    quote:
-      'My transcript had my middle name and my passport did not. Nobody had told me that mattered. It got flagged before I submitted rather than six weeks into a review.',
-    name: 'Grace M.',
-    detail: 'Kenya → Canada, BSc Nursing',
-    src: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80',
-    alt: 'Portrait of a smiling young woman',
-    searchTerm: 'young woman portrait',
-  },
-  {
-    quote:
-      'Four universities, four different portals, all wanting the same six documents. Uploading each one once and having it follow me across every application saved me an entire fortnight.',
-    name: 'Tobi A.',
-    detail: 'Ghana → Germany, MSc Mechanical Engineering',
-    src: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&q=80',
-    alt: 'Portrait of a student in a grey shirt',
-    searchTerm: 'young man portrait',
-  },
-];
-
 export const STUDENTS_CTA = {
   heading: 'Your application, without the guesswork',
   subline: 'Build a profile in ten minutes and see which programs actually fit.',
@@ -135,5 +105,4 @@ export const STUDENTS_CTA = {
 export const STUDENTS_IMAGE_SLOTS: readonly (ImageSlot & { slot: string })[] = [
   { slot: '/students hero', ...STUDENTS_HERO.image },
   { slot: '/students upload preview', ...STUDENT_PREVIEW.image },
-  ...STUDENT_TESTIMONIALS.map((t) => ({ slot: `/students testimonial ${t.name}`, ...t })),
 ];

@@ -1,7 +1,9 @@
 import { Plus, Trash2 } from 'lucide-react';
 
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, SelectField } from '@rakuxon/ui';
 import type { EducationHistoryEntry } from '@rakuxon/contract';
+
+import { QUALIFICATION_LEVELS } from './qualificationLevels';
 
 export function EducationHistorySection({
   entries,
@@ -35,9 +37,19 @@ export function EducationHistorySection({
               <FormField
                 label="Qualification"
                 name={`qualification-${index}`}
-                placeholder="e.g. WAEC, A-Levels"
+                placeholder="e.g. WAEC, A-Levels, BSc Computer Science"
                 defaultValue={entry.qualification}
                 onChange={(event) => onChange(index, { qualification: event.target.value })}
+              />
+              <SelectField
+                label="Level"
+                name={`level-${index}`}
+                placeholder="Select a level"
+                options={QUALIFICATION_LEVELS}
+                value={entry.level ?? ''}
+                onChange={(value) =>
+                  onChange(index, { level: (value || undefined) as EducationHistoryEntry['level'] })
+                }
               />
               <FormField
                 label="Field of study"

@@ -10,6 +10,37 @@ import type { AdminCountry } from '@rakuxon/contract';
 
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
+/** A small number field that only saves when its value actually changes on
+    blur — so tabbing through the table without touching a field never fires
+    a spurious write. */
+function HomepageOrderField({
+  value,
+  disabled,
+  onSave,
+}: {
+  value: number | null | undefined;
+  disabled: boolean;
+  onSave: (order: number | null) => void;
+}) {
+  return (
+    <input
+      type="number"
+      min={1}
+      defaultValue={value ?? ''}
+      disabled={disabled}
+      placeholder="Not featured"
+      aria-label="Homepage position"
+      className="w-28 rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-text focus-visible:outline-none focus-visible:ring disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-muted"
+      onBlur={(event) => {
+        const raw = event.target.value.trim();
+        const next = raw === '' ? null : Number(raw);
+        if (next === (value ?? null)) return;
+        onSave(next);
+      }}
+    />
+  );
+}
+
 function CountriesList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
@@ -53,6 +84,22 @@ function CountriesList() {
     }
   }
 
+  async function setFeatured(country: AdminCountry, homepageFeaturedOrder: number | null) {
+    setPendingCode(country.code);
+    try {
+      const updated = await client.setCountryHomepageFeatured(country.code, { homepageFeaturedOrder });
+      setCountries((current) => current?.map((row) => (row.code === updated.code ? updated : row)) ?? null);
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'That action could not be completed. Please try again.',
+      );
+    } finally {
+      setPendingCode(null);
+    }
+  }
+
   const filtered = (countries ?? []).filter((country) =>
     country.name.toLowerCase().includes(query.trim().toLowerCase()),
   );
@@ -77,6 +124,16 @@ function CountriesList() {
       ),
     },
     {
+      header: 'Homepage',
+      cell: (row) => (
+        <HomepageOrderField
+          value={row.homepageFeaturedOrder}
+          disabled={!hasPermission('catalogue.publish') || pendingCode === row.code}
+          onSave={(order) => setFeatured(row, order)}
+        />
+      ),
+    },
+    {
       header: 'Actions',
       className: 'text-right',
       cell: (row) =>
@@ -97,7 +154,9 @@ function CountriesList() {
       </h1>
       <p className="mt-2 max-w-prose text-base text-text-muted">
         Which countries feed the "where do you want to study" dropdown. Nationality and address
-        fields always use the full reference list regardless of this setting.
+        fields always use the full reference list regardless of this setting. Give a country a
+        homepage position to show it in the marketing site's destinations row — leave it blank to
+        keep it off the homepage.
       </p>
 
       <label className="mt-6 flex max-w-xs items-center gap-2 text-sm text-text-muted">

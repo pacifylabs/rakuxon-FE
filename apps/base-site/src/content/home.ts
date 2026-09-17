@@ -257,43 +257,6 @@ export const DESTINATIONS: readonly DestinationContent[] = [
   },
 ];
 
-/* ---------------------------------------------------- § 3.7 institutions */
-
-export interface InstitutionContent extends ImageSlot {
-  name: string;
-  country: string;
-}
-
-export const INSTITUTIONS: readonly InstitutionContent[] = [
-  {
-    name: 'Northfield University',
-    country: 'United Kingdom',
-    src: 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80',
-    alt: 'University campus building',
-    searchTerm: 'university campus',
-  },
-  {
-    name: 'Westbrook College',
-    country: 'Canada',
-    src: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=800&q=80',
-    /* 04b called this "Historic university hall"; it is a modern building. */
-    alt: 'Modern red-brick university building and plaza',
-    searchTerm: 'university hall',
-  },
-  {
-    name: 'Lakeside Institute',
-    country: 'Australia',
-    /*
-     * 04b § 3.7 specified photo-1607013251379 as "Modern campus courtyard".
-     * That URL loads fine but the photograph is a cheeseburger — the alt text
-     * and the image did not match. Swapped and verified by eye.
-     */
-    src: 'https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b?w=800&q=80',
-    alt: 'Campus walkway between two university buildings',
-    searchTerm: 'campus courtyard',
-  },
-];
-
 /* ---------------------------------------------------- § 3.8 testimonials */
 
 /**
@@ -446,7 +409,6 @@ export const COURSE_PATHS: readonly CoursePath[] = [
 export const HOME_IMAGE_SLOTS: readonly (ImageSlot & { slot: string })[] = [
   ...HERO_AVATARS.map((image, index) => ({ slot: `§3.1 avatar ${index + 1}`, ...image })),
   ...DESTINATIONS.map((d) => ({ slot: `§3.6 ${d.country}`, ...d })),
-  ...INSTITUTIONS.map((i) => ({ slot: `§3.7 ${i.name}`, ...i })),
   ...AUDIENCES.map((a) => ({ slot: `§3.9 ${a.title}`, ...a })),
   ...COURSE_PATHS.map((p) => ({ slot: `course path ${p.title}`, ...p })),
 ];

@@ -7,6 +7,7 @@ import type {
   CountryCount,
   CreateApplicationRequest,
   HealthResponse,
+  IntakeTerm,
   IssueOnboardingLinkRequest,
   LoginRequest,
   Notification,
@@ -215,6 +216,11 @@ export class ApiClient {
   /** Every country, for a profile or address form's dropdown. Public — no session needed. */
   listReferenceCountries(): Promise<ReferenceCountry[]> {
     return this.request<ReferenceCountry[]>('/v1/catalogue/countries/reference');
+  }
+
+  /** Active options for the preferred-intake dropdown. Public — no session needed. */
+  listIntakeTerms(): Promise<IntakeTerm[]> {
+    return this.request<IntakeTerm[]>('/v1/catalogue/intake-terms');
   }
 
   /** Destinations with a published institution count, for a "where to study" teaser. */

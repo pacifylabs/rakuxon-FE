@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useAuth } from '@rakuxon/auth';
@@ -11,14 +11,38 @@ const PASSWORD_MIN = 8;
 
 type FieldErrors = Partial<Record<'email' | 'firstName' | 'lastName' | 'password', string>>;
 
+/** Carries the course/university a visitor was looking at through to the
+    dashboard, so applying does not ask them to find it a second time —
+    shared by the already-signed-in redirect below and the post-registration
+    one further down. */
+function dashboardHrefFor(searchParams: URLSearchParams): string {
+  const params = new URLSearchParams();
+  const course = searchParams.get('course');
+  const university = searchParams.get('university');
+  if (course) params.set('course', course);
+  if (university) params.set('university', university);
+  const query = params.toString();
+  return query ? `/dashboard?${query}` : '/dashboard';
+}
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { registerStudent } = useAuth();
+  const { registerStudent, user, ready } = useAuth();
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  /* A visitor who is already signed in and clicks "Proceed to apply" lands
+     here with a real session — showing them a registration form instead of
+     carrying their course/university straight into the dashboard is the bug,
+     not a feature. */
+  useEffect(() => {
+    if (ready && user) router.replace(dashboardHrefFor(searchParams));
+  }, [ready, user, router, searchParams]);
+
+  if (!ready || user) return null;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,16 +70,7 @@ function RegisterForm() {
     setPending(true);
     try {
       await registerStudent(values);
-
-      /* Carries the course/university the visitor was looking at through to
-         the dashboard, so applying does not ask them to find it a second time. */
-      const params = new URLSearchParams();
-      const course = searchParams.get('course');
-      const university = searchParams.get('university');
-      if (course) params.set('course', course);
-      if (university) params.set('university', university);
-      const query = params.toString();
-      router.push(query ? `/dashboard?${query}` : '/dashboard');
+      router.push(dashboardHrefFor(searchParams));
     } catch (error) {
       if (error instanceof ApiError && error.isConflict) {
         setFieldErrors({ email: error.message });

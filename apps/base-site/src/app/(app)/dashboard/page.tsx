@@ -13,6 +13,7 @@ import type {
   StudentProfile,
 } from '@rakuxon/contract';
 
+import { ApplyIntentResolver } from '@/components/dashboard/ApplyIntentResolver';
 import { profileCompleteness } from '@/components/dashboard/profile/completeness';
 import { DOCUMENT_TYPES } from '@/components/dashboard/documentTypes';
 import { ExploreDestinations } from '@/components/dashboard/home/ExploreDestinations';
@@ -120,6 +121,8 @@ export default function DashboardPage() {
 
   return (
     <section aria-labelledby="dashboard-heading">
+      <ApplyIntentResolver />
+
       <h1 id="dashboard-heading" className="font-heading text-3xl font-bold text-text">
         {firstName ? `Welcome back, ${firstName}` : 'Welcome back'}
       </h1>

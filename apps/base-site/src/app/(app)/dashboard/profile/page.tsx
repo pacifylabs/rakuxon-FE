@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
 import { Button, ProgressBar, Tabs } from '@rakuxon/ui';
-import type { EducationHistoryEntry, ReferenceCountry, StudentProfile } from '@rakuxon/contract';
+import type { EducationHistoryEntry, IntakeTerm, ReferenceCountry, StudentProfile } from '@rakuxon/contract';
 
 import { AddressSection } from '@/components/dashboard/profile/AddressSection';
 import { profileCompleteness } from '@/components/dashboard/profile/completeness';
@@ -22,6 +22,7 @@ export default function ProfilePage() {
 
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [countries, setCountries] = useState<ReferenceCountry[]>([]);
+  const [intakeTerms, setIntakeTerms] = useState<IntakeTerm[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -58,6 +59,21 @@ export default function ProfilePage() {
            a broken page — logged, not surfaced, since it isn't the field the
            visitor came to fill in. */
         console.error('[profile] country list failed to load:', error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const loaded = await client.listIntakeTerms();
+        if (!cancelled) setIntakeTerms(loaded);
+      } catch (error) {
+        console.error('[profile] intake term list failed to load:', error);
       }
     })();
     return () => {
@@ -206,7 +222,12 @@ export default function ProfilePage() {
               label: 'Preferences',
               icon: <Settings2 aria-hidden="true" className="size-4" />,
               content: (
-                <StudyPreferencesSection profile={profile} countries={countries} onChange={update} />
+                <StudyPreferencesSection
+                  profile={profile}
+                  countries={countries}
+                  intakeTerms={intakeTerms}
+                  onChange={update}
+                />
               ),
             },
           ]}

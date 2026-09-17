@@ -33,6 +33,7 @@ export type StudentProfile = Schemas['StudentProfileDto'];
 export type UpdateStudentProfileRequest = Schemas['UpdateStudentProfileDto'];
 export type Address = Schemas['AddressDto'];
 export type EducationHistoryEntry = Schemas['EducationHistoryEntryDto'];
+export type QualificationLevel = Schemas['QualificationLevel'];
 export type DocumentType = Schemas['DocumentType'];
 export type DocumentStatus = Schemas['DocumentStatus'];
 export type UploadSignatureRequest = Schemas['UploadSignatureRequestDto'];
@@ -49,6 +50,9 @@ export type ReferenceCountry = Schemas['CountryDto'];
 export type CountryCount = Schemas['CountryCountDto'];
 export type ArticleSummary = Schemas['ArticleSummaryDto'];
 export type ArticleList = Schemas['ArticleListDto'];
+
+export type Testimonial = Schemas['TestimonialDto'];
+export type IntakeTerm = Schemas['IntakeTermDto'];
 
 /*
  * Admin — a fully separate identity system from the above (own table, own
@@ -90,6 +94,10 @@ export type AdminArticleSummary = Schemas['AdminArticleSummaryDto'];
 export type AdminArticleList = Schemas['AdminArticleListDto'];
 export type PublishStatus = Schemas['PublishStatus'];
 export type AdminCountry = Schemas['AdminCountryDto'];
+export type SetCountryHomepageFeaturedRequest = Schemas['SetCountryHomepageFeaturedDto'];
+export type AdminIntakeTerm = Schemas['AdminIntakeTermDto'];
+export type CreateIntakeTermRequest = Schemas['CreateIntakeTermDto'];
+export type UpdateIntakeTermRequest = Schemas['UpdateIntakeTermDto'];
 
 export type AdminArticleDetail = Schemas['AdminArticleDetailDto'];
 export type UpdateArticleRequest = Schemas['UpdateArticleDto'];
@@ -125,6 +133,12 @@ export type UpdateStudentAdminRequest = Schemas['UpdateStudentAdminDto'];
 
 export type StatusCount = Schemas['StatusCountDto'];
 export type AdminDashboardSummary = Schemas['AdminDashboardSummaryDto'];
+
+export type AdminTestimonialSummary = Schemas['AdminTestimonialSummaryDto'];
+export type AdminTestimonialList = Schemas['AdminTestimonialListDto'];
+export type AdminTestimonialDetail = Schemas['AdminTestimonialDetailDto'];
+export type CreateTestimonialRequest = Schemas['CreateTestimonialDto'];
+export type UpdateTestimonialRequest = Schemas['UpdateTestimonialDto'];
 
 /** Mirrors the backend enum. Kept as a const object so it survives erasure. */
 export const Role = {

@@ -14,12 +14,16 @@ import type {
   AdminInstitutionDetail,
   AdminInstitutionList,
   AdminInstitutionSummary,
+  AdminIntakeTerm,
   AdminList,
   AdminLoginRequest,
   AdminLoginResult,
   AdminStudentDetail,
   AdminStudentList,
   AdminSummary,
+  AdminTestimonialDetail,
+  AdminTestimonialList,
+  AdminTestimonialSummary,
   ChangeAdminPasswordRequest,
   ConfirmAdminPasswordResetRequest,
   ConfirmDocumentUploadRequest,
@@ -27,9 +31,12 @@ import type {
   CreateArticleRequest,
   CreateCourseRequest,
   CreateInstitutionRequest,
+  CreateIntakeTermRequest,
+  CreateTestimonialRequest,
   DisableTotpRequest,
   Permission,
   RejectDocumentRequest,
+  SetCountryHomepageFeaturedRequest,
   StudentDocument,
   Tenant,
   TenantList,
@@ -39,7 +46,9 @@ import type {
   UpdateArticleRequest,
   UpdateCourseRequest,
   UpdateInstitutionRequest,
+  UpdateIntakeTermRequest,
   UpdateStudentAdminRequest,
+  UpdateTestimonialRequest,
   UploadSignature,
   UploadSignatureRequest,
   VerifyAdminTotpLoginRequest,
@@ -327,6 +336,49 @@ export class AdminApiClient {
     });
   }
 
+  listAdminTestimonials(
+    query: { status?: string; page?: number; limit?: number } = {},
+  ): Promise<AdminTestimonialList> {
+    return this.request<AdminTestimonialList>(`/v1/admin/testimonials${toQuery(query)}`, { auth: true });
+  }
+
+  getTestimonialDetail(id: string): Promise<AdminTestimonialDetail> {
+    return this.request<AdminTestimonialDetail>(`/v1/admin/testimonials/${id}`, { auth: true });
+  }
+
+  updateTestimonial(id: string, body: UpdateTestimonialRequest): Promise<AdminTestimonialDetail> {
+    return this.request<AdminTestimonialDetail>(`/v1/admin/testimonials/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  createTestimonial(body: CreateTestimonialRequest): Promise<AdminTestimonialDetail> {
+    return this.request<AdminTestimonialDetail>('/v1/admin/testimonials', { method: 'POST', body, auth: true });
+  }
+
+  publishTestimonial(id: string): Promise<AdminTestimonialSummary> {
+    return this.request<AdminTestimonialSummary>(`/v1/admin/testimonials/${id}/publish`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  suspendTestimonial(id: string): Promise<AdminTestimonialSummary> {
+    return this.request<AdminTestimonialSummary>(`/v1/admin/testimonials/${id}/suspend`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  revertTestimonialToDraft(id: string): Promise<AdminTestimonialSummary> {
+    return this.request<AdminTestimonialSummary>(`/v1/admin/testimonials/${id}/revert-to-draft`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
   /* ---------------------------------------------------------------- countries */
 
   listAdminCountries(): Promise<AdminCountry[]> {
@@ -343,6 +395,37 @@ export class AdminApiClient {
   deactivateCountry(code: string): Promise<AdminCountry> {
     return this.request<AdminCountry>(`/v1/admin/catalogue/countries/${code}/deactivate`, {
       method: 'POST',
+      auth: true,
+    });
+  }
+
+  setCountryHomepageFeatured(
+    code: string,
+    body: SetCountryHomepageFeaturedRequest,
+  ): Promise<AdminCountry> {
+    return this.request<AdminCountry>(`/v1/admin/catalogue/countries/${code}/homepage-featured`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  listAdminIntakeTerms(): Promise<AdminIntakeTerm[]> {
+    return this.request<AdminIntakeTerm[]>('/v1/admin/catalogue/intake-terms', { auth: true });
+  }
+
+  createIntakeTerm(body: CreateIntakeTermRequest): Promise<AdminIntakeTerm> {
+    return this.request<AdminIntakeTerm>('/v1/admin/catalogue/intake-terms', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  updateIntakeTerm(id: string, body: UpdateIntakeTermRequest): Promise<AdminIntakeTerm> {
+    return this.request<AdminIntakeTerm>(`/v1/admin/catalogue/intake-terms/${id}`, {
+      method: 'PATCH',
+      body,
       auth: true,
     });
   }

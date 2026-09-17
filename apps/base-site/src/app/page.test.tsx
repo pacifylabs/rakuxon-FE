@@ -8,10 +8,8 @@ import {
   TRUST_BAR,
   CAPABILITIES,
   HOME_IMAGE_SLOTS,
-  INSTITUTIONS,
   STATS,
   STEPS,
-  TESTIMONIALS,
 } from '@/content/home';
 import { CLOSING_CTA } from '@/content/home';
 import HomePage from './page';
@@ -27,10 +25,25 @@ vi.mock('@/sections/DestinationCounts', () => ({
   DestinationCounts: () => null,
 }));
 
-/* Same reasoning as above: PopularDestinations now fetches the live registry
-   too, to show a count per destination card. */
+/* PopularDestinations is likewise an async Server Component now, reading
+   admin-featured countries from Rakuxon's own catalogue instead of a
+   hardcoded array and the external ror.org registry. Same reasoning. */
 vi.mock('@/sections/PopularDestinations', () => ({
   PopularDestinations: () => null,
+}));
+
+/* Testimonials now fetches admin-authored content from the API rather than
+   rendering a hardcoded array — same async-Server-Component reasoning as the
+   two mocks above. Its own rendering logic (mapping fields, hiding the
+   section when empty) is covered by Testimonials.test.tsx instead. */
+vi.mock('@/sections/Testimonials', () => ({
+  Testimonials: () => null,
+}));
+
+/* MeetInstitutions now fetches admin-featured institutions instead of
+   rendering three fictional sample-bank names. Same reasoning. */
+vi.mock('@/sections/MeetInstitutions', () => ({
+  MeetInstitutions: () => null,
 }));
 
 function renderHome() {
@@ -68,8 +81,11 @@ describe('home page structure', () => {
       'Your study abroad journey, simplified.',
       'Rakuxon by the numbers',
       'How it works',
-      'Explore leading institutions',
-      'Success stories that inspire',
+      // PopularDestinations, MeetInstitutions and Testimonials are mocked to
+      // null above — all three are async Server Components now, fetching
+      // admin-managed content; MeetInstitutions and Testimonials each have
+      // their own rendering covered elsewhere (MeetInstitutions.test.tsx,
+      // Testimonials.test.tsx).
       'Start your journey with us',
       'Ready to start your journey?',
     ]);
@@ -221,7 +237,7 @@ describe('§3.4 stat bar', () => {
   it('carries Rakuxon Ltd’s real figures, no longer flagged as samples', () => {
     renderHome();
     // These are attributable now (rakuxon.com), so a sample marker would be
-    // the inaccurate thing. The institutions list is still illustrative.
+    // the inaccurate thing.
     for (const stat of STATS) {
       // CountUp renders the figure twice on purpose: an sr-only span carrying
       // the final value, and an aria-hidden span that animates.
@@ -255,38 +271,6 @@ describe('§3.5 how it works', () => {
     const items = within(list as HTMLElement).getAllByRole('listitem');
     expect(items).toHaveLength(STEPS.length);
     expect(items[0]).toHaveTextContent('Build your profile');
-  });
-});
-
-describe('§3.7 institutions', () => {
-  it('renders each campus card', () => {
-    renderHome();
-    for (const institution of INSTITUTIONS) {
-      expect(screen.getByRole('heading', { name: institution.name })).toBeInTheDocument();
-    }
-  });
-});
-
-describe('§3.8 testimonials', () => {
-  it('renders each quote with its attributed name', () => {
-    const { container } = renderHome();
-    // The marquee renders the list twice to make the loop seamless; the seam
-    // copy is aria-hidden, so assert against the announced list only.
-    const announced = container.querySelector(
-      '[data-testimonial-marquee] ul:not([aria-hidden])',
-    ) as HTMLElement;
-
-    for (const testimonial of TESTIMONIALS) {
-      expect(within(announced).getByText(testimonial.quote)).toBeInTheDocument();
-      expect(within(announced).getByText(testimonial.name)).toBeInTheDocument();
-    }
-  });
-
-  it('hides the seam copy from assistive technology so quotes are heard once', () => {
-    const { container } = renderHome();
-    const lists = container.querySelectorAll('[data-testimonial-marquee] ul');
-    expect(lists).toHaveLength(2);
-    expect(lists[1]).toHaveAttribute('aria-hidden', 'true');
   });
 });
 

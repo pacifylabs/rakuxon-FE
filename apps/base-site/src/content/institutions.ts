@@ -13,9 +13,12 @@ export const INSTITUTIONS_HERO = {
   primaryCta: { label: 'Partner with us', href: SIGN_UP },
   secondaryCta: { label: 'See how it works', href: '#institution-workflow' },
   image: {
-    src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1400&q=80',
-    alt: 'University campus building with students walking outside',
-    searchTerm: 'university campus building',
+    /* Was photo-1523050854058-8df90110c9f1, which Unsplash has since taken
+       down (404 at the source, not a rendering bug). Reused from
+       universities.ts, which already vetted it as a real campus building. */
+    src: 'https://images.unsplash.com/photo-1562774053-701939374585?w=1400&q=80',
+    alt: 'University campus building',
+    searchTerm: 'university campus',
   } satisfies ImageSlot,
 } as const;
 
