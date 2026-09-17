@@ -15,6 +15,7 @@ import type {
 } from '@rakuxon/contract';
 
 import { CampusesEditor } from '@/components/dashboard/editors/CampusesEditor';
+import { ImageUploadField } from '@/components/dashboard/ImageUploadField';
 import { EnglishTestsEditor } from '@/components/dashboard/editors/EnglishTestsEditor';
 import { FaqsEditor } from '@/components/dashboard/editors/FaqsEditor';
 import { QualityRatingsEditor } from '@/components/dashboard/editors/QualityRatingsEditor';
@@ -190,7 +191,9 @@ function InstitutionEditor() {
           tuitionCurrency: form.tuitionCurrency || null,
           upcomingIntake: form.upcomingIntake || null,
           fastTrackOffer: form.fastTrackOffer,
-          homepageFeaturedOrder: form.homepageFeaturedOrder ? Number(form.homepageFeaturedOrder) : null,
+          homepageFeaturedOrder: form.homepageFeaturedOrder
+            ? Number(form.homepageFeaturedOrder)
+            : null,
           aka: form.aka.filter((v) => v.trim()),
           highlights: form.highlights.filter((v) => v.trim()),
           memberships: form.memberships.filter((v) => v.trim()),
@@ -233,29 +236,113 @@ function InstitutionEditor() {
 
       <form onSubmit={handleSubmit} className="mt-8 flex max-w-3xl flex-col gap-8">
         <div className="grid gap-6 sm:grid-cols-2">
-          <FormField label="Name" name="name" defaultValue={form.name} onChange={(e) => set('name', e.target.value)} required />
-          <FormField label="Slug" name="slug" defaultValue={form.slug} onChange={(e) => set('slug', e.target.value)} required />
-          <FormField label="Country" name="country" defaultValue={form.country} onChange={(e) => set('country', e.target.value)} required />
-          <FormField label="Country code" name="countryCode" placeholder="GB" defaultValue={form.countryCode} onChange={(e) => set('countryCode', e.target.value.toUpperCase())} required />
-          <FormField label="City" name="city" defaultValue={form.city} onChange={(e) => set('city', e.target.value)} />
-          <FormField label="Website" name="website" defaultValue={form.website} onChange={(e) => set('website', e.target.value)} />
+          <FormField
+            label="Name"
+            name="name"
+            defaultValue={form.name}
+            onChange={(e) => set('name', e.target.value)}
+            required
+          />
+          <FormField
+            label="Slug"
+            name="slug"
+            defaultValue={form.slug}
+            onChange={(e) => set('slug', e.target.value)}
+            required
+          />
+          <FormField
+            label="Country"
+            name="country"
+            defaultValue={form.country}
+            onChange={(e) => set('country', e.target.value)}
+            required
+          />
+          <FormField
+            label="Country code"
+            name="countryCode"
+            placeholder="GB"
+            defaultValue={form.countryCode}
+            onChange={(e) => set('countryCode', e.target.value.toUpperCase())}
+            required
+          />
+          <FormField
+            label="City"
+            name="city"
+            defaultValue={form.city}
+            onChange={(e) => set('city', e.target.value)}
+          />
+          <FormField
+            label="Website"
+            name="website"
+            defaultValue={form.website}
+            onChange={(e) => set('website', e.target.value)}
+          />
         </div>
 
         {!isNew && (
           <>
             <div className="grid gap-6 sm:grid-cols-2">
-              <FormField label="Logo URL" name="logoUrl" defaultValue={form.logoUrl} onChange={(e) => set('logoUrl', e.target.value)} />
-              <FormField label="Hero image URL" name="heroImageUrl" defaultValue={form.heroImageUrl} onChange={(e) => set('heroImageUrl', e.target.value)} />
-              <FormField label="Motto" name="motto" defaultValue={form.motto} onChange={(e) => set('motto', e.target.value)} />
-              <FormField label="Founded year" name="foundedYear" type="number" defaultValue={form.foundedYear} onChange={(e) => set('foundedYear', e.target.value)} />
-              <FormField label="Student count" name="studentCount" type="number" defaultValue={form.studentCount} onChange={(e) => set('studentCount', e.target.value)} />
-              <FormField label="Upcoming intake" name="upcomingIntake" placeholder="Sep 2026" defaultValue={form.upcomingIntake} onChange={(e) => set('upcomingIntake', e.target.value)} />
-              <FormField label="Tuition from" name="tuitionFrom" placeholder="18500.00" defaultValue={form.tuitionFrom} onChange={(e) => set('tuitionFrom', e.target.value)} />
-              <FormField label="Tuition currency" name="tuitionCurrency" placeholder="GBP" defaultValue={form.tuitionCurrency} onChange={(e) => set('tuitionCurrency', e.target.value.toUpperCase())} />
+              <ImageUploadField
+                label="Logo"
+                folder="institutions"
+                value={form.logoUrl}
+                onChange={(url) => set('logoUrl', url)}
+              />
+              <ImageUploadField
+                label="Hero image"
+                folder="institutions"
+                value={form.heroImageUrl}
+                onChange={(url) => set('heroImageUrl', url)}
+              />
+              <FormField
+                label="Motto"
+                name="motto"
+                defaultValue={form.motto}
+                onChange={(e) => set('motto', e.target.value)}
+              />
+              <FormField
+                label="Founded year"
+                name="foundedYear"
+                type="number"
+                defaultValue={form.foundedYear}
+                onChange={(e) => set('foundedYear', e.target.value)}
+              />
+              <FormField
+                label="Student count"
+                name="studentCount"
+                type="number"
+                defaultValue={form.studentCount}
+                onChange={(e) => set('studentCount', e.target.value)}
+              />
+              <FormField
+                label="Upcoming intake"
+                name="upcomingIntake"
+                placeholder="Sep 2026"
+                defaultValue={form.upcomingIntake}
+                onChange={(e) => set('upcomingIntake', e.target.value)}
+              />
+              <FormField
+                label="Tuition from"
+                name="tuitionFrom"
+                placeholder="18500.00"
+                defaultValue={form.tuitionFrom}
+                onChange={(e) => set('tuitionFrom', e.target.value)}
+              />
+              <FormField
+                label="Tuition currency"
+                name="tuitionCurrency"
+                placeholder="GBP"
+                defaultValue={form.tuitionCurrency}
+                onChange={(e) => set('tuitionCurrency', e.target.value.toUpperCase())}
+              />
             </div>
 
             <label className="flex items-center gap-2 text-sm text-text">
-              <input type="checkbox" checked={form.fastTrackOffer} onChange={(e) => set('fastTrackOffer', e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={form.fastTrackOffer}
+                onChange={(e) => set('fastTrackOffer', e.target.checked)}
+              />
               Fast-track offer partner
             </label>
 
@@ -292,7 +379,13 @@ function InstitutionEditor() {
                 rows={6}
                 className="w-full rounded-md border border-border bg-surface px-4 py-3 text-base text-text focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
               />
-              <FormField label="Overview source URL" name="overviewSourceUrl" defaultValue={form.overviewSourceUrl} onChange={(e) => set('overviewSourceUrl', e.target.value)} hint="Required if the overview text is quoted from elsewhere." />
+              <FormField
+                label="Overview source URL"
+                name="overviewSourceUrl"
+                defaultValue={form.overviewSourceUrl}
+                onChange={(e) => set('overviewSourceUrl', e.target.value)}
+                hint="Required if the overview text is quoted from elsewhere."
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -308,15 +401,37 @@ function InstitutionEditor() {
               />
             </div>
 
-            <StringArrayEditor label="Alternate names (aka)" values={form.aka} onChange={(v) => set('aka', v)} />
-            <StringArrayEditor label="Highlights" values={form.highlights} onChange={(v) => set('highlights', v)} />
-            <StringArrayEditor label="Memberships" values={form.memberships} onChange={(v) => set('memberships', v)} placeholder="Russell Group" />
+            <StringArrayEditor
+              label="Alternate names (aka)"
+              values={form.aka}
+              onChange={(v) => set('aka', v)}
+            />
+            <StringArrayEditor
+              label="Highlights"
+              values={form.highlights}
+              onChange={(v) => set('highlights', v)}
+            />
+            <StringArrayEditor
+              label="Memberships"
+              values={form.memberships}
+              onChange={(v) => set('memberships', v)}
+              placeholder="Russell Group"
+            />
 
             <CampusesEditor values={form.campuses} onChange={(v) => set('campuses', v)} />
-            <RequirementGroupsEditor values={form.requiredDocuments} onChange={(v) => set('requiredDocuments', v)} />
-            <EnglishTestsEditor values={form.englishTests} onChange={(v) => set('englishTests', v)} />
+            <RequirementGroupsEditor
+              values={form.requiredDocuments}
+              onChange={(v) => set('requiredDocuments', v)}
+            />
+            <EnglishTestsEditor
+              values={form.englishTests}
+              onChange={(v) => set('englishTests', v)}
+            />
             <FaqsEditor values={form.faqs} onChange={(v) => set('faqs', v)} />
-            <QualityRatingsEditor values={form.qualityRatings} onChange={(v) => set('qualityRatings', v)} />
+            <QualityRatingsEditor
+              values={form.qualityRatings}
+              onChange={(v) => set('qualityRatings', v)}
+            />
           </>
         )}
 
@@ -330,7 +445,12 @@ function InstitutionEditor() {
           <Button type="submit" variant="primary" size="lg" disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
           </Button>
-          <Button type="button" variant="ghost" size="lg" onClick={() => router.push('/dashboard/catalogue/institutions')}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            onClick={() => router.push('/dashboard/catalogue/institutions')}
+          >
             Cancel
           </Button>
         </div>
@@ -343,7 +463,11 @@ export default function InstitutionEditorPage() {
   return (
     <RequirePermission
       permissions={['catalogue.publish']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to edit the catalogue.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to edit the catalogue.
+        </p>
+      }
     >
       <InstitutionEditor />
     </RequirePermission>

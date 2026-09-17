@@ -3,14 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { ThemeProvider } from '@rakuxon/ui';
 
-import {
-  AUDIENCES,
-  TRUST_BAR,
-  CAPABILITIES,
-  HOME_IMAGE_SLOTS,
-  STATS,
-  STEPS,
-} from '@/content/home';
+import { AUDIENCES, TRUST_BAR, CAPABILITIES, HOME_IMAGE_SLOTS, STATS, STEPS } from '@/content/home';
 import { CLOSING_CTA } from '@/content/home';
 import HomePage from './page';
 
@@ -310,10 +303,9 @@ describe('images', () => {
   });
 
   it('renders one image per declared slot', () => {
-    // Excludes the marquee's aria-hidden seam copy, which deliberately repeats
-    // the testimonial portraits to make the loop continuous. Also excludes
-    // §3.6: PopularDestinations is mocked to null above, for the same reason
-    // DestinationCounts is — both are async Server Components RTL cannot render.
+    // Excludes §3.6: PopularDestinations is mocked to null above, for the same
+    // reason DestinationCounts is — both are async Server Components RTL
+    // cannot render.
     const { container } = renderHome();
     const shown = [...container.querySelectorAll('img')].filter(
       (image) => !image.closest('[aria-hidden="true"]'),

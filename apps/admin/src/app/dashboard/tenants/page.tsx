@@ -41,7 +41,7 @@ function TenantsList() {
       setError(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not load tenants. Please try again.',
+          : 'Could not load partners. Please try again.',
       );
     }
   }, [client, statusFilter, page]);
@@ -68,7 +68,9 @@ function TenantsList() {
             ? await client.suspendTenant(tenant.id)
             : await client.reactivateTenant(tenant.id);
 
-      setTenants((current) => current?.map((row) => (row.id === updated.id ? updated : row)) ?? null);
+      setTenants(
+        (current) => current?.map((row) => (row.id === updated.id ? updated : row)) ?? null,
+      );
     } catch (caught) {
       setError(
         caught instanceof ApiError || caught instanceof NetworkError
@@ -97,17 +99,32 @@ function TenantsList() {
       cell: (tenant) => (
         <div className="flex justify-end gap-3">
           {tenant.status === 'pending' && hasPermission('tenants.approve') && (
-            <Button variant="primary" size="md" disabled={pendingActionId === tenant.id} onClick={() => runAction(tenant, 'approve')}>
+            <Button
+              variant="primary"
+              size="md"
+              disabled={pendingActionId === tenant.id}
+              onClick={() => runAction(tenant, 'approve')}
+            >
               Approve
             </Button>
           )}
           {tenant.status === 'active' && hasPermission('tenants.suspend') && (
-            <Button variant="ghost" size="md" disabled={pendingActionId === tenant.id} onClick={() => runAction(tenant, 'suspend')}>
+            <Button
+              variant="ghost"
+              size="md"
+              disabled={pendingActionId === tenant.id}
+              onClick={() => runAction(tenant, 'suspend')}
+            >
               Suspend
             </Button>
           )}
           {tenant.status === 'suspended' && hasPermission('tenants.approve') && (
-            <Button variant="ghost" size="md" disabled={pendingActionId === tenant.id} onClick={() => runAction(tenant, 'reactivate')}>
+            <Button
+              variant="ghost"
+              size="md"
+              disabled={pendingActionId === tenant.id}
+              onClick={() => runAction(tenant, 'reactivate')}
+            >
               Reactivate
             </Button>
           )}
@@ -119,11 +136,11 @@ function TenantsList() {
   return (
     <section aria-labelledby="tenants-heading">
       <h1 id="tenants-heading" className="font-heading text-3xl font-bold text-text">
-        Tenants
+        Partners
       </h1>
       <p className="mt-2 max-w-prose text-base text-text-muted">
-        Agencies that have registered on the platform. Approve a pending agency before it can
-        invite students.
+        Agencies that have registered on the platform. Approve a pending agency before it can invite
+        students.
       </p>
 
       <div role="group" aria-label="Filter by status" className="mt-6 flex flex-wrap gap-2">
@@ -165,7 +182,7 @@ function TenantsList() {
             emptyState={
               <EmptyState
                 icon={ShieldCheck}
-                title="No tenants match this filter"
+                title="No partners match this filter"
                 description="Try a different status, or check back once an agency registers."
               />
             }
@@ -183,7 +200,7 @@ export default function TenantsPage() {
       permissions={['tenants.view']}
       denied={
         <p className="text-base text-text-muted">
-          Your account does not have permission to view tenants.
+          Your account does not have permission to view partners.
         </p>
       }
     >

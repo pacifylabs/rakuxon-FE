@@ -3,6 +3,17 @@ import { fileURLToPath } from 'node:url';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      { source: '/login', destination: '/auth/login', permanent: false },
+      { source: '/register', destination: '/auth/register', permanent: false },
+      { source: '/forgot-password', destination: '/auth/forgot-password', permanent: false },
+      { source: '/reset-password/:token', destination: '/auth/reset-password/:token', permanent: false },
+      { source: '/verify-email/:token', destination: '/auth/verify-email/:token', permanent: false },
+      { source: '/invite/:token', destination: '/auth/invite/:token', permanent: false },
+      { source: '/sso/callback', destination: '/auth/sso/callback', permanent: false },
+    ];
+  },
   output: 'standalone',
   outputFileTracingRoot: fileURLToPath(new URL('../../', import.meta.url)),
   poweredByHeader: false,

@@ -9,7 +9,7 @@ const replace = vi.fn();
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push, replace }) }));
 
 import DashboardPage from './dashboard/page';
-import LoginPage from './login/page';
+import LoginPage from './auth/login/page';
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -18,7 +18,14 @@ const session = (role: string) => ({
   accessToken: 'a',
   refreshToken: 'r',
   expiresIn: 900,
-  user: { id: 'u1', email: 'user@b.test', firstName: 'Test', lastName: 'User', role, tenantId: 't1' },
+  user: {
+    id: 'u1',
+    email: 'user@b.test',
+    firstName: 'Test',
+    lastName: 'User',
+    role,
+    tenantId: 't1',
+  },
   expiresAt: Date.now() + 900_000,
 });
 
@@ -63,7 +70,7 @@ describe('institution-portal sign-in', () => {
 describe('institution-portal dashboard', () => {
   it('sends a signed-out visitor to sign in, showing nothing protected', async () => {
     renderApp(<DashboardPage />);
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('/auth/login'));
     expect(screen.queryByText('Application inbox')).not.toBeInTheDocument();
   });
 

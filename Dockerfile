@@ -8,6 +8,8 @@ RUN pnpm install --frozen-lockfile
 FROM dependencies AS build
 ARG APP_NAME
 ARG NEXT_PUBLIC_API_BASE_URL=/api
+ARG NEXT_PUBLIC_PARTNER_APP_URL=http://localhost:3002
+ENV NEXT_PUBLIC_PARTNER_APP_URL=$NEXT_PUBLIC_PARTNER_APP_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 # Build-time catalogue requests fail fast; runtime uses the private API.
 ENV API_INTERNAL_URL=http://127.0.0.1:3001

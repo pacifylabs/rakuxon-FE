@@ -24,7 +24,7 @@ function Workspace() {
               variant="ghost"
               onClick={async () => {
                 await signOut();
-                router.push('/login');
+                router.push('/auth/login');
               }}
             >
               Sign out
@@ -79,7 +79,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   return (
-    <GuardedPage onUnauthenticated={() => router.replace('/login')}>
+    <GuardedPage onUnauthenticated={() => router.replace('/auth/login')}>
       <Workspace />
     </GuardedPage>
   );

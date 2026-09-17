@@ -33,14 +33,16 @@ describe('<Testimonials/>', () => {
 
     await renderTestimonials();
 
-    // The marquee renders the list twice to make the loop seamless, so a
-    // real quote is expected to appear more than once.
-    expect(screen.getAllByText('Rakuxon made it happen.').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Amara').length).toBeGreaterThan(0);
+    expect(screen.getByText('Rakuxon made it happen.')).toBeInTheDocument();
+    expect(screen.getByText('Amara')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'See all reviews' })).toBeInTheDocument();
   });
 
   it('renders nothing when there are no published testimonials, rather than an empty heading', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => ok([])));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ok([])),
+    );
 
     await renderTestimonials();
 

@@ -40,6 +40,10 @@ export function UniversityBrowser({
   showSignUpPrompt = true,
 }: Props) {
   const { items, total, page, pageCount, error } = result;
+  /* Inside the dashboard, an institution card should open the dashboard's own
+     copy of the detail page (basePath + slug) rather than the public one, so
+     "Proceed to apply" never has to leave the app shell to reach it. */
+  const inDashboard = basePath !== ROUTES.universities;
 
   const hrefFor = (next: { country?: string; q?: string; page?: number }) => {
     const params = new URLSearchParams();
@@ -133,8 +137,12 @@ export function UniversityBrowser({
                   name={institution.name}
                   location={formatLocation(institution.city, institution.country)}
                   countryCode={institution.countryCode}
-                  href={universityRoute(institution.slug)}
-                  applyHref={applyHref({ university: institution.slug })}
+                  href={inDashboard ? `${basePath}/${institution.slug}` : universityRoute(institution.slug)}
+                  applyHref={
+                    inDashboard
+                      ? `${basePath}/${institution.slug}#courses`
+                      : applyHref({ university: institution.slug })
+                  }
                   badge={institution.fastTrackOffer ? 'Fast-track offer' : undefined}
                   facts={institutionCardFacts(institution)}
                 />

@@ -1,8 +1,15 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { AuthProvider } from '@rakuxon/auth';
 
 import type { ApiCourse } from '@/lib/catalogue/api';
+
+const push = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push }),
+}));
 
 import { CourseBrowser } from './CourseBrowser';
 
@@ -96,5 +103,55 @@ describe('CourseBrowser', () => {
     } finally {
       Storage.prototype.getItem = getItem;
     }
+  });
+});
+
+describe('CourseBrowser (dashboardApply)', () => {
+  const json = (status: number, body: unknown) =>
+    new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+  beforeEach(() => {
+    push.mockClear();
+    window.sessionStorage.setItem(
+      'rakuxon.session',
+      JSON.stringify({
+        accessToken: 'access-1',
+        refreshToken: 'refresh-1',
+        user: { id: 'u1', email: 'ada@b.test', firstName: 'Ada', lastName: 'Lovelace', role: 'student' },
+        expiresAt: Date.now() + 900_000,
+      }),
+    );
+  });
+
+  afterEach(() => {
+    window.sessionStorage.clear();
+    vi.unstubAllGlobals();
+  });
+
+  const renderDashboard = () =>
+    render(
+      <AuthProvider baseUrl="https://api.test">
+        <CourseBrowser courses={courses} dashboardApply />
+      </AuthProvider>,
+    );
+
+  it('renders "Proceed to apply" as a button, not a link, so it never leaves the dashboard', () => {
+    renderDashboard();
+    expect(screen.queryAllByRole('link', { name: 'Proceed to apply' })).toHaveLength(0);
+    expect(screen.getAllByRole('button', { name: 'Proceed to apply' })).toHaveLength(2);
+  });
+
+  it('creates the application directly and lands on its detail page, with no /register round trip', async () => {
+    const fetchMock = vi.fn(async () => json(201, { id: 'app-uuid-1' }));
+    vi.stubGlobal('fetch', fetchMock);
+    renderDashboard();
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'Proceed to apply' })[0]!);
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/dashboard/applications/app-uuid-1'));
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/v1/applications'),
+      expect.objectContaining({ method: 'POST' }),
+    );
   });
 });

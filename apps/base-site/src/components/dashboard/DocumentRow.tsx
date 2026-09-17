@@ -1,11 +1,11 @@
 'use client';
 
-import { CheckCircle2, FileText, Trash2, Upload, XCircle } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { CheckCircle2, FileText, Trash2, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { Button } from '@rakuxon/ui';
+import { DropzoneUploader } from '@rakuxon/ui';
 import type { DocumentType, StudentDocument } from '@rakuxon/contract';
 
 function formatBytes(bytes: number | null): string {
@@ -29,7 +29,6 @@ export interface DocumentRowProps {
  */
 export function DocumentRow({ type, label, document, onUploaded, onDeleted }: DocumentRowProps) {
   const client = useApiClient();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +75,6 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
       );
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
     }
   }
 
@@ -137,25 +135,16 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
       </div>
 
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-        <input
-          ref={inputRef}
-          type="file"
-          className="hidden"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) void handleFile(file);
-          }}
-        />
         {uploaded ? (
           <>
-            <Button
-              variant="ghost"
-              type="button"
+            <DropzoneUploader
+              label="Replace"
+              layout="inline"
+              variant="document"
+              onUpload={handleFile}
+              uploading={uploading}
               disabled={uploading}
-              onClick={() => inputRef.current?.click()}
-            >
-              Replace
-            </Button>
+            />
             <button
               type="button"
               onClick={handleDelete}
@@ -167,15 +156,14 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
             </button>
           </>
         ) : (
-          <Button
-            variant="accent"
-            type="button"
+          <DropzoneUploader
+            label={rejected ? 'Upload replacement' : 'Upload'}
+            layout="inline"
+            variant="document"
+            onUpload={handleFile}
+            uploading={uploading}
             disabled={uploading}
-            onClick={() => inputRef.current?.click()}
-          >
-            <Upload aria-hidden="true" className="mr-2 inline size-4" />
-            {uploading ? 'Uploading…' : rejected ? 'Upload replacement' : 'Upload'}
-          </Button>
+          />
         )}
       </div>
     </div>

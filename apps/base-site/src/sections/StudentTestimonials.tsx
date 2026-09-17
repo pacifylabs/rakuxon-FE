@@ -1,6 +1,7 @@
-import { SectionBand, TestimonialMarquee } from '@rakuxon/ui';
-import type { SliderTestimonial } from '@rakuxon/ui';
+import { AppLink, SectionBand, TestimonialGrid } from '@rakuxon/ui';
+import type { GridTestimonial } from '@rakuxon/ui';
 
+import { ROUTES } from '@/content/routes';
 import { fetchTestimonials } from '@/lib/testimonials/api';
 
 /**
@@ -14,7 +15,8 @@ export async function StudentTestimonials() {
   const testimonials = await fetchTestimonials('students');
   if (testimonials.length === 0) return null;
 
-  const slides: SliderTestimonial[] = testimonials.map((testimonial) => ({
+  const cards: GridTestimonial[] = testimonials.map((testimonial) => ({
+    id: testimonial.id,
     quote: testimonial.quote,
     name: testimonial.authorName,
     detail: testimonial.detail,
@@ -30,7 +32,16 @@ export async function StudentTestimonials() {
       >
         Students who have been through it
       </h2>
-      <TestimonialMarquee className="mt-12" testimonials={slides} />
+      <TestimonialGrid className="mt-12" testimonials={cards} />
+
+      <div className="mt-8 flex justify-center">
+        <AppLink
+          href={ROUTES.testimonials}
+          className="rounded-sm text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+        >
+          See all reviews
+        </AppLink>
+      </div>
     </SectionBand>
   );
 }

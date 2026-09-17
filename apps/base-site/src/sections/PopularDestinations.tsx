@@ -1,4 +1,4 @@
-import { DestinationCard, Reveal, SectionBand } from '@rakuxon/ui';
+import { DestinationCard, SectionBand } from '@rakuxon/ui';
 
 import { DESTINATIONS } from '@/content/home';
 import { fetchCountries } from '@/lib/catalogue/api';
@@ -21,7 +21,9 @@ import { fetchCountries } from '@/lib/catalogue/api';
  */
 export async function PopularDestinations() {
   const featured = await fetchCountries({ featured: true });
-  const imageByCountry = new Map(DESTINATIONS.map((destination) => [destination.country, destination]));
+  const imageByCountry = new Map(
+    DESTINATIONS.map((destination) => [destination.country, destination]),
+  );
 
   const cards = featured
     .map((entry) => {
@@ -45,21 +47,19 @@ export async function PopularDestinations() {
       </p>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card, index) => (
+        {cards.map((card) => (
           <li key={card.country} className="h-full">
-            <Reveal delay={index * 70}>
-              <DestinationCard
-                country={card.country}
-                href={card.href}
-                src={card.src}
-                alt={card.alt}
-                description={
-                  card.count
-                    ? `${card.count.toLocaleString('en-GB')} universit${card.count === 1 ? 'y' : 'ies'} in the catalogue.`
-                    : undefined
-                }
-              />
-            </Reveal>
+            <DestinationCard
+              country={card.country}
+              href={card.href}
+              src={card.src}
+              alt={card.alt}
+              description={
+                card.count
+                  ? `${card.count.toLocaleString('en-GB')} universit${card.count === 1 ? 'y' : 'ies'} in the catalogue.`
+                  : undefined
+              }
+            />
           </li>
         ))}
       </ul>

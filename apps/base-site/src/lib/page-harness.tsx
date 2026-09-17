@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 
+import { AuthProvider } from '@rakuxon/auth';
 import { Footer, Header, ThemeProvider } from '@rakuxon/ui';
 
 import {
@@ -22,24 +23,31 @@ import {
 /**
  * Renders a page inside the same shell app/layout.tsx provides, so a page test
  * can assert on real landmarks rather than a bare fragment.
+ *
+ * Wrapped in `AuthProvider` because `layout.tsx` really does wrap every page
+ * in one (via `SessionProvider`) — a component reached from here that calls
+ * `useAuth()`/`useApiClient()` (the header itself, or a course card's apply
+ * action) needs the same context in the test as it has in production.
  */
 export function renderPage(page: ReactElement) {
   return render(
-    <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
-      <Header navLinks={NAV_LINKS} logIn={LOG_IN_LINK} getStarted={GET_STARTED_LINK} />
-      <main id="main">{page}</main>
-      <Footer
-        tagline={FOOTER_TAGLINE}
-        domain={FOOTER_DOMAIN}
-        email={CONTACT_EMAIL}
-        addresses={CONTACT_ADDRESSES}
-            phones={CONTACT_PHONES}
-            blurb={FOOTER_BLURB}
-        columns={FOOTER_COLUMNS}
-        socials={SOCIALS}
-        legalLinks={FOOTER_LEGAL_LINKS}
-      />
-    </ThemeProvider>,
+    <AuthProvider baseUrl="https://api.test">
+      <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
+        <Header navLinks={NAV_LINKS} logIn={LOG_IN_LINK} getStarted={GET_STARTED_LINK} />
+        <main id="main">{page}</main>
+        <Footer
+          tagline={FOOTER_TAGLINE}
+          domain={FOOTER_DOMAIN}
+          email={CONTACT_EMAIL}
+          addresses={CONTACT_ADDRESSES}
+          phones={CONTACT_PHONES}
+          blurb={FOOTER_BLURB}
+          columns={FOOTER_COLUMNS}
+          socials={SOCIALS}
+          legalLinks={FOOTER_LEGAL_LINKS}
+        />
+      </ThemeProvider>
+    </AuthProvider>,
   );
 }
 

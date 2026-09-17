@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  BookOpen,
-  FileStack,
-  GraduationCap,
-  Landmark,
-  ShieldCheck,
-  Users,
-} from 'lucide-react';
+import { BookOpen, FileStack, GraduationCap, Landmark, ShieldCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -33,7 +26,17 @@ function labelFor(key: string): string {
   return STATUS_LABELS[key] ?? key;
 }
 
-function StatCard({ icon: Icon, label, value, href }: { icon: LucideIcon; label: string; value: number; href: string }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  href,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: number;
+  href: string;
+}) {
   return (
     <a
       href={href}
@@ -98,26 +101,63 @@ function DashboardHome() {
       {summary && (
         <>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <StatCard icon={ShieldCheck} label="Tenants" value={summary.totalTenants} href="/dashboard/tenants" />
-            <StatCard icon={Landmark} label="Institutions" value={summary.totalInstitutions} href="/dashboard/catalogue/institutions" />
-            <StatCard icon={GraduationCap} label="Courses" value={summary.totalCourses} href="/dashboard/catalogue/courses" />
-            <StatCard icon={BookOpen} label="Articles" value={summary.totalArticles} href="/dashboard/catalogue/articles" />
-            <StatCard icon={Users} label="Students" value={summary.totalStudents} href="/dashboard/students" />
-            <StatCard icon={FileStack} label="Applications" value={summary.totalApplications} href="/dashboard/applications" />
+            <StatCard
+              icon={ShieldCheck}
+              label="Partners"
+              value={summary.totalTenants}
+              href="/dashboard/tenants"
+            />
+            <StatCard
+              icon={Landmark}
+              label="Institutions"
+              value={summary.totalInstitutions}
+              href="/dashboard/catalogue/institutions"
+            />
+            <StatCard
+              icon={GraduationCap}
+              label="Courses"
+              value={summary.totalCourses}
+              href="/dashboard/catalogue/courses"
+            />
+            <StatCard
+              icon={BookOpen}
+              label="Articles"
+              value={summary.totalArticles}
+              href="/dashboard/catalogue/articles"
+            />
+            <StatCard
+              icon={Users}
+              label="Students"
+              value={summary.totalStudents}
+              href="/dashboard/students"
+            />
+            <StatCard
+              icon={FileStack}
+              label="Applications"
+              value={summary.totalApplications}
+              href="/dashboard/applications"
+            />
           </div>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-2">
             <div className="rounded-lg border border-border bg-surface p-6">
-              <h2 className="font-heading text-lg font-semibold text-text">Applications by status</h2>
+              <h2 className="font-heading text-lg font-semibold text-text">
+                Applications by status
+              </h2>
               <div className="mt-6">
                 <BarChart
-                  data={summary.applicationsByStatus.map((row) => ({ label: labelFor(row.key), value: row.count }))}
+                  data={summary.applicationsByStatus.map((row) => ({
+                    label: labelFor(row.key),
+                    value: row.count,
+                  }))}
                 />
               </div>
             </div>
 
             <div className="rounded-lg border border-border bg-surface p-6">
-              <h2 className="font-heading text-lg font-semibold text-text">Student profile completion</h2>
+              <h2 className="font-heading text-lg font-semibold text-text">
+                Student profile completion
+              </h2>
               <div className="mt-6">
                 <PieChart
                   data={[
@@ -129,16 +169,28 @@ function DashboardHome() {
             </div>
 
             <div className="rounded-lg border border-border bg-surface p-6">
-              <h2 className="font-heading text-lg font-semibold text-text">Tenants by status</h2>
+              <h2 className="font-heading text-lg font-semibold text-text">Partners by status</h2>
               <div className="mt-6">
-                <BarChart data={summary.tenantsByStatus.map((row) => ({ label: labelFor(row.key), value: row.count }))} />
+                <BarChart
+                  data={summary.tenantsByStatus.map((row) => ({
+                    label: labelFor(row.key),
+                    value: row.count,
+                  }))}
+                />
               </div>
             </div>
 
             <div className="rounded-lg border border-border bg-surface p-6">
-              <h2 className="font-heading text-lg font-semibold text-text">Institutions by status</h2>
+              <h2 className="font-heading text-lg font-semibold text-text">
+                Institutions by status
+              </h2>
               <div className="mt-6">
-                <PieChart data={summary.institutionsByStatus.map((row) => ({ label: labelFor(row.key), value: row.count }))} />
+                <PieChart
+                  data={summary.institutionsByStatus.map((row) => ({
+                    label: labelFor(row.key),
+                    value: row.count,
+                  }))}
+                />
               </div>
             </div>
           </div>

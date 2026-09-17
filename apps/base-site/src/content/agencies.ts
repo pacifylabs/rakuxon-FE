@@ -1,7 +1,7 @@
 import { BookOpenCheck, Coins, FileSearch, LayoutDashboard, Link2, Users } from 'lucide-react';
 
 import type { ImageSlot } from './home';
-import { ROUTES, SIGN_UP } from './routes';
+import { PARTNER_SIGN_UP, ROUTES } from './routes';
 
 /** /agencies — docs/04b § 5. Angle: operational leverage and margin. */
 
@@ -10,7 +10,7 @@ export const AGENCIES_HERO = {
   title: 'Grow your recruitment business, no platform fees.',
   subcopy:
     'You already know how to place students. What slows you down is chasing documents over WhatsApp, rebuilding the same profile for each university, and never quite knowing which applications are stuck. That is the part we take.',
-  primaryCta: { label: 'Become a partner', href: SIGN_UP },
+  primaryCta: { label: 'Become a partner', href: PARTNER_SIGN_UP },
   secondaryCta: { label: 'See how it works', href: '#partner-workflow' },
   image: {
     src: 'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=1400&q=80',
@@ -102,7 +102,7 @@ export const AGENCY_BENEFITS = [
 export const AGENCIES_CTA = {
   heading: 'Bring your desk onto one board',
   subline: 'Move your current students across and see the pipeline in an afternoon.',
-  cta: { label: 'Join our network', href: SIGN_UP },
+  cta: { label: 'Join our network', href: PARTNER_SIGN_UP },
   reassurance: 'No platform fee. No minimum volume.',
 } as const;
 

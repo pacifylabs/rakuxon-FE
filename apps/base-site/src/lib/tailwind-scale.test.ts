@@ -41,8 +41,6 @@ const KEYWORDS = new Set([
   'content',
   'prose',
   'card-float',
-  'card-quote',
-  'card-quote-lg',
   'media',
 ]);
 

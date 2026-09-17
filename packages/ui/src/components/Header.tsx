@@ -25,6 +25,8 @@ export interface HeaderProps {
   navLinks: readonly NavLink[];
   logIn: NavLink;
   getStarted: NavLink;
+  /** Replaces the log-in/get-started pair with a single link, for a visitor already signed in. */
+  signedInAs?: NavLink;
   className?: string;
 }
 
@@ -154,7 +156,7 @@ function MobileNavItem({ link, onNavigate }: { link: NavLink; onNavigate: () => 
  * Below `lg` the nav collapses behind a disclosure button rather than being
  * hidden outright, so every destination stays reachable on a phone.
  */
-export function Header({ navLinks, logIn, getStarted, className }: HeaderProps) {
+export function Header({ navLinks, logIn, getStarted, signedInAs, className }: HeaderProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -185,10 +187,16 @@ export function Header({ navLinks, logIn, getStarted, className }: HeaderProps) 
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button href={logIn.href} variant="ghost" className="hidden sm:inline-flex">
-            {logIn.label}
-          </Button>
-          <Button href={getStarted.href}>{getStarted.label}</Button>
+          {signedInAs ? (
+            <Button href={signedInAs.href}>{signedInAs.label}</Button>
+          ) : (
+            <>
+              <Button href={logIn.href} variant="ghost" className="hidden sm:inline-flex">
+                {logIn.label}
+              </Button>
+              <Button href={getStarted.href}>{getStarted.label}</Button>
+            </>
+          )}
 
           <button
             type="button"
@@ -217,11 +225,13 @@ export function Header({ navLinks, logIn, getStarted, className }: HeaderProps) 
           {navLinks.map((link) => (
             <MobileNavItem key={link.href} link={link} onNavigate={() => setOpen(false)} />
           ))}
-          <li className="sm:hidden">
-            <a href={logIn.href} className={NAV_LINK_CLASSES} onClick={() => setOpen(false)}>
-              {logIn.label}
-            </a>
-          </li>
+          {!signedInAs && (
+            <li className="sm:hidden">
+              <a href={logIn.href} className={NAV_LINK_CLASSES} onClick={() => setOpen(false)}>
+                {logIn.label}
+              </a>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

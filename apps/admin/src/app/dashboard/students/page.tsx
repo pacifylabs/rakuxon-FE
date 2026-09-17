@@ -87,7 +87,7 @@ function StudentsList() {
         Students
       </h1>
       <p className="mt-2 max-w-prose text-base text-text-muted">
-        Every applicant across every tenant. Open a student to see their full profile and
+        Every applicant across every partner. Open a student to see their full profile and
         documents.
       </p>
 
@@ -121,7 +121,11 @@ function StudentsList() {
             rows={items}
             getRowKey={(row) => row.id}
             emptyState={
-              <EmptyState icon={GraduationCap} title="No students match this search" description="Try a different name or email." />
+              <EmptyState
+                icon={GraduationCap}
+                title="No students match this search"
+                description="Try a different name or email."
+              />
             }
           />
           <Pagination page={pageInfo.page} pageCount={pageInfo.pageCount} onPageChange={setPage} />
@@ -135,7 +139,11 @@ export default function StudentsPage() {
   return (
     <RequirePermission
       permissions={['students.view']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to view students.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to view students.
+        </p>
+      }
     >
       <StudentsList />
     </RequirePermission>

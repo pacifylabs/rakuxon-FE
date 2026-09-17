@@ -17,6 +17,13 @@ export interface CourseCardProps {
   countryCode?: string;
   href: string;
   applyHref: string;
+  /**
+   * When set, "Proceed to apply" becomes a button that calls this instead of
+   * following `applyHref` — for a signed-in visitor already inside the
+   * dashboard, where applying should create the application directly rather
+   * than link out through a registration page it doesn't need.
+   */
+  onApplyClick?: () => void;
   facts: readonly CourseCardFact[];
   badge?: string;
   className?: string;
@@ -40,10 +47,13 @@ export function CourseCard({
   countryCode,
   href,
   applyHref,
+  onApplyClick,
   facts,
   badge,
   className,
 }: CourseCardProps) {
+  const applyClassName =
+    'inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md border border-primary bg-surface px-4 text-sm font-semibold text-primary transition-colors duration-fast ease-standard hover:bg-accent-soft focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none';
   return (
     <article
       className={clsx(
@@ -107,12 +117,15 @@ export function CourseCard({
           >
             View course
           </AppLink>
-          <AppLink
-            href={applyHref}
-            className="inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md border border-primary bg-surface px-4 text-sm font-semibold text-primary transition-colors duration-fast ease-standard hover:bg-accent-soft focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none"
-          >
-            Proceed to apply
-          </AppLink>
+          {onApplyClick ? (
+            <button type="button" onClick={onApplyClick} className={applyClassName}>
+              Proceed to apply
+            </button>
+          ) : (
+            <AppLink href={applyHref} className={applyClassName}>
+              Proceed to apply
+            </AppLink>
+          )}
         </div>
       </div>
     </article>

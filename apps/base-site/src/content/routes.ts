@@ -1,5 +1,18 @@
 import { COURSES, INSTITUTIONS } from '@/lib/catalogue/bank';
-import { SERVICES } from './services';
+
+/**
+ * The six real, admin-authored services' stable slugs — kept here rather than
+ * fetched, since this file must stay a synchronous, importable constant (see
+ * `content/site.ts`'s own `SERVICE_LINKS` for the same tradeoff).
+ */
+const SERVICE_SLUGS = [
+  'free-consultancy',
+  'university-applications',
+  'visa-support',
+  'pre-departure',
+  'ongoing-support',
+  'travels-tourism',
+] as const;
 
 /**
  * Every route this site serves. The single source of truth for links.
@@ -23,20 +36,21 @@ export const ROUTES = {
   explore: '/explore',
   destinations: '/destinations',
   resources: '/resources',
+  testimonials: '/testimonials',
   about: '/about',
   contact: '/contact',
   privacy: '/privacy',
   terms: '/terms',
-  register: '/register',
-  login: '/login',
+  register: '/auth/register',
+  login: '/auth/login',
   dashboard: '/dashboard',
-  /** Prefix only — the real path always carries a token: `/invite/${token}`. */
-  invite: '/invite',
-  forgotPassword: '/forgot-password',
-  /** Prefix only — the real path always carries a token: `/reset-password/${token}`. */
-  resetPassword: '/reset-password',
-  /** Prefix only — the real path always carries a token: `/verify-email/${token}`. */
-  verifyEmail: '/verify-email',
+  /** Prefix only — the real path always carries a token: `/auth/invite/${token}`. */
+  invite: '/auth/invite',
+  forgotPassword: '/auth/forgot-password',
+  /** Prefix only — the real path always carries a token: `/auth/reset-password/${token}`. */
+  resetPassword: '/auth/reset-password',
+  /** Prefix only — the real path always carries a token: `/auth/verify-email/${token}`. */
+  verifyEmail: '/auth/verify-email',
 } as const;
 
 export const countryRoute = (slug: CountrySlug) => `/destinations/${slug}` as const;
@@ -48,6 +62,15 @@ export const articleRoute = (slug: string) => `/resources/${slug}`;
 export const serviceRoute = (id: string) => `/services/${id}`;
 
 export const SIGN_UP = ROUTES.register;
+
+/**
+ * Agencies register in a separate app (`partner-app`), not on this site — a
+ * different session, a different dashboard. Absolute by necessity, so it
+ * never needs to appear in `ALL_ROUTES`: `internalPaths()` in
+ * `src/lib/page-harness.tsx`, which that list exists to check against, only
+ * collects hrefs starting with `/`.
+ */
+export const PARTNER_SIGN_UP = `${process.env.NEXT_PUBLIC_PARTNER_APP_URL ?? 'http://localhost:3002'}/auth/register`;
 
 /**
  * Apply, carrying what the visitor was looking at.
@@ -78,5 +101,5 @@ export const ALL_ROUTES: readonly string[] = [
   ...COUNTRY_SLUGS.map(countryRoute),
   ...COURSES.map((course) => courseRoute(course.slug)),
   ...INSTITUTIONS.map((institution) => universityRoute(institution.slug)),
-  ...SERVICES.map((service) => serviceRoute(service.id)),
+  ...SERVICE_SLUGS.map((slug) => serviceRoute(slug)),
 ];

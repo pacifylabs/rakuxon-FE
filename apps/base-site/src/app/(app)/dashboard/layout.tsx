@@ -23,7 +23,7 @@ function toShellItem(notification: Notification): AppShellNotificationItem {
 }
 
 const NAV_ITEMS: AppShellNavItem[] = [
-  { href: '/dashboard', label: 'Home', icon: Home },
+  { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/dashboard/schools', label: 'Schools', icon: Building2 },
   { href: '/dashboard/profile', label: 'Profile', icon: User },
   { href: '/dashboard/documents', label: 'Documents', icon: FileText },
@@ -53,7 +53,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     setNotifications((current) =>
       (current ?? []).map((notification) =>
-        notification.id === id ? { ...notification, readAt: notification.readAt ?? new Date().toISOString() } : notification,
+        notification.id === id
+          ? { ...notification, readAt: notification.readAt ?? new Date().toISOString() }
+          : notification,
       ),
     );
 
@@ -70,7 +72,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <GuardedPage
       roles={['student']}
-      onUnauthenticated={() => router.replace('/login')}
+      onUnauthenticated={() => router.replace('/auth/login')}
       wrongRole={
         <div className="mx-auto max-w-prose px-5 py-16 text-center">
           <Wordmark href="/" />
@@ -90,7 +92,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         userEmail={user?.email}
         onSignOut={async () => {
           await signOut();
-          router.push('/login');
+          router.push('/auth/login');
         }}
         notifications={
           notifications

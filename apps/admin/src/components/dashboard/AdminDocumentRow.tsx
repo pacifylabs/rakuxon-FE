@@ -1,10 +1,10 @@
 'use client';
 
 import { CheckCircle2, FileText, XCircle } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button } from '@rakuxon/ui';
+import { Button, DropzoneUploader } from '@rakuxon/ui';
 import type { DocumentType, StudentDocument } from '@rakuxon/contract';
 
 import { useAdminApiClient } from '@/lib/admin-auth';
@@ -35,7 +35,6 @@ export interface AdminDocumentRowProps {
  */
 export function AdminDocumentRow({ studentId, type, label, document, canReview, onChanged }: AdminDocumentRowProps) {
   const client = useAdminApiClient();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
@@ -82,7 +81,6 @@ export function AdminDocumentRow({ studentId, type, label, document, canReview, 
       );
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
     }
   }
 
@@ -148,18 +146,14 @@ export function AdminDocumentRow({ studentId, type, label, document, canReview, 
 
         {canReview && (
           <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-            <input
-              ref={inputRef}
-              type="file"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void handleFile(file);
-              }}
+            <DropzoneUploader
+              label={uploaded ? 'Replace' : 'Upload on behalf'}
+              layout="inline"
+              variant="document"
+              onUpload={handleFile}
+              uploading={uploading}
+              disabled={uploading}
             />
-            <Button variant={uploaded ? 'ghost' : 'accent'} type="button" disabled={uploading} onClick={() => inputRef.current?.click()}>
-              {uploading ? 'Uploading…' : uploaded ? 'Replace' : 'Upload on behalf'}
-            </Button>
             {uploaded && (
               <Button variant="ghost" type="button" onClick={() => setRejecting((current) => !current)}>
                 Reject

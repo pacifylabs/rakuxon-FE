@@ -1,4 +1,4 @@
-import { ImageCard, Reveal, SectionBand } from '@rakuxon/ui';
+import { ImageCard, SectionBand } from '@rakuxon/ui';
 
 import { COURSE_PATHS } from '@/content/home';
 import { ROUTES } from '@/content/routes';
@@ -21,23 +21,21 @@ export function CoursePaths() {
       </p>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {COURSE_PATHS.map((path, index) => (
+        {COURSE_PATHS.map((path) => (
           <li key={path.title} className="h-full">
-            <Reveal delay={index * 80}>
-              <ImageCard
-                src={path.src}
-                alt={path.alt}
-                href={`${ROUTES.explore}?${path.query}`}
-                aspect="aspect-[4/3]"
-              >
-                <h3 className="font-heading text-lg font-semibold text-text">{path.title}</h3>
-                <p className="mt-2 text-sm text-text-muted">{path.description}</p>
-                <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-primary">
-                  Browse
-                  <span aria-hidden="true">→</span>
-                </span>
-              </ImageCard>
-            </Reveal>
+            <ImageCard
+              src={path.src}
+              alt={path.alt}
+              href={`${ROUTES.explore}?${path.query}`}
+              aspect="aspect-[4/3]"
+            >
+              <h3 className="font-heading text-lg font-semibold text-text">{path.title}</h3>
+              <p className="mt-2 text-sm text-text-muted">{path.description}</p>
+              <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-primary">
+                Browse
+                <span aria-hidden="true">→</span>
+              </span>
+            </ImageCard>
           </li>
         ))}
       </ul>

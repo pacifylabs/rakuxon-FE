@@ -1,5 +1,7 @@
 import type {
   AdminAccount,
+  AdminUploadSignature,
+  AdminUploadSignatureRequest,
   AdminApplicationDetail,
   AdminApplicationList,
   AdminArticleDetail,
@@ -21,6 +23,9 @@ import type {
   AdminStudentDetail,
   AdminStudentList,
   AdminSummary,
+  AdminServiceDetail,
+  AdminServiceList,
+  AdminServiceSummary,
   AdminTestimonialDetail,
   AdminTestimonialList,
   AdminTestimonialSummary,
@@ -32,6 +37,7 @@ import type {
   CreateCourseRequest,
   CreateInstitutionRequest,
   CreateIntakeTermRequest,
+  CreateServiceRequest,
   CreateTestimonialRequest,
   DisableTotpRequest,
   Permission,
@@ -47,6 +53,7 @@ import type {
   UpdateCourseRequest,
   UpdateInstitutionRequest,
   UpdateIntakeTermRequest,
+  UpdateServiceRequest,
   UpdateStudentAdminRequest,
   UpdateTestimonialRequest,
   UploadSignature,
@@ -148,7 +155,10 @@ export class AdminApiClient {
   }
 
   verifyTotpLogin(body: VerifyAdminTotpLoginRequest): Promise<AdminAuthTokens> {
-    return this.request<AdminAuthTokens>('/v1/admin-auth/login/verify-totp', { method: 'POST', body });
+    return this.request<AdminAuthTokens>('/v1/admin-auth/login/verify-totp', {
+      method: 'POST',
+      body,
+    });
   }
 
   refresh(refreshToken: string): Promise<AdminAuthTokens> {
@@ -175,7 +185,9 @@ export class AdminApiClient {
 
   /* -------------------------------------------------------------- tenants */
 
-  listTenants(query: { status?: string; q?: string; page?: number; limit?: number } = {}): Promise<TenantList> {
+  listTenants(
+    query: { status?: string; q?: string; page?: number; limit?: number } = {},
+  ): Promise<TenantList> {
     return this.request<TenantList>(`/v1/admin/tenants${toQuery(query)}`, { auth: true });
   }
 
@@ -192,7 +204,10 @@ export class AdminApiClient {
   }
 
   reactivateTenant(id: string): Promise<Tenant> {
-    return this.request<Tenant>(`/v1/admin/tenants/${id}/reactivate`, { method: 'POST', auth: true });
+    return this.request<Tenant>(`/v1/admin/tenants/${id}/reactivate`, {
+      method: 'POST',
+      auth: true,
+    });
   }
 
   /* ------------------------------------------------------------ catalogue */
@@ -206,7 +221,9 @@ export class AdminApiClient {
   }
 
   getInstitutionDetail(id: string): Promise<AdminInstitutionDetail> {
-    return this.request<AdminInstitutionDetail>(`/v1/admin/catalogue/institutions/${id}/detail`, { auth: true });
+    return this.request<AdminInstitutionDetail>(`/v1/admin/catalogue/institutions/${id}/detail`, {
+      auth: true,
+    });
   }
 
   updateInstitution(id: string, body: UpdateInstitutionRequest): Promise<AdminInstitutionDetail> {
@@ -257,19 +274,31 @@ export class AdminApiClient {
       limit?: number;
     } = {},
   ): Promise<AdminCourseList> {
-    return this.request<AdminCourseList>(`/v1/admin/catalogue/courses${toQuery(query)}`, { auth: true });
+    return this.request<AdminCourseList>(`/v1/admin/catalogue/courses${toQuery(query)}`, {
+      auth: true,
+    });
   }
 
   getCourseDetail(id: string): Promise<AdminCourseDetail> {
-    return this.request<AdminCourseDetail>(`/v1/admin/catalogue/courses/${id}/detail`, { auth: true });
+    return this.request<AdminCourseDetail>(`/v1/admin/catalogue/courses/${id}/detail`, {
+      auth: true,
+    });
   }
 
   updateCourse(id: string, body: UpdateCourseRequest): Promise<AdminCourseDetail> {
-    return this.request<AdminCourseDetail>(`/v1/admin/catalogue/courses/${id}`, { method: 'PATCH', body, auth: true });
+    return this.request<AdminCourseDetail>(`/v1/admin/catalogue/courses/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
   }
 
   createCourse(body: CreateCourseRequest): Promise<AdminCourseDetail> {
-    return this.request<AdminCourseDetail>('/v1/admin/catalogue/courses', { method: 'POST', body, auth: true });
+    return this.request<AdminCourseDetail>('/v1/admin/catalogue/courses', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 
   publishCourse(id: string): Promise<AdminCourseSummary> {
@@ -296,11 +325,15 @@ export class AdminApiClient {
   listAdminArticles(
     query: { status?: string; q?: string; page?: number; limit?: number } = {},
   ): Promise<AdminArticleList> {
-    return this.request<AdminArticleList>(`/v1/admin/catalogue/articles${toQuery(query)}`, { auth: true });
+    return this.request<AdminArticleList>(`/v1/admin/catalogue/articles${toQuery(query)}`, {
+      auth: true,
+    });
   }
 
   getArticleDetail(id: string): Promise<AdminArticleDetail> {
-    return this.request<AdminArticleDetail>(`/v1/admin/catalogue/articles/${id}/detail`, { auth: true });
+    return this.request<AdminArticleDetail>(`/v1/admin/catalogue/articles/${id}/detail`, {
+      auth: true,
+    });
   }
 
   updateArticle(id: string, body: UpdateArticleRequest): Promise<AdminArticleDetail> {
@@ -312,7 +345,11 @@ export class AdminApiClient {
   }
 
   createArticle(body: CreateArticleRequest): Promise<AdminArticleDetail> {
-    return this.request<AdminArticleDetail>('/v1/admin/catalogue/articles', { method: 'POST', body, auth: true });
+    return this.request<AdminArticleDetail>('/v1/admin/catalogue/articles', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 
   publishArticle(id: string): Promise<AdminArticleSummary> {
@@ -339,7 +376,9 @@ export class AdminApiClient {
   listAdminTestimonials(
     query: { status?: string; page?: number; limit?: number } = {},
   ): Promise<AdminTestimonialList> {
-    return this.request<AdminTestimonialList>(`/v1/admin/testimonials${toQuery(query)}`, { auth: true });
+    return this.request<AdminTestimonialList>(`/v1/admin/testimonials${toQuery(query)}`, {
+      auth: true,
+    });
   }
 
   getTestimonialDetail(id: string): Promise<AdminTestimonialDetail> {
@@ -355,7 +394,11 @@ export class AdminApiClient {
   }
 
   createTestimonial(body: CreateTestimonialRequest): Promise<AdminTestimonialDetail> {
-    return this.request<AdminTestimonialDetail>('/v1/admin/testimonials', { method: 'POST', body, auth: true });
+    return this.request<AdminTestimonialDetail>('/v1/admin/testimonials', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 
   publishTestimonial(id: string): Promise<AdminTestimonialSummary> {
@@ -374,6 +417,53 @@ export class AdminApiClient {
 
   revertTestimonialToDraft(id: string): Promise<AdminTestimonialSummary> {
     return this.request<AdminTestimonialSummary>(`/v1/admin/testimonials/${id}/revert-to-draft`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  listAdminServices(
+    query: { status?: string; page?: number; limit?: number } = {},
+  ): Promise<AdminServiceList> {
+    return this.request<AdminServiceList>(`/v1/admin/services${toQuery(query)}`, { auth: true });
+  }
+
+  getServiceDetail(id: string): Promise<AdminServiceDetail> {
+    return this.request<AdminServiceDetail>(`/v1/admin/services/${id}`, { auth: true });
+  }
+
+  updateService(id: string, body: UpdateServiceRequest): Promise<AdminServiceDetail> {
+    return this.request<AdminServiceDetail>(`/v1/admin/services/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  createService(body: CreateServiceRequest): Promise<AdminServiceDetail> {
+    return this.request<AdminServiceDetail>('/v1/admin/services', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  publishService(id: string): Promise<AdminServiceSummary> {
+    return this.request<AdminServiceSummary>(`/v1/admin/services/${id}/publish`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  suspendService(id: string): Promise<AdminServiceSummary> {
+    return this.request<AdminServiceSummary>(`/v1/admin/services/${id}/suspend`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  revertServiceToDraft(id: string): Promise<AdminServiceSummary> {
+    return this.request<AdminServiceSummary>(`/v1/admin/services/${id}/revert-to-draft`, {
       method: 'POST',
       auth: true,
     });
@@ -435,7 +525,9 @@ export class AdminApiClient {
   listAdminApplications(
     query: { status?: string; tenantId?: string; page?: number; limit?: number } = {},
   ): Promise<AdminApplicationList> {
-    return this.request<AdminApplicationList>(`/v1/admin/applications${toQuery(query)}`, { auth: true });
+    return this.request<AdminApplicationList>(`/v1/admin/applications${toQuery(query)}`, {
+      auth: true,
+    });
   }
 
   getAdminApplication(id: string): Promise<AdminApplicationDetail> {
@@ -465,16 +557,24 @@ export class AdminApiClient {
   }
 
   suspendAdmin(id: string): Promise<AdminSummary> {
-    return this.request<AdminSummary>(`/v1/admin/admins/${id}/suspend`, { method: 'POST', auth: true });
+    return this.request<AdminSummary>(`/v1/admin/admins/${id}/suspend`, {
+      method: 'POST',
+      auth: true,
+    });
   }
 
   reactivateAdmin(id: string): Promise<AdminSummary> {
-    return this.request<AdminSummary>(`/v1/admin/admins/${id}/reactivate`, { method: 'POST', auth: true });
+    return this.request<AdminSummary>(`/v1/admin/admins/${id}/reactivate`, {
+      method: 'POST',
+      auth: true,
+    });
   }
 
   /* ------------------------------------------------------------- students */
 
-  listAdminStudents(query: { q?: string; page?: number; limit?: number } = {}): Promise<AdminStudentList> {
+  listAdminStudents(
+    query: { q?: string; page?: number; limit?: number } = {},
+  ): Promise<AdminStudentList> {
     return this.request<AdminStudentList>(`/v1/admin/students${toQuery(query)}`, { auth: true });
   }
 
@@ -483,7 +583,11 @@ export class AdminApiClient {
   }
 
   updateAdminStudent(id: string, body: UpdateStudentAdminRequest): Promise<AdminStudentDetail> {
-    return this.request<AdminStudentDetail>(`/v1/admin/students/${id}`, { method: 'PATCH', body, auth: true });
+    return this.request<AdminStudentDetail>(`/v1/admin/students/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
   }
 
   /* ------------------------------------------------------------ dashboard */
@@ -492,21 +596,43 @@ export class AdminApiClient {
     return this.request<AdminDashboardSummary>('/v1/admin/dashboard/summary', { auth: true });
   }
 
-  /* ------------------------------------------------------------ documents */
+  /* --------------------------------------------------------------- uploads */
 
-  listAdminStudentDocuments(studentId: string): Promise<StudentDocument[]> {
-    return this.request<StudentDocument[]>(`/v1/admin/students/${studentId}/documents`, { auth: true });
-  }
-
-  getAdminUploadSignature(studentId: string, body: UploadSignatureRequest): Promise<UploadSignature> {
-    return this.request<UploadSignature>(`/v1/admin/students/${studentId}/documents/upload-signature`, {
+  /** For an admin-authored content image (testimonial photo, institution logo/hero, article hero). */
+  getContentUploadSignature(body: AdminUploadSignatureRequest): Promise<AdminUploadSignature> {
+    return this.request<AdminUploadSignature>('/v1/admin/uploads/signature', {
       method: 'POST',
       body,
       auth: true,
     });
   }
 
-  confirmAdminDocumentUpload(documentId: string, body: ConfirmDocumentUploadRequest): Promise<StudentDocument> {
+  /* ------------------------------------------------------------ documents */
+
+  listAdminStudentDocuments(studentId: string): Promise<StudentDocument[]> {
+    return this.request<StudentDocument[]>(`/v1/admin/students/${studentId}/documents`, {
+      auth: true,
+    });
+  }
+
+  getAdminUploadSignature(
+    studentId: string,
+    body: UploadSignatureRequest,
+  ): Promise<UploadSignature> {
+    return this.request<UploadSignature>(
+      `/v1/admin/students/${studentId}/documents/upload-signature`,
+      {
+        method: 'POST',
+        body,
+        auth: true,
+      },
+    );
+  }
+
+  confirmAdminDocumentUpload(
+    documentId: string,
+    body: ConfirmDocumentUploadRequest,
+  ): Promise<StudentDocument> {
     return this.request<StudentDocument>(`/v1/admin/documents/${documentId}/confirm`, {
       method: 'POST',
       body,
@@ -529,23 +655,42 @@ export class AdminApiClient {
   }
 
   updateAccountProfile(body: UpdateAdminProfileRequest): Promise<AdminAccount> {
-    return this.request<AdminAccount>('/v1/admin/account/me', { method: 'PATCH', body, auth: true });
+    return this.request<AdminAccount>('/v1/admin/account/me', {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
   }
 
   changeAccountPassword(body: ChangeAdminPasswordRequest): Promise<void> {
-    return this.request<void>('/v1/admin/account/me/password', { method: 'POST', body, auth: true });
+    return this.request<void>('/v1/admin/account/me/password', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 
   setupTotp(): Promise<TotpSetup> {
-    return this.request<TotpSetup>('/v1/admin/account/me/2fa/setup', { method: 'POST', auth: true });
+    return this.request<TotpSetup>('/v1/admin/account/me/2fa/setup', {
+      method: 'POST',
+      auth: true,
+    });
   }
 
   enableTotp(body: VerifyTotpRequest): Promise<TotpEnabled> {
-    return this.request<TotpEnabled>('/v1/admin/account/me/2fa/enable', { method: 'POST', body, auth: true });
+    return this.request<TotpEnabled>('/v1/admin/account/me/2fa/enable', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 
   disableTotp(body: DisableTotpRequest): Promise<void> {
-    return this.request<void>('/v1/admin/account/me/2fa/disable', { method: 'POST', body, auth: true });
+    return this.request<void>('/v1/admin/account/me/2fa/disable', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 }
 

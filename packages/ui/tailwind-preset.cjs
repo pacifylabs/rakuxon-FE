@@ -128,25 +128,6 @@ module.exports = {
         /* The floating hero cards. Derived from the space scale rather than a
            raw px value, so it moves with the tokens. */
         'card-float': 'calc(var(--space-20) * 3)',
-        /* Testimonial cards in the marquee. */
-        'card-quote': 'calc(var(--space-20) * 4)',
-        'card-quote-lg': 'calc(var(--space-16) * 6)',
-      },
-      keyframes: {
-        /* Half the track, because the content is rendered twice. */
-        marquee: {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
-        /* Cards settle into place rather than appearing. */
-        reveal: {
-          '0%': { opacity: '0', transform: 'translateY(var(--space-6))' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-      },
-      animation: {
-        marquee: 'marquee var(--marquee-duration, 60s) linear infinite',
-        reveal: 'reveal var(--duration-base) var(--ease-standard) both',
       },
       minHeight: {
         /* Floor for a media column that stretches to match its text column,

@@ -24,7 +24,7 @@ function Workspace() {
               variant="ghost"
               onClick={async () => {
                 await signOut();
-                router.push('/login');
+                router.push('/auth/login');
               }}
             >
               Sign out
@@ -78,7 +78,7 @@ export default function DashboardPage() {
   return (
     <GuardedPage
       roles={['institution_user']}
-      onUnauthenticated={() => router.replace('/login')}
+      onUnauthenticated={() => router.replace('/auth/login')}
       wrongRole={
         <main className="grid min-h-screen place-items-center px-5">
           <div className="max-w-prose text-center">

@@ -16,7 +16,7 @@ const PASSWORD_MIN = 8;
  */
 export function RequestPasswordResetForm({
   baseUrl,
-  signInHref = '/login',
+  signInHref = '/auth/login',
   ownsMainLandmark = true,
 }: {
   baseUrl: string;

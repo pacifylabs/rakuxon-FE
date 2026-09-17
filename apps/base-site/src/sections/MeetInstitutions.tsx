@@ -1,4 +1,4 @@
-import { Reveal, SectionBand, UniversityCard } from '@rakuxon/ui';
+import { SectionBand, UniversityCard } from '@rakuxon/ui';
 
 import { fetchInstitutions } from '@/lib/catalogue/api';
 
@@ -32,16 +32,14 @@ export async function MeetInstitutions() {
       </h2>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {withPhotos.map((institution, index) => (
+        {withPhotos.map((institution) => (
           <li key={institution.id} className="h-full">
-            <Reveal delay={index * 70}>
-              <UniversityCard
-                name={institution.name}
-                country={institution.country}
-                src={institution.heroImageUrl}
-                alt={`${institution.name} campus`}
-              />
-            </Reveal>
+            <UniversityCard
+              name={institution.name}
+              country={institution.country}
+              src={institution.heroImageUrl}
+              alt={`${institution.name} campus`}
+            />
           </li>
         ))}
       </ul>

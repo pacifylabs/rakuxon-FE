@@ -1,7 +1,22 @@
 import type { FooterColumn, NavLink } from '@rakuxon/ui';
 
 import { LOG_IN, ROUTES, SIGN_UP, countryRoute, serviceRoute } from './routes';
-import { SERVICES } from './services';
+
+/**
+ * The six real services, admin-authored now (see `lib/services/api.ts`) —
+ * but the nav and footer render synchronously with no fetch, so their
+ * title/slug pairs are pinned here rather than derived. A renamed or
+ * reordered service on the admin side does not update these two labels
+ * until this list is edited to match, same as the footer column below.
+ */
+const SERVICE_LINKS: readonly { title: string; slug: string }[] = [
+  { title: 'Free Educational Consultancy', slug: 'free-consultancy' },
+  { title: 'University Selection & Application', slug: 'university-applications' },
+  { title: 'Visa Application Support', slug: 'visa-support' },
+  { title: 'Pre-departure & Arrival Support', slug: 'pre-departure' },
+  { title: 'Ongoing Client Support', slug: 'ongoing-support' },
+  { title: 'Travels and Tourism', slug: 'travels-tourism' },
+];
 
 /** Global shell content (docs/04b § 2), shared by every page. */
 
@@ -40,7 +55,10 @@ export const NAV_LINKS: readonly NavLink[] = [
   {
     label: 'Services',
     href: ROUTES.services,
-    children: SERVICES.map((service) => ({ label: service.title, href: serviceRoute(service.id) })),
+    children: SERVICE_LINKS.map((service) => ({
+      label: service.title,
+      href: serviceRoute(service.slug),
+    })),
   },
   /* "Guidance" named the shelf rather than what is on it; these are articles a
      student reads before applying. */
@@ -63,7 +81,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     links: [
       { label: 'About', href: ROUTES.about },
       { label: 'How we work', href: `${ROUTES.about}#how-we-work` },
-      { label: 'Success stories', href: `${ROUTES.about}#success-stories` },
+      { label: 'Success stories', href: ROUTES.testimonials },
       { label: 'Contact', href: ROUTES.contact },
     ],
   },

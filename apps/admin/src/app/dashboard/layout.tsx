@@ -1,6 +1,19 @@
 'use client';
 
-import { Building2, BookOpen, CalendarDays, GraduationCap, Globe2, Landmark, LayoutGrid, MessageSquareQuote, ShieldCheck, Users, Wrench } from 'lucide-react';
+import {
+  Building2,
+  BookOpen,
+  CalendarDays,
+  Compass,
+  GraduationCap,
+  Globe2,
+  Landmark,
+  LayoutGrid,
+  MessageSquareQuote,
+  ShieldCheck,
+  Users,
+  Wrench,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -10,8 +23,8 @@ import type { AppShellNavItem } from '@rakuxon/ui';
 import { RequirePermission, useAdminAuth } from '@/lib/admin-auth';
 
 const NAV_ITEMS: AppShellNavItem[] = [
-  { href: '/dashboard', label: 'Home', icon: LayoutGrid },
-  { href: '/dashboard/tenants', label: 'Tenants', icon: ShieldCheck },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
+  { href: '/dashboard/tenants', label: 'Partners', icon: ShieldCheck },
   {
     label: 'Catalogue',
     icon: Building2,
@@ -26,6 +39,7 @@ const NAV_ITEMS: AppShellNavItem[] = [
     icon: MessageSquareQuote,
     children: [
       { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+      { href: '/dashboard/content/services', label: 'Services', icon: Compass },
     ],
   },
   { href: '/dashboard/applications', label: 'Applications', icon: Users },
@@ -54,13 +68,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <RequirePermission
-      onUnauthenticated={() => router.replace('/login')}
+      onUnauthenticated={() => router.replace('/auth/login')}
       fallback={<p className="p-8 text-base text-text-muted">Checking your session…</p>}
       denied={
         <main className="grid min-h-screen place-items-center px-5">
           <div className="max-w-prose text-center">
             <Wordmark href="/" />
-            <h1 className="mt-8 font-heading text-2xl font-bold text-text">Redirecting to sign in…</h1>
+            <h1 className="mt-8 font-heading text-2xl font-bold text-text">
+              Redirecting to sign in…
+            </h1>
           </div>
         </main>
       }
@@ -72,7 +88,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         userEmail={admin?.email}
         onSignOut={async () => {
           await signOut();
-          router.push('/login');
+          router.push('/auth/login');
         }}
         badge="Admin"
         accountMenu={{

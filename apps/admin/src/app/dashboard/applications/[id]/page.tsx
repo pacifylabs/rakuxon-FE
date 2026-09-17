@@ -60,7 +60,12 @@ function ApplicationDetail() {
         <p role="alert" className="text-base text-danger">
           {error}
         </p>
-        <Button variant="ghost" size="md" className="mt-4" onClick={() => router.push('/dashboard/applications')}>
+        <Button
+          variant="ghost"
+          size="md"
+          className="mt-4"
+          onClick={() => router.push('/dashboard/applications')}
+        >
           Back to applications
         </Button>
       </section>
@@ -93,12 +98,17 @@ function ApplicationDetail() {
         <dl className="grid gap-6">
           <Field label="Student" value={application.studentName} />
           <Field label="Student email" value={application.studentEmail} />
-          <Field label="Tenant" value={application.tenantName} />
+          <Field label="Partner" value={application.tenantName} />
         </dl>
 
         <dl className="grid gap-6">
           <Field label="Created" value={new Date(application.createdAt).toLocaleString()} />
-          <Field label="Submitted" value={application.submittedAt ? new Date(application.submittedAt).toLocaleString() : ''} />
+          <Field
+            label="Submitted"
+            value={
+              application.submittedAt ? new Date(application.submittedAt).toLocaleString() : ''
+            }
+          />
         </dl>
       </div>
 
@@ -113,7 +123,8 @@ function ApplicationDetail() {
         </div>
 
         <p className="mt-2 text-sm text-text-muted">
-          {application.attachedDocumentIds.length} document{application.attachedDocumentIds.length === 1 ? '' : 's'} attached.
+          {application.attachedDocumentIds.length} document
+          {application.attachedDocumentIds.length === 1 ? '' : 's'} attached.
         </p>
 
         {application.missingDocumentTypes.length > 0 && (
@@ -137,7 +148,11 @@ export default function ApplicationDetailPage() {
   return (
     <RequirePermission
       permissions={['applications.view']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to view applications.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to view applications.
+        </p>
+      }
     >
       <ApplicationDetail />
     </RequirePermission>

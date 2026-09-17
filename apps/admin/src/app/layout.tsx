@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-int
 
 export const metadata: Metadata = {
   title: { default: 'Rakuxon admin', template: `%s · ${baseTokens.brand.name}` },
-  description: 'Vet tenants and institutions, manage the catalogue, configure plans.',
+  description: 'Vet partners and institutions, manage the catalogue, configure plans.',
   /* An authenticated workspace has nothing to offer a crawler. */
   robots: { index: false, follow: false },
 };

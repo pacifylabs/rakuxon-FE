@@ -80,8 +80,13 @@ function ApplicationsList() {
         </div>
       ),
     },
-    { header: 'Tenant', cell: (row) => <span className="text-text-muted">{row.tenantName}</span> },
-    { header: 'Created', cell: (row) => <span className="text-text-muted">{new Date(row.createdAt).toLocaleDateString()}</span> },
+    { header: 'Partner', cell: (row) => <span className="text-text-muted">{row.tenantName}</span> },
+    {
+      header: 'Created',
+      cell: (row) => (
+        <span className="text-text-muted">{new Date(row.createdAt).toLocaleDateString()}</span>
+      ),
+    },
     { header: 'Status', cell: (row) => <ApplicationStatusBadge status={row.status} /> },
     {
       header: 'Actions',
@@ -103,7 +108,7 @@ function ApplicationsList() {
         Applications
       </h1>
       <p className="mt-2 max-w-prose text-base text-text-muted">
-        Every application across every tenant. Open one to see its documents and status in full.
+        Every application across every partner. Open one to see its documents and status in full.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -126,12 +131,12 @@ function ApplicationsList() {
         </div>
 
         <label className="ml-auto flex items-center gap-2 text-sm text-text-muted">
-          <span className="sr-only">Filter by tenant id</span>
+          <span className="sr-only">Filter by partner id</span>
           <input
             type="search"
             value={tenantId}
             onChange={(event) => setTenantId(event.target.value)}
-            placeholder="Filter by tenant id…"
+            placeholder="Filter by partner id…"
             className="rounded-md border border-border bg-surface px-4 py-2 text-sm text-text focus-visible:outline-none focus-visible:ring"
           />
         </label>
@@ -156,7 +161,11 @@ function ApplicationsList() {
             rows={items}
             getRowKey={(row) => row.id}
             emptyState={
-              <EmptyState icon={FileStack} title="No applications match this filter" description="Try a different status or tenant id." />
+              <EmptyState
+                icon={FileStack}
+                title="No applications match this filter"
+                description="Try a different status or partner id."
+              />
             }
           />
           <Pagination page={pageInfo.page} pageCount={pageInfo.pageCount} onPageChange={setPage} />
@@ -170,7 +179,11 @@ export default function ApplicationsPage() {
   return (
     <RequirePermission
       permissions={['applications.view']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to view applications.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to view applications.
+        </p>
+      }
     >
       <ApplicationsList />
     </RequirePermission>

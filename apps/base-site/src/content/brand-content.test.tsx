@@ -1,20 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { initialsOf } from '@rakuxon/ui';
-
 import { ABOUT_STATS, ABOUT_VISION_MISSION } from './about';
-import { STATS, TESTIMONIALS } from './home';
-import { SERVICES } from './services';
-import {
-  CONTACT_ADDRESSES,
-  CONTACT_EMAIL,
-  CONTACT_PHONES,
-  FOOTER_COLUMNS,
-  SOCIALS,
-} from './site';
+import { STATS } from './home';
+import { CONTACT_ADDRESSES, CONTACT_EMAIL, CONTACT_PHONES, FOOTER_COLUMNS, SOCIALS } from './site';
 import { ALL_ROUTES } from './routes';
-import ServicesPage from '../app/services/page';
 import { renderPage } from '../lib/page-harness';
 
 /**
@@ -85,34 +75,6 @@ describe('statistics', () => {
   });
 });
 
-describe('testimonials', () => {
-  it('is the six real clients', () => {
-    expect(TESTIMONIALS.map((entry) => entry.name)).toEqual([
-      'Sarah Adebayo',
-      'Michael Okafor',
-      'Fatima Kone',
-      'David Adamu',
-      'Amaka & Chinedu Eze',
-      'Tomiwa Adedeji',
-    ]);
-  });
-
-  it('gives no real person a stock face', () => {
-    // The quotes are attributed to named people at named universities. A
-    // stranger's portrait beside that name misrepresents them, and it stops
-    // being arguable the moment somebody recognises the photo.
-    for (const entry of TESTIMONIALS) {
-      expect(entry).not.toHaveProperty('src');
-    }
-  });
-
-  it('derives the initials rakuxon.com shows', () => {
-    expect(initialsOf('Sarah Adebayo')).toBe('SA');
-    expect(initialsOf('Amaka & Chinedu Eze')).toBe('AE');
-    expect(initialsOf('Tomiwa Adedeji')).toBe('TA');
-  });
-});
-
 describe('vision and mission', () => {
   it('quotes both statements verbatim', () => {
     const [vision, mission] = ABOUT_VISION_MISSION.items;
@@ -123,39 +85,6 @@ describe('vision and mission', () => {
     expect(mission?.body).toBe(
       'To deliver trusted, personalized, and innovative educational consultancy and travel services, transforming aspirations into achievements through expert guidance, exceptional service, and unwavering commitment to client success.',
     );
-  });
-});
-
-describe('services', () => {
-  it('carries all six, with travel marked as its own strand', () => {
-    expect(SERVICES).toHaveLength(6);
-    expect(SERVICES.filter((service) => service.strand === 'travel')).toHaveLength(1);
-  });
-
-  it('renders every service with its own heading', () => {
-    render(<ServicesPage />);
-
-    for (const service of SERVICES) {
-      expect(screen.getAllByText(service.title).length).toBeGreaterThan(0);
-    }
-  });
-
-  it('links every summary card straight to that service\'s own page, not a shared anchor', () => {
-    // A student comparing courses should not have to read past honeymoon
-    // packages to reach visa support — each service gets its own page now,
-    // rather than a heading-separated section on one shared page.
-    render(<ServicesPage />);
-
-    for (const service of SERVICES) {
-      expect(screen.getByRole('link', { name: new RegExp(service.title) })).toHaveAttribute(
-        'href',
-        `/services/${service.id}`,
-      );
-    }
-  });
-
-  it('leads with the free consultancy, which is the way in', () => {
-    expect(SERVICES[0]?.id).toBe('free-consultancy');
   });
 });
 

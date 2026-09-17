@@ -5,6 +5,7 @@ import { useSyncExternalStore } from 'react';
 
 import { CourseCard } from '@rakuxon/ui';
 
+import { DashboardCourseCard } from '@/components/catalogue/DashboardCourseCard';
 import { applyHref, courseRoute } from '@/content/routes';
 import type { ApiCourse } from '@/lib/catalogue/api';
 import { cardFacts, feeFromApi, formatDiscipline, formatFee } from '@/lib/catalogue/course-view';
@@ -67,7 +68,21 @@ const TOGGLE_BUTTON =
  * courses; rows suit Exeter's 879, where the fee is read straight down a
  * column and twenty-odd titles fit in a screen.
  */
-export function CourseBrowser({ courses }: { courses: readonly ApiCourse[] }) {
+export interface CourseBrowserProps {
+  courses: readonly ApiCourse[];
+  /**
+   * Set inside the dashboard, where a signed-in visitor's "Proceed to apply"
+   * should create the application directly rather than link out through
+   * `/register`. A boolean, not a passed-in handler — this component is
+   * rendered from an async Server Component
+   * (`components/catalogue/InstitutionDetail.tsx`), which cannot hand a
+   * client-side function down as a prop, so the actual apply call
+   * (`useApplyToCourse`) happens right here instead.
+   */
+  dashboardApply?: boolean;
+}
+
+export function CourseBrowser({ courses, dashboardApply }: CourseBrowserProps) {
   const view = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   return (
@@ -109,19 +124,25 @@ export function CourseBrowser({ courses }: { courses: readonly ApiCourse[] }) {
 
       {view === 'grid' ? (
         <ul className="mt-4 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course) => (
-            <li key={course.id} className="h-full">
-              <CourseCard
-                title={course.title}
-                institution={course.institutionName}
-                countryCode={course.countryCode}
-                href={courseRoute(course.slug)}
-                applyHref={applyHref({ course: course.slug })}
-                badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
-                facts={cardFacts(course)}
-              />
-            </li>
-          ))}
+          {courses.map((course) =>
+            dashboardApply ? (
+              <li key={course.id} className="h-full">
+                <DashboardCourseCard course={course} />
+              </li>
+            ) : (
+              <li key={course.id} className="h-full">
+                <CourseCard
+                  title={course.title}
+                  institution={course.institutionName}
+                  countryCode={course.countryCode}
+                  href={courseRoute(course.slug)}
+                  applyHref={applyHref({ course: course.slug })}
+                  badge={course.fastTrackOffer ? 'Fast-track offer' : undefined}
+                  facts={cardFacts(course)}
+                />
+              </li>
+            ),
+          )}
         </ul>
       ) : (
         <ul className="mt-4 overflow-hidden rounded-lg border border-border bg-surface">

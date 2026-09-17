@@ -1,4 +1,4 @@
-import { CapabilityCard, EyebrowPill, Reveal, SectionBand } from '@rakuxon/ui';
+import { CapabilityCard, EyebrowPill, SectionBand } from '@rakuxon/ui';
 
 import { CAPABILITIES } from '@/content/home';
 
@@ -17,17 +17,15 @@ export function CapabilityGrid() {
       </div>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {CAPABILITIES.map((capability, index) => (
+        {CAPABILITIES.map((capability) => (
           <li key={capability.title} className="h-full">
-            <Reveal delay={index * 70}>
-              <CapabilityCard
-                icon={capability.icon}
-                tone={capability.tone}
-                title={capability.title}
-                description={capability.description}
-                action={capability.action}
-              />
-            </Reveal>
+            <CapabilityCard
+              icon={capability.icon}
+              tone={capability.tone}
+              title={capability.title}
+              description={capability.description}
+              action={capability.action}
+            />
           </li>
         ))}
       </ul>

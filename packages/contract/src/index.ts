@@ -41,6 +41,8 @@ export type UploadSignature = Schemas['UploadSignatureDto'];
 export type ConfirmDocumentUploadRequest = Schemas['ConfirmDocumentUploadDto'];
 export type StudentDocument = Schemas['DocumentDto'];
 export type RejectDocumentRequest = Schemas['RejectDocumentDto'];
+export type AdminUploadSignatureRequest = Schemas['AdminUploadSignatureRequestDto'];
+export type AdminUploadSignature = Schemas['AdminUploadSignatureDto'];
 
 export type Notification = Schemas['NotificationDto'];
 export type UnreadCount = Schemas['UnreadCountDto'];
@@ -53,6 +55,8 @@ export type ArticleList = Schemas['ArticleListDto'];
 
 export type Testimonial = Schemas['TestimonialDto'];
 export type IntakeTerm = Schemas['IntakeTermDto'];
+export type Service = Schemas['ServiceDto'];
+export type ServiceFaq = Schemas['ServiceFaqDto'];
 
 /*
  * Admin — a fully separate identity system from the above (own table, own
@@ -139,6 +143,12 @@ export type AdminTestimonialList = Schemas['AdminTestimonialListDto'];
 export type AdminTestimonialDetail = Schemas['AdminTestimonialDetailDto'];
 export type CreateTestimonialRequest = Schemas['CreateTestimonialDto'];
 export type UpdateTestimonialRequest = Schemas['UpdateTestimonialDto'];
+
+export type AdminServiceSummary = Schemas['AdminServiceSummaryDto'];
+export type AdminServiceList = Schemas['AdminServiceListDto'];
+export type AdminServiceDetail = Schemas['AdminServiceDetailDto'];
+export type CreateServiceRequest = Schemas['CreateServiceDto'];
+export type UpdateServiceRequest = Schemas['UpdateServiceDto'];
 
 /** Mirrors the backend enum. Kept as a const object so it survives erasure. */
 export const Role = {

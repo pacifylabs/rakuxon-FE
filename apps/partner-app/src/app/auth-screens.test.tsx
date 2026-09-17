@@ -10,8 +10,8 @@ const replace = vi.fn();
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push, replace }) }));
 
 import DashboardPage from './dashboard/page';
-import LoginPage from './login/page';
-import RegisterPage from './register/page';
+import LoginPage from './auth/login/page';
+import RegisterPage from './auth/register/page';
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -207,7 +207,7 @@ describe('dashboard', () => {
     mockFetch(() => json(200, {}));
     renderApp(<DashboardPage />);
 
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('/auth/login'));
     expect(screen.queryByText(/Welcome back/)).not.toBeInTheDocument();
   });
 

@@ -1823,6 +1823,142 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List published services */
+        get: operations["ServicesController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/services/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a published service by slug */
+        get: operations["ServicesController_getBySlug_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List services, including drafts and suspended records */
+        get: operations["AdminServicesController_list_v1"];
+        put?: never;
+        /**
+         * Create a service
+         * @description Starts life as draft.
+         */
+        post: operations["AdminServicesController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/services/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminServicesController_getDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminServicesController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/services/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminServicesController_publish_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/services/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminServicesController_suspend_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/services/{id}/revert-to-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminServicesController_revertToDraft_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/uploads/signature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Issue a signed Cloudinary upload for an admin-authored content image */
+        post: operations["AdminUploadsController_createSignature_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2997,6 +3133,100 @@ export interface components {
             consentGiven?: boolean;
             placement?: ("home" | "students")[];
             displayOrder?: number;
+        };
+        ServiceFaqDto: {
+            question: string;
+            answer: string;
+        };
+        ServiceDto: {
+            id: string;
+            slug: string;
+            iconName: string;
+            title: string;
+            summary: string;
+            description: string;
+            /** @enum {string} */
+            strand: "education" | "travel";
+            metaTitle: string;
+            metaDescription: string;
+            whatsIncluded: string[];
+            faqs: components["schemas"]["ServiceFaqDto"][];
+            relatedArticleSlugs?: string[] | null;
+        };
+        CreateServiceDto: {
+            slug: string;
+            iconName: string;
+            title: string;
+            summary: string;
+            description: string;
+            /** @enum {string} */
+            strand: "education" | "travel";
+            metaTitle: string;
+            metaDescription: string;
+            whatsIncluded?: string[];
+            faqs?: components["schemas"]["ServiceFaqDto"][];
+            relatedArticleSlugs?: string[] | null;
+            displayOrder?: number;
+        };
+        AdminServiceDetailDto: {
+            id: string;
+            slug: string;
+            iconName: string;
+            title: string;
+            summary: string;
+            description: string;
+            /** @enum {string} */
+            strand: "education" | "travel";
+            metaTitle: string;
+            metaDescription: string;
+            whatsIncluded: string[];
+            faqs: components["schemas"]["ServiceFaqDto"][];
+            relatedArticleSlugs?: string[] | null;
+            status: components["schemas"]["PublishStatus"];
+            displayOrder: number;
+        };
+        AdminServiceSummaryDto: {
+            id: string;
+            slug: string;
+            title: string;
+            /** @enum {string} */
+            strand: "education" | "travel";
+            status: components["schemas"]["PublishStatus"];
+        };
+        AdminServiceListDto: {
+            items: components["schemas"]["AdminServiceSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        UpdateServiceDto: {
+            slug?: string;
+            iconName?: string;
+            title?: string;
+            summary?: string;
+            description?: string;
+            /** @enum {string} */
+            strand?: "education" | "travel";
+            metaTitle?: string;
+            metaDescription?: string;
+            whatsIncluded?: string[];
+            faqs?: components["schemas"]["ServiceFaqDto"][];
+            relatedArticleSlugs?: string[] | null;
+            displayOrder?: number;
+        };
+        AdminUploadSignatureRequestDto: {
+            /** @enum {string} */
+            folder: "testimonials" | "institutions" | "articles";
+        };
+        AdminUploadSignatureDto: {
+            cloudName: string;
+            apiKey: string;
+            /** @description Unix seconds. Signed alongside publicId — must be sent back unchanged. */
+            timestamp: number;
+            signature: string;
+            publicId: string;
+            /** @description POST the file here as multipart form data. */
+            uploadUrl: string;
         };
     };
     responses: never;
@@ -5865,6 +6095,224 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminTestimonialSummaryDto"];
+                };
+            };
+        };
+    };
+    ServicesController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceDto"][];
+                };
+            };
+        };
+    };
+    ServicesController_getBySlug_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_list_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PublishStatus"];
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceListDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateServiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDetailDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_getDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDetailDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateServiceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDetailDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_publish_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_suspend_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminServicesController_revertToDraft_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminUploadsController_createSignature_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUploadSignatureRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUploadSignatureDto"];
                 };
             };
         };

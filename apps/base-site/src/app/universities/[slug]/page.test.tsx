@@ -1,9 +1,10 @@
 import { screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { InstitutionDetail } from '@/components/catalogue/InstitutionDetail';
 import { renderPage } from '@/lib/page-harness';
 
-import UniversityPage, { generateMetadata } from './page';
+import { generateMetadata } from './page';
 
 /**
  * Imported records carry a name, a location and whatever Wikidata could add.
@@ -155,9 +156,10 @@ function stubApi(
 
 const render = async (query: Record<string, string> = {}) =>
   renderPage(
-    await UniversityPage({
-      params: Promise.resolve({ slug: 'cardiff-university' }),
-      searchParams: Promise.resolve(query),
+    await InstitutionDetail({
+      slug: 'cardiff-university',
+      query,
+      applyMode: { kind: 'public' },
     }),
   );
 

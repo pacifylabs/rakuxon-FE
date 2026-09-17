@@ -1,8 +1,16 @@
 import type { MetadataRoute } from 'next';
 
-import { COUNTRY_SLUGS, ROUTES, articleRoute, countryRoute, courseRoute, serviceRoute, universityRoute } from '@/content/routes';
-import { SERVICES } from '@/content/services';
+import {
+  COUNTRY_SLUGS,
+  ROUTES,
+  articleRoute,
+  countryRoute,
+  courseRoute,
+  serviceRoute,
+  universityRoute,
+} from '@/content/routes';
 import { fetchArticles, fetchCourses, fetchInstitutions } from '@/lib/catalogue/api';
+import { fetchServices } from '@/lib/services/api';
 import { absoluteUrl } from '@/lib/site-url';
 
 /* Regenerated hourly rather than on every crawl — a sitemap this size is not
@@ -41,12 +49,14 @@ const STATIC_ROUTE_PRIORITY: Record<string, number> = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  const staticEntries: MetadataRoute.Sitemap = Object.entries(STATIC_ROUTE_PRIORITY).map(([path, priority]) => ({
-    url: absoluteUrl(path),
-    lastModified: now,
-    changeFrequency: path === ROUTES.home ? 'daily' : 'weekly',
-    priority,
-  }));
+  const staticEntries: MetadataRoute.Sitemap = Object.entries(STATIC_ROUTE_PRIORITY).map(
+    ([path, priority]) => ({
+      url: absoluteUrl(path),
+      lastModified: now,
+      changeFrequency: path === ROUTES.home ? 'daily' : 'weekly',
+      priority,
+    }),
+  );
 
   const countryEntries: MetadataRoute.Sitemap = COUNTRY_SLUGS.map((slug) => ({
     url: absoluteUrl(countryRoute(slug)),
@@ -55,8 +65,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const serviceEntries: MetadataRoute.Sitemap = SERVICES.map((service) => ({
-    url: absoluteUrl(serviceRoute(service.id)),
+  const services = await fetchServices();
+  const serviceEntries: MetadataRoute.Sitemap = services.map((service) => ({
+    url: absoluteUrl(serviceRoute(service.slug)),
     lastModified: now,
     changeFrequency: 'monthly',
     priority: 0.7,

@@ -7,6 +7,7 @@ import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { Button, FormField } from '@rakuxon/ui';
 import type { AdminTestimonialDetail } from '@rakuxon/contract';
 
+import { ImageUploadField } from '@/components/dashboard/ImageUploadField';
 import { RequirePermission, useAdminApiClient } from '@/lib/admin-auth';
 
 type Placement = 'home' | 'students';
@@ -196,25 +197,19 @@ function TestimonialEditor() {
             <span>
               <span className="font-semibold text-text">This person has consented to a photo.</span>
               <span className="mt-1 block text-text-muted">
-                Required before a photo URL can be saved — a stock or unconsented photo under a real
+                Required before a photo can be uploaded — a stock or unconsented photo under a real
                 name is a misrepresentation, not decoration.
               </span>
             </span>
           </label>
 
-          <div className="mt-4 flex flex-col gap-2">
-            <label htmlFor="photoUrl" className="text-sm font-medium text-text">
-              Photo URL
-            </label>
-            <input
-              id="photoUrl"
-              name="photoUrl"
-              type="text"
+          <div className="mt-4">
+            <ImageUploadField
+              label={form.consentGiven ? 'Photo' : 'Photo (requires consent above)'}
+              folder="testimonials"
               value={form.photoUrl}
-              onChange={(event) => set('photoUrl', event.target.value)}
+              onChange={(url) => set('photoUrl', url)}
               disabled={!form.consentGiven}
-              placeholder={form.consentGiven ? 'https://…' : 'Requires consent above'}
-              className="w-full rounded-md border border-border bg-surface px-4 py-3 text-base text-text focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-muted"
             />
           </div>
         </div>
@@ -253,7 +248,12 @@ function TestimonialEditor() {
           <Button type="submit" variant="primary" size="lg" disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
           </Button>
-          <Button type="button" variant="ghost" size="lg" onClick={() => router.push('/dashboard/content/testimonials')}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            onClick={() => router.push('/dashboard/content/testimonials')}
+          >
             Cancel
           </Button>
         </div>
@@ -266,7 +266,11 @@ export default function TestimonialEditorPage() {
   return (
     <RequirePermission
       permissions={['content.manage']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to edit content.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to edit content.
+        </p>
+      }
     >
       <TestimonialEditor />
     </RequirePermission>

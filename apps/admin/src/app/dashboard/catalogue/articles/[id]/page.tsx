@@ -8,6 +8,7 @@ import { Button, FormField } from '@rakuxon/ui';
 import type { AdminArticleDetail } from '@rakuxon/contract';
 
 import { StringArrayEditor } from '@/components/dashboard/editors/StringArrayEditor';
+import { ImageUploadField } from '@/components/dashboard/ImageUploadField';
 import { RequirePermission, useAdminApiClient } from '@/lib/admin-auth';
 
 interface FormState {
@@ -152,11 +153,28 @@ function ArticleEditor() {
 
       <form onSubmit={handleSubmit} className="mt-8 flex max-w-2xl flex-col gap-6">
         <div className="grid gap-6 sm:grid-cols-2">
-          <FormField label="Title" name="title" defaultValue={form.title} onChange={(e) => set('title', e.target.value)} required />
-          <FormField label="Slug" name="slug" defaultValue={form.slug} onChange={(e) => set('slug', e.target.value)} required />
+          <FormField
+            label="Title"
+            name="title"
+            defaultValue={form.title}
+            onChange={(e) => set('title', e.target.value)}
+            required
+          />
+          <FormField
+            label="Slug"
+            name="slug"
+            defaultValue={form.slug}
+            onChange={(e) => set('slug', e.target.value)}
+            required
+          />
         </div>
 
-        <FormField label="Excerpt" name="excerpt" defaultValue={form.excerpt} onChange={(e) => set('excerpt', e.target.value)} />
+        <FormField
+          label="Excerpt"
+          name="excerpt"
+          defaultValue={form.excerpt}
+          onChange={(e) => set('excerpt', e.target.value)}
+        />
 
         <div className="flex flex-col gap-2">
           <label htmlFor="body" className="text-sm font-medium text-text">
@@ -173,14 +191,47 @@ function ArticleEditor() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <FormField label="Hero image URL" name="heroImageUrl" defaultValue={form.heroImageUrl} onChange={(e) => set('heroImageUrl', e.target.value)} />
-          <FormField label="Country code" name="countryCode" placeholder="GB" defaultValue={form.countryCode} onChange={(e) => set('countryCode', e.target.value.toUpperCase())} />
-          <FormField label="Read minutes" name="readMinutes" type="number" defaultValue={form.readMinutes} onChange={(e) => set('readMinutes', e.target.value)} />
-          <FormField label="Author" name="author" defaultValue={form.author} onChange={(e) => set('author', e.target.value)} />
-          <FormField label="Published date" name="publishedAt" type="date" defaultValue={form.publishedAt} onChange={(e) => set('publishedAt', e.target.value)} />
+          <ImageUploadField
+            label="Hero image"
+            folder="articles"
+            value={form.heroImageUrl}
+            onChange={(url) => set('heroImageUrl', url)}
+          />
+          <FormField
+            label="Country code"
+            name="countryCode"
+            placeholder="GB"
+            defaultValue={form.countryCode}
+            onChange={(e) => set('countryCode', e.target.value.toUpperCase())}
+          />
+          <FormField
+            label="Read minutes"
+            name="readMinutes"
+            type="number"
+            defaultValue={form.readMinutes}
+            onChange={(e) => set('readMinutes', e.target.value)}
+          />
+          <FormField
+            label="Author"
+            name="author"
+            defaultValue={form.author}
+            onChange={(e) => set('author', e.target.value)}
+          />
+          <FormField
+            label="Published date"
+            name="publishedAt"
+            type="date"
+            defaultValue={form.publishedAt}
+            onChange={(e) => set('publishedAt', e.target.value)}
+          />
         </div>
 
-        <StringArrayEditor label="Tags" values={form.tags} onChange={(tags) => set('tags', tags)} placeholder="visa" />
+        <StringArrayEditor
+          label="Tags"
+          values={form.tags}
+          onChange={(tags) => set('tags', tags)}
+          placeholder="visa"
+        />
 
         {error && (
           <p role="alert" className="text-sm text-danger">
@@ -192,7 +243,12 @@ function ArticleEditor() {
           <Button type="submit" variant="primary" size="lg" disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
           </Button>
-          <Button type="button" variant="ghost" size="lg" onClick={() => router.push('/dashboard/catalogue/articles')}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            onClick={() => router.push('/dashboard/catalogue/articles')}
+          >
             Cancel
           </Button>
         </div>
@@ -205,7 +261,11 @@ export default function ArticleEditorPage() {
   return (
     <RequirePermission
       permissions={['catalogue.publish']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to edit the catalogue.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to edit the catalogue.
+        </p>
+      }
     >
       <ArticleEditor />
     </RequirePermission>

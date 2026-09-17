@@ -5,12 +5,15 @@ import { ThemeProvider } from '@rakuxon/ui';
 
 const push = vi.fn();
 const replace = vi.fn();
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push, replace }), usePathname: () => '/dashboard' }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push, replace }),
+  usePathname: () => '/dashboard',
+}));
 
 import { AdminAuthProvider } from '@/lib/admin-auth';
 import DashboardLayout from './dashboard/layout';
 import DashboardPage from './dashboard/page';
-import LoginPage from './login/page';
+import LoginPage from './auth/login/page';
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -18,7 +21,13 @@ const json = (status: number, body: unknown) =>
 const adminSession = (permissions: string[] = []) => ({
   accessToken: 'a',
   refreshToken: 'r',
-  admin: { id: 'admin-1', email: 'admin@rakuxon.com', firstName: 'Test', lastName: 'Admin', permissions },
+  admin: {
+    id: 'admin-1',
+    email: 'admin@rakuxon.com',
+    firstName: 'Test',
+    lastName: 'Admin',
+    permissions,
+  },
   expiresAt: Date.now() + 900_000,
 });
 
@@ -84,7 +93,7 @@ describe('admin dashboard', () => {
         <DashboardPage />
       </DashboardLayout>,
     );
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('/auth/login'));
     expect(screen.queryByText('Platform administration')).not.toBeInTheDocument();
   });
 
@@ -95,7 +104,9 @@ describe('admin dashboard', () => {
         <DashboardPage />
       </DashboardLayout>,
     );
-    expect(await screen.findByRole('heading', { name: 'Platform administration' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Platform administration' }),
+    ).toBeInTheDocument();
   });
 
   it('marks the shell as Admin and puts the signed-in name in a header account menu', async () => {
@@ -131,7 +142,7 @@ describe('admin dashboard', () => {
     );
     await screen.findByRole('heading', { name: 'Platform administration' });
     const nav = within(screen.getByRole('navigation', { name: 'Primary' }));
-    expect(nav.getByRole('link', { name: /tenants/i })).toBeInTheDocument();
+    expect(nav.getByRole('link', { name: /partners/i })).toBeInTheDocument();
     expect(nav.getByRole('link', { name: /admins/i })).toBeInTheDocument();
   });
 });

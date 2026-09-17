@@ -3,40 +3,43 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs, CtaBand, SectionBand } from '@rakuxon/ui';
 
-import { SERVICES, SERVICES_CTA } from '@/content/services';
+import { SERVICES_CTA, resolveServiceIcon } from '@/content/services';
 import { ROUTES, articleRoute, serviceRoute } from '@/content/routes';
 import { fetchArticle } from '@/lib/catalogue/api';
+import { fetchService, fetchServices } from '@/lib/services/api';
 import { absoluteUrl } from '@/lib/site-url';
 
-export const dynamic = 'force-static';
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return SERVICES.map((service) => ({ id: service.id }));
-}
+/*
+ * Rendered on demand and then cached, not prebuilt — services are
+ * admin-authored now, so a new one must not need a redeploy to get a page.
+ */
+export const revalidate = 300;
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params;
-  const service = SERVICES.find((entry) => entry.id === id);
+  const service = await fetchService(id);
   if (!service) return {};
 
   return {
     title: service.metaTitle,
     description: service.metaDescription,
-    alternates: { canonical: serviceRoute(service.id) },
+    alternates: { canonical: serviceRoute(service.slug) },
   };
 }
 
 export default async function ServicePage({ params }: Params) {
   const { id } = await params;
-  const service = SERVICES.find((entry) => entry.id === id);
+  const service = await fetchService(id);
   if (!service) notFound();
+
+  const Icon = resolveServiceIcon(service.iconName);
 
   /* The other services in the same strand — a visitor reading about visas is
      more likely to want applications next than a honeymoon package. */
-  const related = SERVICES.filter(
+  const allServices = await fetchServices();
+  const related = allServices.filter(
     (entry) => entry.strand === service.strand && entry.id !== service.id,
   );
 
@@ -46,7 +49,7 @@ export default async function ServicePage({ params }: Params) {
      that was later unpublished) are dropped rather than shown broken. */
   const relatedArticles = (
     await Promise.all((service.relatedArticleSlugs ?? []).map((slug) => fetchArticle(slug)))
-  ).filter((article) => article !== null);
+  ).filter((article): article is NonNullable<typeof article> => article !== null);
 
   return (
     <>
@@ -59,10 +62,15 @@ export default async function ServicePage({ params }: Params) {
             '@type': 'Service',
             name: service.title,
             description: service.description,
-            url: absoluteUrl(serviceRoute(service.id)),
+            url: absoluteUrl(serviceRoute(service.slug)),
             provider: { '@type': 'Organization', name: 'Rakuxon' },
             areaServed: 'Worldwide',
-            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: service.summary },
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
+              description: service.summary,
+            },
           }),
         }}
       />
@@ -74,8 +82,18 @@ export default async function ServicePage({ params }: Params) {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Services', item: absoluteUrl(ROUTES.services) },
-              { '@type': 'ListItem', position: 2, name: service.title, item: absoluteUrl(serviceRoute(service.id)) },
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Services',
+                item: absoluteUrl(ROUTES.services),
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: service.title,
+                item: absoluteUrl(serviceRoute(service.slug)),
+              },
             ],
           }),
         }}
@@ -106,7 +124,7 @@ export default async function ServicePage({ params }: Params) {
 
         <div className="mt-6 flex items-start gap-5">
           <span className="grid h-16 w-16 shrink-0 place-items-center rounded-md bg-accent-soft text-primary">
-            <service.icon size={26} aria-hidden="true" focusable="false" />
+            <Icon size={26} aria-hidden="true" focusable="false" />
           </span>
           <div>
             <h1
@@ -123,28 +141,30 @@ export default async function ServicePage({ params }: Params) {
         <p className="mt-8 max-w-prose text-base text-text-muted">{service.description}</p>
       </SectionBand>
 
-      <SectionBand labelledBy="service-included-heading">
-        <h2
-          id="service-included-heading"
-          className="font-heading text-2xl font-bold text-text md:text-3xl"
-        >
-          What's included
-        </h2>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {service.whatsIncluded.map((item) => (
-            <li
-              key={item}
-              className="flex items-start gap-3 rounded-lg border border-border bg-surface p-5"
-            >
-              <span
-                aria-hidden="true"
-                className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary"
-              />
-              <span className="text-base text-text-muted">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </SectionBand>
+      {service.whatsIncluded.length > 0 && (
+        <SectionBand labelledBy="service-included-heading">
+          <h2
+            id="service-included-heading"
+            className="font-heading text-2xl font-bold text-text md:text-3xl"
+          >
+            What's included
+          </h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {service.whatsIncluded.map((item) => (
+              <li
+                key={item}
+                className="flex items-start gap-3 rounded-lg border border-border bg-surface p-5"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary"
+                />
+                <span className="text-base text-text-muted">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </SectionBand>
+      )}
 
       {relatedArticles.length > 0 && (
         <SectionBand tone="muted" labelledBy="service-guidance-heading">
@@ -177,22 +197,24 @@ export default async function ServicePage({ params }: Params) {
         </SectionBand>
       )}
 
-      <SectionBand labelledBy="service-faq-heading">
-        <h2
-          id="service-faq-heading"
-          className="font-heading text-2xl font-bold text-text md:text-3xl"
-        >
-          Frequently asked questions
-        </h2>
-        <dl className="mt-8 flex max-w-prose flex-col gap-8">
-          {service.faqs.map((faq) => (
-            <div key={faq.question}>
-              <dt className="font-heading text-lg font-semibold text-text">{faq.question}</dt>
-              <dd className="mt-2 text-base text-text-muted">{faq.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </SectionBand>
+      {service.faqs.length > 0 && (
+        <SectionBand labelledBy="service-faq-heading">
+          <h2
+            id="service-faq-heading"
+            className="font-heading text-2xl font-bold text-text md:text-3xl"
+          >
+            Frequently asked questions
+          </h2>
+          <dl className="mt-8 flex max-w-prose flex-col gap-8">
+            {service.faqs.map((faq) => (
+              <div key={faq.question}>
+                <dt className="font-heading text-lg font-semibold text-text">{faq.question}</dt>
+                <dd className="mt-2 text-base text-text-muted">{faq.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </SectionBand>
+      )}
 
       {related.length > 0 && (
         <SectionBand tone="muted" labelledBy="related-services-heading">
@@ -204,22 +226,25 @@ export default async function ServicePage({ params }: Params) {
           </h2>
 
           <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((entry) => (
-              <li key={entry.id} className="h-full">
-                <a
-                  href={serviceRoute(entry.id)}
-                  className="flex h-full flex-col rounded-lg border border-border bg-surface p-6 shadow-sm transition-[transform,box-shadow] duration-base ease-standard hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-                >
-                  <span className="grid h-12 w-12 place-items-center rounded-md bg-accent-soft text-primary">
-                    <entry.icon size={20} aria-hidden="true" focusable="false" />
-                  </span>
-                  <h3 className="mt-5 font-heading text-lg font-semibold text-text">
-                    {entry.title}
-                  </h3>
-                  <p className="mt-2 text-base text-text-muted">{entry.summary}</p>
-                </a>
-              </li>
-            ))}
+            {related.map((entry) => {
+              const EntryIcon = resolveServiceIcon(entry.iconName);
+              return (
+                <li key={entry.id} className="h-full">
+                  <a
+                    href={serviceRoute(entry.slug)}
+                    className="flex h-full flex-col rounded-lg border border-border bg-surface p-6 shadow-sm transition-[transform,box-shadow] duration-base ease-standard hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  >
+                    <span className="grid h-12 w-12 place-items-center rounded-md bg-accent-soft text-primary">
+                      <EntryIcon size={20} aria-hidden="true" focusable="false" />
+                    </span>
+                    <h3 className="mt-5 font-heading text-lg font-semibold text-text">
+                      {entry.title}
+                    </h3>
+                    <p className="mt-2 text-base text-text-muted">{entry.summary}</p>
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </SectionBand>
       )}
