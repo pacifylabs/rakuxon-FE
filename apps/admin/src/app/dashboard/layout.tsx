@@ -47,7 +47,7 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
       ],
     },
     { href: '/dashboard/applications', label: 'Applications', icon: Users },
-    { href: '/dashboard/students', label: 'Students', icon: GraduationCap },
+    { href: '/dashboard/students', label: 'Applicants', icon: GraduationCap },
     {
       label: 'Admins',
       icon: Users,

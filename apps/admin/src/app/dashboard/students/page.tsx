@@ -11,9 +11,11 @@ import type { AdminStudentSummary } from '@rakuxon/contract';
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
 /**
- * Finding and opening a student to support a document review or an
- * application, editing their profile, and — for a student the partner
- * already has elsewhere — bringing them onto the platform directly.
+ * Finding and opening an applicant to support a document review or an
+ * application, editing their profile, and — for an applicant the partner
+ * already has elsewhere — bringing them onto the platform directly. Shows
+ * enough of each row (applications, registered date) to gauge engagement
+ * without opening it.
  */
 function StudentsList() {
   const client = useAdminApiClient();
@@ -34,7 +36,7 @@ function StudentsList() {
       setError(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not load students. Please try again.',
+          : 'Could not load applicants. Please try again.',
       );
     }
   }, [client, query, page]);
@@ -69,6 +71,22 @@ function StudentsList() {
         ),
     },
     {
+      header: 'Applications',
+      cell: (row) => (
+        <span className="text-text">
+          {row.applicationsCount} {row.applicationsCount === 1 ? 'application' : 'applications'}
+        </span>
+      ),
+    },
+    {
+      header: 'Registered',
+      cell: (row) => (
+        <span className="whitespace-nowrap text-text-muted">
+          {new Date(row.createdAt).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
       header: 'Actions',
       className: 'text-right',
       cell: (row) => (
@@ -87,16 +105,16 @@ function StudentsList() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 id="students-heading" className="font-heading text-3xl font-bold text-text">
-            Students
+            Applicants
           </h1>
           <p className="mt-2 max-w-prose text-base text-text-muted">
-            Every applicant across every partner. Open a student to see their full profile and
+            Every applicant across every partner. Open one to see their full profile and
             documents.
           </p>
         </div>
         {hasPermission('students.manage') && (
           <Button variant="primary" size="md" onClick={() => window.location.assign('/dashboard/students/new')}>
-            New student
+            New applicant
           </Button>
         )}
       </div>
@@ -133,7 +151,7 @@ function StudentsList() {
             emptyState={
               <EmptyState
                 icon={GraduationCap}
-                title="No students match this search"
+                title="No applicants match this search"
                 description="Try a different name or email."
               />
             }
@@ -151,7 +169,7 @@ export default function StudentsPage() {
       permissions={['students.view']}
       denied={
         <p className="text-base text-text-muted">
-          Your account does not have permission to view students.
+          Your account does not have permission to view applicants.
         </p>
       }
     >

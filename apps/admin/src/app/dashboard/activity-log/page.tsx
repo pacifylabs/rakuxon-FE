@@ -19,7 +19,7 @@ const ACTOR_LABEL: Record<AuditLogEntry['actorType'], string> = {
 const RESOURCE_FILTERS = [
   { value: '', label: 'All resources' },
   { value: 'application', label: 'Applications' },
-  { value: 'student', label: 'Students' },
+  { value: 'student', label: 'Applicants' },
   { value: 'tenant', label: 'Partners' },
   { value: 'admin', label: 'Admins' },
   { value: 'admin-role', label: 'Roles' },

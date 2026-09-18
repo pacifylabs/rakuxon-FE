@@ -3118,6 +3118,9 @@ export interface components {
             tenantId: string;
             /** Format: date-time */
             profileCompletedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            applicationsCount: number;
         };
         AdminStudentListDto: {
             items: components["schemas"]["AdminStudentSummaryDto"][];

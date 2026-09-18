@@ -127,7 +127,7 @@ function DashboardHome() {
             />
             <StatCard
               icon={Users}
-              label="Students"
+              label="Applicants"
               value={summary.totalStudents}
               href="/dashboard/students"
             />

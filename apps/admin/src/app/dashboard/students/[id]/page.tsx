@@ -92,13 +92,13 @@ function NewStudentForm() {
         lastName: String(data.get('lastName') ?? '').trim(),
         password: String(data.get('password') ?? ''),
       });
-      toast.success('Student created.');
+      toast.success('Applicant created.');
       router.push(`/dashboard/students/${created.id}`);
     } catch (caught) {
       const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not create the student. Please try again.';
+          : 'Could not create the applicant. Please try again.';
       setError(message);
       toast.error(message);
     } finally {
@@ -109,15 +109,15 @@ function NewStudentForm() {
   return (
     <section aria-labelledby="new-student-heading" className="max-w-xl">
       <Button variant="ghost" size="md" onClick={() => router.push('/dashboard/students')}>
-        ← Back to students
+        ← Back to applicants
       </Button>
 
       <h1 id="new-student-heading" className="mt-4 font-heading text-3xl font-bold text-text">
-        New student
+        New applicant
       </h1>
       <p className="mt-2 text-base text-text-muted">
-        For a student the partner already has, manually or through another system. Sets a real
-        password directly — the student can change it via the reset flow afterwards.
+        For an applicant the partner already has, manually or through another system. Sets a real
+        password directly — they can change it via the reset flow afterwards.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6">
@@ -185,7 +185,7 @@ function StudentDetail() {
       setError(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not load this student. Please try again.',
+          : 'Could not load this applicant. Please try again.',
       );
     }
   }, [client, params.id]);
@@ -203,7 +203,7 @@ function StudentDetail() {
       setDocumentsError(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not load this student’s documents. Please try again.',
+          : 'Could not load this applicant’s documents. Please try again.',
       );
     }
   }, [client, params.id, canReview]);
@@ -299,7 +299,7 @@ function StudentDetail() {
           {error}
         </p>
         <Button variant="ghost" size="md" className="mt-4" onClick={() => router.push('/dashboard/students')}>
-          Back to students
+          Back to applicants
         </Button>
       </section>
     );
@@ -457,7 +457,7 @@ function StudentDetail() {
     <section aria-labelledby="student-heading">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="md" onClick={() => router.push('/dashboard/students')}>
-          ← Back to students
+          ← Back to applicants
         </Button>
         {hasPermission('students.manage') && (
           <div className="flex gap-3">
@@ -528,7 +528,7 @@ function StudentDetail() {
         <div className="mt-10">
           <h2 className="font-heading text-xl font-semibold text-text">Documents</h2>
           <p className="mt-1 text-sm text-text-muted">
-            Reject an upload that doesn't hold up, or upload one on this student's behalf.
+            Reject an upload that doesn't hold up, or upload one on this applicant's behalf.
           </p>
 
           {documentsError && (
@@ -600,7 +600,7 @@ export default function StudentDetailPage() {
     return (
       <RequirePermission
         permissions={['students.manage']}
-        denied={<p className="text-base text-text-muted">Your account does not have permission to create students.</p>}
+        denied={<p className="text-base text-text-muted">Your account does not have permission to create applicants.</p>}
       >
         <NewStudentForm />
       </RequirePermission>
@@ -610,7 +610,7 @@ export default function StudentDetailPage() {
   return (
     <RequirePermission
       permissions={['students.view']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to view students.</p>}
+      denied={<p className="text-base text-text-muted">Your account does not have permission to view applicants.</p>}
     >
       <StudentDetail />
     </RequirePermission>
