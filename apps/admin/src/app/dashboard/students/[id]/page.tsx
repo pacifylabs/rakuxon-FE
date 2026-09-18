@@ -10,6 +10,7 @@ import type { AdminStudentDetail, EducationHistoryEntry, StudentDocument, StudyL
 import { AdminDocumentRow } from '@/components/dashboard/AdminDocumentRow';
 import { DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS } from '@/components/dashboard/documentTypes';
 import { RepeatableGroup } from '@/components/dashboard/editors/RepeatableGroup';
+import { HistoryPanel } from '@/components/dashboard/HistoryPanel';
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
 const STUDY_LEVELS: StudyLevel[] = ['foundation', 'undergraduate', 'postgraduate', 'research'];
@@ -559,6 +560,13 @@ function StudentDetail() {
           )}
         </div>
       )}
+
+      <div className="mt-10">
+        <h2 className="font-heading text-xl font-semibold text-text">History</h2>
+        <div className="mt-4">
+          <HistoryPanel load={() => client.getStudentAuditLog(student.id)} />
+        </div>
+      </div>
 
       <ConfirmDialog
         open={settingPassword}

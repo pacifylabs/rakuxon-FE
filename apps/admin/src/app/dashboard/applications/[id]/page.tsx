@@ -4,11 +4,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { ApplicationStatusBadge, Button, StatusBadge } from '@rakuxon/ui';
-import type { AdminApplicationDetail, StudentDocument } from '@rakuxon/contract';
+import { ApplicationStatusBadge, Button, ConfirmDialog, StatusBadge, useToast } from '@rakuxon/ui';
+import type { AdminApplicationDetail, AssignableAdmin, StudentDocument } from '@rakuxon/contract';
 
 import { AdminDocumentRow } from '@/components/dashboard/AdminDocumentRow';
 import { DOCUMENT_TYPE_LABELS } from '@/components/dashboard/documentTypes';
+import { HistoryPanel } from '@/components/dashboard/HistoryPanel';
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -38,6 +39,7 @@ function ApplicationDetail() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const toast = useToast();
   const { hasPermission } = useAdminAuth();
   const canManage = hasPermission('applications.manage');
   const canReview = hasPermission('documents.review');
@@ -47,6 +49,11 @@ function ApplicationDetail() {
   const [documents, setDocuments] = useState<StudentDocument[] | null>(null);
   const [documentsError, setDocumentsError] = useState<string | null>(null);
   const [pendingDocumentId, setPendingDocumentId] = useState<string | null>(null);
+  const [admins, setAdmins] = useState<AssignableAdmin[]>([]);
+  const [assigning, setAssigning] = useState(false);
+  const [confirmingAssign, setConfirmingAssign] = useState<{ adminId: string | null; label: string } | null>(
+    null,
+  );
 
   const load = useCallback(async () => {
     try {
@@ -64,6 +71,36 @@ function ApplicationDetail() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!canManage) return;
+    client
+      .listAssignableAdmins()
+      .then((result) => setAdmins(result.items))
+      .catch(() => {
+        /* The assign selector degrades to "no admins listed" — the rest of the page still works. */
+      });
+  }, [client, canManage]);
+
+  async function confirmAssign() {
+    if (!application || confirmingAssign === undefined || confirmingAssign === null) return;
+    setAssigning(true);
+    try {
+      setApplication(await client.assignApplication(application.id, { adminId: confirmingAssign.adminId }));
+      toast.success(
+        confirmingAssign.adminId ? `Assigned to ${confirmingAssign.label}.` : 'Unassigned.',
+      );
+      setConfirmingAssign(null);
+    } catch (caught) {
+      toast.error(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not update the assignment. Please try again.',
+      );
+    } finally {
+      setAssigning(false);
+    }
+  }
 
   const loadDocuments = useCallback(async () => {
     if (!application || !canReview) return;
@@ -191,6 +228,39 @@ function ApplicationDetail() {
         </dl>
 
         <dl className="grid gap-6">
+          <div>
+            <dt className="text-sm text-text-muted">Assigned to</dt>
+            {canManage ? (
+              <dd className="mt-1">
+                <select
+                  value={application.assignedAdminId ?? ''}
+                  disabled={assigning}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                      setConfirmingAssign({ adminId: null, label: '' });
+                      return;
+                    }
+                    const chosen = admins.find((admin) => admin.id === value);
+                    setConfirmingAssign({
+                      adminId: value,
+                      label: chosen ? `${chosen.firstName} ${chosen.lastName}` : 'this admin',
+                    });
+                  }}
+                  className="rounded-md border border-border bg-surface px-4 py-2 text-base text-text focus-visible:outline-none focus-visible:ring"
+                >
+                  <option value="">Unassigned</option>
+                  {admins.map((admin) => (
+                    <option key={admin.id} value={admin.id}>
+                      {admin.firstName} {admin.lastName}
+                    </option>
+                  ))}
+                </select>
+              </dd>
+            ) : (
+              <dd className="mt-1 text-base text-text">{application.assignedAdminName ?? '—'}</dd>
+            )}
+          </div>
           <Field label="Created" value={new Date(application.createdAt).toLocaleString()} />
           <Field
             label="Submitted"
@@ -328,6 +398,22 @@ function ApplicationDetail() {
           </div>
         )}
       </div>
+
+      <div className="mt-10">
+        <h2 className="font-heading text-xl font-semibold text-text">History</h2>
+        <div className="mt-4">
+          <HistoryPanel load={() => client.getApplicationAuditLog(application.id)} />
+        </div>
+      </div>
+
+      <ConfirmDialog
+        open={confirmingAssign !== null}
+        onOpenChange={(open) => !open && setConfirmingAssign(null)}
+        title={confirmingAssign?.adminId ? `Assign to ${confirmingAssign.label}?` : 'Unassign this application?'}
+        confirmLabel={confirmingAssign?.adminId ? 'Assign' : 'Unassign'}
+        confirming={assigning}
+        onConfirm={confirmAssign}
+      />
     </section>
   );
 }

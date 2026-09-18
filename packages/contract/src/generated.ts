@@ -1127,6 +1127,23 @@ export interface paths {
         patch: operations["AdminStudentsController_update_v1"];
         trace?: never;
     };
+    "/v1/admin/students/{id}/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** This student's own history — every admin and student action on them */
+        get: operations["AdminStudentsController_auditLogFor_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/students/{id}/set-password": {
         parameters: {
             query?: never;
@@ -1138,6 +1155,23 @@ export interface paths {
         put?: never;
         /** Set a student's password directly — a reset done for them, not by them. */
         post: operations["AdminStudentsController_setPassword_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The platform-wide activity log, filterable and paginated */
+        get: operations["AuditLogController_list_v1"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1430,6 +1464,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/applications/assignable-admins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Active admins, for an "assign to" picker */
+        get: operations["AdminApplicationsController_assignableAdmins_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/applications/{id}": {
         parameters: {
             query?: never;
@@ -1445,6 +1496,43 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/applications/{id}/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** This application's own history — every admin and student action on it */
+        get: operations["AdminApplicationsController_auditLogFor_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/applications/{id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Assign this application to an admin, or unassign it
+         * @description Who currently owns working this application. Allowed at any status — a submitted application still needs a caseworker.
+         */
+        patch: operations["AdminApplicationsController_assign_v1"];
         trace?: never;
     };
     "/v1/admin/applications/{id}/documents/{documentId}": {
@@ -1463,23 +1551,6 @@ export interface paths {
         post: operations["AdminApplicationsController_attachDocument_v1"];
         /** Detach a document from a student's draft application */
         delete: operations["AdminApplicationsController_detachDocument_v1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/audit-log": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** The platform-wide activity log, filterable and paginated */
-        get: operations["AuditLogController_list_v1"];
-        put?: never;
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1515,6 +1586,23 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["AdminsController_updateRole_v1"];
+        trace?: never;
+    };
+    "/v1/admin/admins/{id}/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** This admin's own history — every action taken on their account */
+        get: operations["AdminsController_auditLogFor_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/admin/admins/{id}/role": {
@@ -1772,6 +1860,23 @@ export interface paths {
         head?: never;
         /** Edit a partner's name or subdomain */
         patch: operations["TenantsController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/tenants/{id}/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** This partner's own history — every admin action on it */
+        get: operations["TenantsController_auditLogFor_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/admin/tenants/{id}/approve": {
@@ -3020,6 +3125,26 @@ export interface components {
             page: number;
             pageCount: number;
         };
+        AuditLogEntryDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            actorType: "admin" | "student" | "system";
+            /** Format: uuid */
+            actorId: string | null;
+            actorName: string | null;
+            action: string;
+            description: string;
+            resourceType: string | null;
+            /** Format: uuid */
+            resourceId: string | null;
+            metadata: Record<string, never>;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ResourceAuditLogDto: {
+            items: components["schemas"]["AuditLogEntryDto"][];
+        };
         UpdateStudentAdminDto: {
             /** @example ada@example.com */
             email?: string;
@@ -3045,6 +3170,12 @@ export interface components {
         SetStudentPasswordDto: {
             /** @example correct-horse-battery */
             password: string;
+        };
+        AuditLogListDto: {
+            items: components["schemas"]["AuditLogEntryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
         };
         NotificationDto: {
             /** Format: uuid */
@@ -3161,6 +3292,15 @@ export interface components {
             page: number;
             pageCount: number;
         };
+        AssignableAdminDto: {
+            /** Format: uuid */
+            id: string;
+            firstName: string;
+            lastName: string;
+        };
+        AssignableAdminListDto: {
+            items: components["schemas"]["AssignableAdminDto"][];
+        };
         AdminApplicationDetailDto: {
             /** Format: uuid */
             id: string;
@@ -3189,28 +3329,9 @@ export interface components {
             missingDocumentTypes: components["schemas"]["DocumentType"][];
             readyToSubmit: boolean;
         };
-        AuditLogEntryDto: {
+        AssignApplicationDto: {
             /** Format: uuid */
-            id: string;
-            /** @enum {string} */
-            actorType: "admin" | "student" | "system";
-            /** Format: uuid */
-            actorId: string | null;
-            actorName: string | null;
-            action: string;
-            description: string;
-            resourceType: string | null;
-            /** Format: uuid */
-            resourceId: string | null;
-            metadata: Record<string, never>;
-            /** Format: date-time */
-            createdAt: string;
-        };
-        AuditLogListDto: {
-            items: components["schemas"]["AuditLogEntryDto"][];
-            total: number;
-            page: number;
-            pageCount: number;
+            adminId?: string | null;
         };
         AdminRoleSummaryDto: {
             /** Format: uuid */
@@ -5498,6 +5619,27 @@ export interface operations {
             };
         };
     };
+    AdminStudentsController_auditLogFor_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceAuditLogDto"];
+                };
+            };
+        };
+    };
     AdminStudentsController_setPassword_v1: {
         parameters: {
             query?: never;
@@ -5525,6 +5667,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AuditLogController_list_v1: {
+        parameters: {
+            query?: {
+                actorType?: "admin" | "student" | "system";
+                /** @description e.g. application, student, tenant, admin, document */
+                resourceType?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditLogListDto"];
+                };
             };
         };
     };
@@ -5921,6 +6088,25 @@ export interface operations {
             };
         };
     };
+    AdminApplicationsController_assignableAdmins_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignableAdminListDto"];
+                };
+            };
+        };
+    };
     AdminApplicationsController_get_v1: {
         parameters: {
             query?: never;
@@ -5946,6 +6132,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AdminApplicationsController_auditLogFor_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceAuditLogDto"];
+                };
+            };
+        };
+    };
+    AdminApplicationsController_assign_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignApplicationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
             };
         };
     };
@@ -5989,31 +6221,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminApplicationDetailDto"];
-                };
-            };
-        };
-    };
-    AuditLogController_list_v1: {
-        parameters: {
-            query?: {
-                actorType?: "admin" | "student" | "system";
-                /** @description e.g. application, student, tenant, admin, document */
-                resourceType?: string;
-                page?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuditLogListDto"];
                 };
             };
         };
@@ -6100,6 +6307,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminRoleSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminsController_auditLogFor_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceAuditLogDto"];
                 };
             };
         };
@@ -6542,6 +6770,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    TenantsController_auditLogFor_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceAuditLogDto"];
+                };
             };
         };
     };

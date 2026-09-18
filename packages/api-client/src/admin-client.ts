@@ -33,6 +33,9 @@ import type {
   AdminTestimonialDetail,
   AdminTestimonialList,
   AdminTestimonialSummary,
+  AssignApplicationRequest,
+  AssignableAdminList,
+  AuditLogList,
   ChangeAdminPasswordRequest,
   ConfirmAdminPasswordResetRequest,
   ConfirmDocumentUploadRequest,
@@ -47,6 +50,7 @@ import type {
   DisableTotpRequest,
   Permission,
   RejectDocumentRequest,
+  ResourceAuditLog,
   SetCountryHomepageFeaturedRequest,
   SetStudentPasswordRequest,
   SetTenantStaffPasswordRequest,
@@ -607,6 +611,49 @@ export class AdminApiClient {
       `/v1/admin/applications/${applicationId}/documents/${documentId}`,
       { method: 'DELETE', auth: true },
     );
+  }
+
+  assignApplication(
+    applicationId: string,
+    body: AssignApplicationRequest,
+  ): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(`/v1/admin/applications/${applicationId}/assign`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  getApplicationAuditLog(applicationId: string): Promise<ResourceAuditLog> {
+    return this.request<ResourceAuditLog>(`/v1/admin/applications/${applicationId}/audit-log`, {
+      auth: true,
+    });
+  }
+
+  listAssignableAdmins(): Promise<AssignableAdminList> {
+    return this.request<AssignableAdminList>('/v1/admin/applications/assignable-admins', {
+      auth: true,
+    });
+  }
+
+  /* ------------------------------------------------------------- audit log */
+
+  listAuditLog(
+    query: { actorType?: string; resourceType?: string; page?: number; limit?: number } = {},
+  ): Promise<AuditLogList> {
+    return this.request<AuditLogList>(`/v1/admin/audit-log${toQuery(query)}`, { auth: true });
+  }
+
+  getStudentAuditLog(studentId: string): Promise<ResourceAuditLog> {
+    return this.request<ResourceAuditLog>(`/v1/admin/students/${studentId}/audit-log`, { auth: true });
+  }
+
+  getTenantAuditLog(tenantId: string): Promise<ResourceAuditLog> {
+    return this.request<ResourceAuditLog>(`/v1/admin/tenants/${tenantId}/audit-log`, { auth: true });
+  }
+
+  getAdminAuditLog(adminId: string): Promise<ResourceAuditLog> {
+    return this.request<ResourceAuditLog>(`/v1/admin/admins/${adminId}/audit-log`, { auth: true });
   }
 
   /* --------------------------------------------------------------- admins */

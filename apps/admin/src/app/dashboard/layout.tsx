@@ -10,6 +10,7 @@ import {
   Landmark,
   LayoutGrid,
   MessageSquareQuote,
+  ScrollText,
   Settings,
   ShieldCheck,
   Users,
@@ -23,46 +24,51 @@ import type { AppShellNavItem } from '@rakuxon/ui';
 
 import { RequirePermission, useAdminAuth } from '@/lib/admin-auth';
 
-const NAV_ITEMS: AppShellNavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
-  { href: '/dashboard/tenants', label: 'Partners', icon: ShieldCheck },
-  {
-    label: 'Catalogue',
-    icon: Building2,
-    children: [
-      { href: '/dashboard/catalogue/institutions', label: 'Institutions', icon: Landmark },
-      { href: '/dashboard/catalogue/courses', label: 'Courses', icon: GraduationCap },
-      { href: '/dashboard/catalogue/articles', label: 'Articles', icon: BookOpen },
-    ],
-  },
-  {
-    label: 'Content',
-    icon: MessageSquareQuote,
-    children: [
-      { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
-      { href: '/dashboard/content/services', label: 'Services', icon: Compass },
-      { href: '/dashboard/content/site-settings', label: 'Site settings', icon: Settings },
-    ],
-  },
-  { href: '/dashboard/applications', label: 'Applications', icon: Users },
-  { href: '/dashboard/students', label: 'Students', icon: GraduationCap },
-  {
-    label: 'Admins',
-    icon: Users,
-    children: [
-      { href: '/dashboard/admins', label: 'Administrators', icon: Users },
-      { href: '/dashboard/admins/roles', label: 'Roles & permissions', icon: ShieldCheck },
-    ],
-  },
-  {
-    label: 'Utilities',
-    icon: Wrench,
-    children: [
-      { href: '/dashboard/utilities/countries', label: 'Countries', icon: Globe2 },
-      { href: '/dashboard/utilities/intake-terms', label: 'Intake terms', icon: CalendarDays },
-    ],
-  },
-];
+function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
+  return [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
+    { href: '/dashboard/tenants', label: 'Partners', icon: ShieldCheck },
+    {
+      label: 'Catalogue',
+      icon: Building2,
+      children: [
+        { href: '/dashboard/catalogue/institutions', label: 'Institutions', icon: Landmark },
+        { href: '/dashboard/catalogue/courses', label: 'Courses', icon: GraduationCap },
+        { href: '/dashboard/catalogue/articles', label: 'Articles', icon: BookOpen },
+      ],
+    },
+    {
+      label: 'Content',
+      icon: MessageSquareQuote,
+      children: [
+        { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+        { href: '/dashboard/content/services', label: 'Services', icon: Compass },
+        { href: '/dashboard/content/site-settings', label: 'Site settings', icon: Settings },
+      ],
+    },
+    { href: '/dashboard/applications', label: 'Applications', icon: Users },
+    { href: '/dashboard/students', label: 'Students', icon: GraduationCap },
+    {
+      label: 'Admins',
+      icon: Users,
+      children: [
+        { href: '/dashboard/admins', label: 'Administrators', icon: Users },
+        { href: '/dashboard/admins/roles', label: 'Roles & permissions', icon: ShieldCheck },
+      ],
+    },
+    {
+      label: 'Utilities',
+      icon: Wrench,
+      children: [
+        { href: '/dashboard/utilities/countries', label: 'Countries', icon: Globe2 },
+        { href: '/dashboard/utilities/intake-terms', label: 'Intake terms', icon: CalendarDays },
+      ],
+    },
+    ...(hasPermission('platform.audit')
+      ? [{ href: '/dashboard/activity-log', label: 'Activity log', icon: ScrollText }]
+      : []),
+  ];
+}
 
 /**
  * Shared shell for every /dashboard/* screen — wraps RequirePermission once
@@ -73,7 +79,7 @@ const NAV_ITEMS: AppShellNavItem[] = [
  */
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { admin, signOut } = useAdminAuth();
+  const { admin, signOut, hasPermission } = useAdminAuth();
 
   return (
     <RequirePermission
@@ -91,7 +97,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       }
     >
       <AppShell
-        navItems={NAV_ITEMS}
+        navItems={navItems(hasPermission)}
         homeHref="/dashboard"
         userName={admin ? `${admin.firstName} ${admin.lastName}` : undefined}
         userEmail={admin?.email}

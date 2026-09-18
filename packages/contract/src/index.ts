@@ -139,6 +139,9 @@ export type TuitionPeriod = Schemas['TuitionPeriod'];
 export type AdminApplicationSummary = Schemas['AdminApplicationSummaryDto'];
 export type AdminApplicationList = Schemas['AdminApplicationListDto'];
 export type AdminApplicationDetail = Schemas['AdminApplicationDetailDto'];
+export type AssignApplicationRequest = Schemas['AssignApplicationDto'];
+export type AssignableAdmin = Schemas['AssignableAdminDto'];
+export type AssignableAdminList = Schemas['AssignableAdminListDto'];
 
 export type AdminStudentSummary = Schemas['AdminStudentSummaryDto'];
 export type AdminStudentList = Schemas['AdminStudentListDto'];
@@ -146,6 +149,10 @@ export type AdminStudentDetail = Schemas['AdminStudentDetailDto'];
 export type UpdateStudentAdminRequest = Schemas['UpdateStudentAdminDto'];
 export type AdminCreateStudentRequest = Schemas['AdminCreateStudentDto'];
 export type SetStudentPasswordRequest = Schemas['SetStudentPasswordDto'];
+
+export type AuditLogEntry = Schemas['AuditLogEntryDto'];
+export type AuditLogList = Schemas['AuditLogListDto'];
+export type ResourceAuditLog = Schemas['ResourceAuditLogDto'];
 
 export type StatusCount = Schemas['StatusCountDto'];
 export type AdminDashboardSummary = Schemas['AdminDashboardSummaryDto'];
