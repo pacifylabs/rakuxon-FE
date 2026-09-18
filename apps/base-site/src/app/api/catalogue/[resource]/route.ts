@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import { findCourses } from '@/lib/catalogue/bank';
-import { fetchCountries, fetchInstitutions, searchCatalogue } from '@/lib/catalogue/api';
+import {
+  fetchCountries,
+  fetchCourses,
+  fetchInstitutions,
+  searchCatalogue,
+} from '@/lib/catalogue/api';
 
 /**
  * The catalogue as real HTTP endpoints.
@@ -16,9 +20,9 @@ import { fetchCountries, fetchInstitutions, searchCatalogue } from '@/lib/catalo
  *   GET /api/catalogue/suggest?q=nor&limit=8
  *   GET /api/catalogue/country-counts
  *
- * Universities and suggestions come from our own backend, so an admin can
- * unpublish a record and it disappears everywhere without a redeploy. Courses
- * are still the local seed until the course importer lands.
+ * Universities, courses and suggestions all come from our own backend, so an
+ * admin can unpublish a record and it disappears everywhere without a
+ * redeploy.
  *
  * These stay server-side proxies rather than letting the browser call the API
  * directly: it keeps the backend origin out of the client bundle, and means a
@@ -34,7 +38,6 @@ type Resource = (typeof RESOURCES)[number];
 
 const isResource = (value: string): value is Resource =>
   (RESOURCES as readonly string[]).includes(value);
-
 
 export async function GET(request: Request, { params }: { params: Promise<{ resource: string }> }) {
   const { resource } = await params;
@@ -55,9 +58,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ reso
       case 'universities':
         return fetchInstitutions({ country, q: query, limit: 24 });
       case 'courses':
-        return findCourses({
+        return fetchCourses({
           q: query,
-          countryCode: country,
+          country,
           level: url.searchParams.get('level') ?? '',
           discipline: url.searchParams.get('discipline') ?? '',
         });

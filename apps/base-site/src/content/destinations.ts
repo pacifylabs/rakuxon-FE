@@ -439,11 +439,6 @@ export const DESTINATIONS_CTA = {
   reassurance: 'Free, and no obligation to apply anywhere.',
 } as const;
 
-export const DESTINATION_LINKS = COUNTRIES.map((country) => ({
-  label: country.shortName,
-  href: countryRoute(country.slug),
-}));
-
 export const UNIVERSITIES_ROUTE = ROUTES.universities;
 
 export const DESTINATIONS_IMAGE_SLOTS: readonly (ImageSlot & { slot: string })[] = COUNTRIES.map(

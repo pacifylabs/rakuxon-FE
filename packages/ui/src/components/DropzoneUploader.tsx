@@ -155,7 +155,10 @@ export function DropzoneUploader({
       )}
 
       {isDragActive && layout === 'field' && (
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-primary opacity-10" />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-primary opacity-10"
+        />
       )}
     </button>
   );
@@ -188,7 +191,9 @@ export function DropzoneUploader({
       {dropzone}
       {input}
       {hasContent && !disabled && (
-        <span className="text-xs text-text-muted">Drag a new file onto it, or click to replace.</span>
+        <span className="text-xs text-text-muted">
+          Drag a new file onto it, or click to replace.
+        </span>
       )}
       {error && (
         <p role="alert" className="text-sm text-danger">

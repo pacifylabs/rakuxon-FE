@@ -33,7 +33,14 @@ export interface AdminDocumentRowProps {
  * document's owner. Adds the one thing the student's own row has no reason
  * to offer: rejecting an upload.
  */
-export function AdminDocumentRow({ studentId, type, label, document, canReview, onChanged }: AdminDocumentRowProps) {
+export function AdminDocumentRow({
+  studentId,
+  type,
+  label,
+  document,
+  canReview,
+  onChanged,
+}: AdminDocumentRowProps) {
   const client = useAdminApiClient();
   const [uploading, setUploading] = useState(false);
   const [rejecting, setRejecting] = useState(false);
@@ -45,7 +52,10 @@ export function AdminDocumentRow({ studentId, type, label, document, canReview, 
     setUploading(true);
     setError(null);
     try {
-      const signature = await client.getAdminUploadSignature(studentId, { type, filename: file.name });
+      const signature = await client.getAdminUploadSignature(studentId, {
+        type,
+        filename: file.name,
+      });
 
       const form = new FormData();
       form.set('file', file);
@@ -113,7 +123,11 @@ export function AdminDocumentRow({ studentId, type, label, document, canReview, 
         <div className="flex items-start gap-3">
           <span
             className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
-              uploaded ? 'bg-primary/15 text-primary' : rejected ? 'bg-danger/15 text-danger' : 'bg-surface-muted text-text-muted'
+              uploaded
+                ? 'bg-primary/15 text-primary'
+                : rejected
+                  ? 'bg-danger/15 text-danger'
+                  : 'bg-surface-muted text-text-muted'
             }`}
           >
             {uploaded ? (
@@ -155,7 +169,11 @@ export function AdminDocumentRow({ studentId, type, label, document, canReview, 
               disabled={uploading}
             />
             {uploaded && (
-              <Button variant="ghost" type="button" onClick={() => setRejecting((current) => !current)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => setRejecting((current) => !current)}
+              >
                 Reject
               </Button>
             )}
@@ -177,7 +195,12 @@ export function AdminDocumentRow({ studentId, type, label, document, canReview, 
             className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-text focus-visible:outline-none focus-visible:ring"
           />
           <div className="flex gap-2">
-            <Button variant="primary" type="button" disabled={!reason.trim() || submittingReject} onClick={handleReject}>
+            <Button
+              variant="primary"
+              type="button"
+              disabled={!reason.trim() || submittingReject}
+              onClick={handleReject}
+            >
               {submittingReject ? 'Rejecting…' : 'Confirm reject'}
             </Button>
             <Button variant="ghost" type="button" onClick={() => setRejecting(false)}>

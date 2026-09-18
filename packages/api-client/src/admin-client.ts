@@ -26,6 +26,7 @@ import type {
   AdminServiceDetail,
   AdminServiceList,
   AdminServiceSummary,
+  AdminSiteSettings,
   AdminTestimonialDetail,
   AdminTestimonialList,
   AdminTestimonialSummary,
@@ -54,6 +55,7 @@ import type {
   UpdateInstitutionRequest,
   UpdateIntakeTermRequest,
   UpdateServiceRequest,
+  UpdateSiteSettingsRequest,
   UpdateStudentAdminRequest,
   UpdateTestimonialRequest,
   UploadSignature,
@@ -469,6 +471,18 @@ export class AdminApiClient {
     });
   }
 
+  getSiteSettings(): Promise<AdminSiteSettings> {
+    return this.request<AdminSiteSettings>('/v1/admin/site-settings', { auth: true });
+  }
+
+  updateSiteSettings(body: UpdateSiteSettingsRequest): Promise<AdminSiteSettings> {
+    return this.request<AdminSiteSettings>('/v1/admin/site-settings', {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
   /* ---------------------------------------------------------------- countries */
 
   listAdminCountries(): Promise<AdminCountry[]> {
@@ -532,6 +546,26 @@ export class AdminApiClient {
 
   getAdminApplication(id: string): Promise<AdminApplicationDetail> {
     return this.request<AdminApplicationDetail>(`/v1/admin/applications/${id}`, { auth: true });
+  }
+
+  attachApplicationDocument(
+    applicationId: string,
+    documentId: string,
+  ): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(
+      `/v1/admin/applications/${applicationId}/documents/${documentId}`,
+      { method: 'POST', auth: true },
+    );
+  }
+
+  detachApplicationDocument(
+    applicationId: string,
+    documentId: string,
+  ): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(
+      `/v1/admin/applications/${applicationId}/documents/${documentId}`,
+      { method: 'DELETE', auth: true },
+    );
   }
 
   /* --------------------------------------------------------------- admins */

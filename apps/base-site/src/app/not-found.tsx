@@ -1,13 +1,17 @@
 import { PageHeader, SectionBand } from '@rakuxon/ui';
 
-import { NAV_LINKS } from '@/content/site';
+import { buildNavLinks } from '@/content/site';
 import { ROUTES } from '@/content/routes';
 
-/** Honest dead end that offers the routes that do exist. */
+/**
+ * Honest dead end that offers the routes that do exist. Only each nav
+ * entry's own label/href is used here, not its dropdown children, so this
+ * doesn't need the live per-country list `buildNavLinks` can take.
+ */
 export default function NotFound() {
   const destinations = [
     { label: 'Home', href: ROUTES.home },
-    ...NAV_LINKS,
+    ...buildNavLinks([]),
     { label: 'Contact', href: ROUTES.contact },
   ];
 

@@ -1,16 +1,20 @@
 import { CountryFlag, CountUp, SectionBand } from '@rakuxon/ui';
 
-import { fetchCountryCounts } from '@/lib/catalogue/institutions';
+import { fetchCountries } from '@/lib/catalogue/api';
 import { ROUTES } from '@/content/routes';
 
 /**
- * Live institution counts per destination, from the open Research Organization
- * Registry. Renders nothing if the registry is unreachable — a marketing page
- * should not show an error where a number was promised.
+ * Live institution counts per destination, from the admin-managed catalogue
+ * — the same `fetchCountries()` the header, footer and /destinations use, so
+ * a country the admin disables here drops out everywhere at once. Next
+ * dedupes this against those other calls within the same render, so this
+ * costs no extra request. Renders nothing if the catalogue is unreachable or
+ * empty — a marketing page should not show an error where a number was
+ * promised.
  */
 export async function DestinationCounts() {
-  const counts = await fetchCountryCounts();
-  if (counts.error || counts.items.length === 0) return null;
+  const countries = await fetchCountries();
+  if (countries.length === 0) return null;
 
   return (
     <SectionBand tone="muted" labelledBy="counts-heading">
@@ -21,12 +25,12 @@ export async function DestinationCounts() {
         How many institutions are out there
       </h2>
       <p className="mx-auto mt-4 max-w-prose text-center text-base text-text-muted">
-        Registered education organisations per destination, counted live from the open Research
-        Organization Registry. Not a number we made up.
+        Registered institutions per destination, counted live from our own catalogue. Not a number
+        we made up.
       </p>
 
       <ul className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {counts.items.map((entry) => (
+        {countries.map((entry) => (
           <li key={entry.countryCode} className="h-full">
             <a
               href={`${ROUTES.explore}?tab=universities&country=${entry.countryCode}`}

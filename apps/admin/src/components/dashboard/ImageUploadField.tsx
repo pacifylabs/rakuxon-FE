@@ -19,7 +19,13 @@ export interface ImageUploadFieldProps {
  * (`useCloudinaryUpload`), then hands the resulting `secure_url` to
  * `onChange`, same as if it had been typed in.
  */
-export function ImageUploadField({ label, folder, value, onChange, disabled }: ImageUploadFieldProps) {
+export function ImageUploadField({
+  label,
+  folder,
+  value,
+  onChange,
+  disabled,
+}: ImageUploadFieldProps) {
   const { upload, uploading, error } = useCloudinaryUpload(folder);
 
   async function handleUpload(file: File) {

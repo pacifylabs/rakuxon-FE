@@ -23,6 +23,8 @@ import type {
 
 import {
   clearSession,
+  STORAGE_KEY,
+  migrateTabSession,
   isExpired,
   readSession,
   sessionFromTokens,
@@ -93,11 +95,38 @@ export function AuthProvider({ baseUrl, children }: { baseUrl: string; children:
 
   /* Storage only exists on the client, so the first read happens after mount. */
   useEffect(() => {
+    migrateTabSession();
     const stored = readSession();
     sessionRef.current = stored;
     setSession(stored);
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    const sync = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY && event.key !== null) return;
+      const current = readSession();
+      sessionRef.current = current;
+      setSession(current);
+    };
+    const refreshUser = async () => {
+      const current = sessionRef.current;
+      if (!current || isExpired(current)) return;
+      try {
+        const user = await client.me();
+        if (sessionRef.current?.accessToken === current.accessToken &&
+            readSession()?.accessToken === current.accessToken) apply({ ...current, user });
+      } catch { /* A failed profile refresh must not discard a valid login. */ }
+    };
+    window.addEventListener('storage', sync);
+    window.addEventListener('focus', refreshUser);
+    window.addEventListener('rakuxon:email-verified', refreshUser);
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('focus', refreshUser);
+      window.removeEventListener('rakuxon:email-verified', refreshUser);
+    };
+  }, [client, apply]);
 
   /*
    * Rotate ahead of expiry. A failed refresh signs out rather than retrying:
@@ -109,12 +138,27 @@ export function AuthProvider({ baseUrl, children }: { baseUrl: string; children:
 
     const refreshIn = Math.max(0, session.expiresAt - Date.now() - 60_000);
     const timer = window.setTimeout(async () => {
-      try {
-        const tokens = await client.refresh(session.refreshToken);
-        apply(sessionFromTokens(tokens));
-      } catch {
-        apply(null);
-      }
+      const refresh = async () => {
+        const current = readSession();
+        if (!current || current.refreshToken !== session.refreshToken) {
+          sessionRef.current = current;
+          setSession(current);
+          return;
+        }
+        try {
+          const tokens = await client.refresh(current.refreshToken);
+          // Logout or a new login while the request was in flight wins.
+          const latest = readSession();
+          if (sessionRef.current?.refreshToken === current.refreshToken &&
+              latest?.refreshToken === current.refreshToken) {
+            apply(sessionFromTokens(tokens));
+          }
+        } catch {
+          if (readSession()?.refreshToken === current.refreshToken) apply(null);
+        }
+      };
+      if (navigator.locks) await navigator.locks.request('rakuxon-session-refresh', refresh);
+      else await refresh();
     }, refreshIn);
 
     return () => window.clearTimeout(timer);

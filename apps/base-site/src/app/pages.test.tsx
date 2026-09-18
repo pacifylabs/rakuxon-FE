@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { HOME_IMAGE_SLOTS } from '@/content/home';
 import { UNIVERSITIES_IMAGE_SLOTS } from '@/content/universities';
 import { ALL_ROUTES, COUNTRY_SLUGS } from '@/content/routes';
-import { NAV_LINKS } from '@/content/site';
+import { buildNavLinks } from '@/content/site';
 import { internalPaths, renderPage } from '@/lib/page-harness';
 
 import HomePage from './page';
@@ -48,17 +48,18 @@ vi.mock('@/sections/MeetInstitutions', () => ({
 import NotFound from './not-found';
 import AboutPage from './about/page';
 import AgenciesPage from './agencies/page';
-import ContactPage from './contact/page';
 import PrivacyPage from './privacy/page';
 import StudentsPage from './students/page';
 import TermsPage from './terms/page';
 
+/* /contact is its own dedicated test file — it's an async Server Component
+   now (fetches admin-authored contact details), so it can't sit in this
+   table of plain, synchronously-constructed elements. */
 const PAGES = [
   ['/', <HomePage key="home" />, 'Your degree abroad,'],
   ['/students', <StudentsPage key="students" />, 'Find your perfect program'],
   ['/agencies', <AgenciesPage key="agencies" />, 'Grow your recruitment business'],
   ['/about', <AboutPage key="about" />, 'Transform'],
-  ['/contact', <ContactPage key="contact" />, 'Tell us which side you are on'],
   ['/privacy', <PrivacyPage key="privacy" />, 'Privacy policy'],
   ['/terms', <TermsPage key="terms" />, 'Terms of service'],
   ['404', <NotFound key="404" />, 'We could not find that page'],
@@ -113,7 +114,7 @@ describe.each(PAGES)('%s', (route, element, expectedHeading) => {
      * duplicated here, so removing a page failed nine tests for the same
      * reason instead of one.
      */
-    for (const link of NAV_LINKS) {
+    for (const link of buildNavLinks([])) {
       expect(within(banner).getAllByRole('link', { name: link.label }).length).toBeGreaterThan(0);
     }
   });

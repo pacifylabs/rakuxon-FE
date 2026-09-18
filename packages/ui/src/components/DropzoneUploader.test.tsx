@@ -70,7 +70,12 @@ describe('<DropzoneUploader/>', () => {
 
   it('renders an error message when given one', () => {
     render(
-      <DropzoneUploader label="Photo" onUpload={vi.fn()} uploading={false} error="Upload failed." />,
+      <DropzoneUploader
+        label="Photo"
+        onUpload={vi.fn()}
+        uploading={false}
+        error="Upload failed."
+      />,
     );
     expect(screen.getByRole('alert')).toHaveTextContent('Upload failed.');
   });

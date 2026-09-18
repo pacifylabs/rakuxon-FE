@@ -30,7 +30,7 @@ const session = (role: string) => ({
 });
 
 const signedInAs = (role: string) =>
-  window.sessionStorage.setItem('rakuxon.session', JSON.stringify(session(role)));
+  window.localStorage.setItem('rakuxon.session', JSON.stringify(session(role)));
 
 const renderApp = (ui: React.ReactElement) =>
   render(
@@ -41,6 +41,7 @@ const renderApp = (ui: React.ReactElement) =>
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  window.localStorage.clear();
   push.mockClear();
   replace.mockClear();
   vi.stubGlobal(

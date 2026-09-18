@@ -5,9 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { ApplicationStatusBadge, Button, StatusBadge } from '@rakuxon/ui';
-import type { AdminApplicationDetail } from '@rakuxon/contract';
+import type { AdminApplicationDetail, StudentDocument } from '@rakuxon/contract';
 
-import { RequirePermission, useAdminApiClient } from '@/lib/admin-auth';
+import { AdminDocumentRow } from '@/components/dashboard/AdminDocumentRow';
+import { DOCUMENT_TYPE_LABELS } from '@/components/dashboard/documentTypes';
+import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
@@ -25,17 +27,26 @@ function humanize(type: string): string {
 }
 
 /**
- * Read-only, same as the applications list: review/decision workflow is a
- * later stage. This screen is the fuller picture behind one row — who it's
- * for, which course, and how close it is to submittable.
+ * Review/decision workflow is still a later stage — this screen is the
+ * fuller picture behind one row: who it's for, which course, how close it
+ * is to submittable, and — since an admin can act on a student's behalf —
+ * the actual controls to get it there: attach a document the student
+ * already has on file, or upload a new one directly, either of which
+ * updates `missingDocumentTypes` immediately.
  */
 function ApplicationDetail() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const { hasPermission } = useAdminAuth();
+  const canManage = hasPermission('applications.manage');
+  const canReview = hasPermission('documents.review');
 
   const [application, setApplication] = useState<AdminApplicationDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<StudentDocument[] | null>(null);
+  const [documentsError, setDocumentsError] = useState<string | null>(null);
+  const [pendingDocumentId, setPendingDocumentId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -54,7 +65,75 @@ function ApplicationDetail() {
     void load();
   }, [load]);
 
-  if (error) {
+  const loadDocuments = useCallback(async () => {
+    if (!application || !canReview) return;
+    try {
+      setDocuments(await client.listAdminStudentDocuments(application.studentId));
+      setDocumentsError(null);
+    } catch (caught) {
+      setDocumentsError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not load this student’s documents. Please try again.',
+      );
+    }
+  }, [client, application, canReview]);
+
+  useEffect(() => {
+    void loadDocuments();
+  }, [loadDocuments]);
+
+  async function attach(documentId: string) {
+    if (!application) return;
+    setPendingDocumentId(documentId);
+    try {
+      setApplication(await client.attachApplicationDocument(application.id, documentId));
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not attach that document. Please try again.',
+      );
+    } finally {
+      setPendingDocumentId(null);
+    }
+  }
+
+  async function detach(documentId: string) {
+    if (!application) return;
+    setPendingDocumentId(documentId);
+    try {
+      setApplication(await client.detachApplicationDocument(application.id, documentId));
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not detach that document. Please try again.',
+      );
+    } finally {
+      setPendingDocumentId(null);
+    }
+  }
+
+  /**
+   * Fires after an upload or a reject from a row below. A freshly uploaded
+   * document for a type this application is still missing is attached
+   * immediately — the whole reason this section exists is so uploading a
+   * document here is enough on its own, with no separate "now go attach
+   * it" step.
+   */
+  async function handleDocumentChanged(updated: StudentDocument) {
+    setDocuments((current) => {
+      const withoutPrevious = (current ?? []).filter((entry) => entry.id !== updated.id);
+      return [updated, ...withoutPrevious];
+    });
+
+    if (updated.status === 'uploaded' && application?.missingDocumentTypes.includes(updated.type)) {
+      await attach(updated.id);
+    }
+  }
+
+  if (error && !application) {
     return (
       <section>
         <p role="alert" className="text-base text-danger">
@@ -77,6 +156,16 @@ function ApplicationDetail() {
       <p role="status" className="text-base text-text-muted">
         Loading…
       </p>
+    );
+  }
+
+  /** The already-uploaded document (if any) of a given type, not yet attached here. */
+  function unattachedUploadOf(type: string): StudentDocument | undefined {
+    return documents?.find(
+      (entry) =>
+        entry.type === type &&
+        entry.status === 'uploaded' &&
+        !application?.attachedDocumentIds.includes(entry.id),
     );
   }
 
@@ -127,15 +216,114 @@ function ApplicationDetail() {
           {application.attachedDocumentIds.length === 1 ? '' : 's'} attached.
         </p>
 
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-danger">
+            {error}
+          </p>
+        )}
+
         {application.missingDocumentTypes.length > 0 && (
           <div className="mt-4">
             <p className="text-sm font-semibold text-text">Still missing</p>
-            <ul className="mt-2 flex flex-wrap gap-2">
-              {application.missingDocumentTypes.map((type) => (
-                <li key={type}>
-                  <StatusBadge tone="negative">{humanize(type)}</StatusBadge>
-                </li>
-              ))}
+
+            {!canManage ? (
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {application.missingDocumentTypes.map((type) => (
+                  <li key={type}>
+                    <StatusBadge tone="negative">{humanize(type)}</StatusBadge>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="mt-4 flex flex-col gap-3">
+                {application.missingDocumentTypes.map((type) => {
+                  const existing = unattachedUploadOf(type);
+
+                  if (existing) {
+                    return (
+                      <div
+                        key={type}
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-4"
+                      >
+                        <div>
+                          <p className="font-heading text-sm font-semibold text-text">
+                            {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)}
+                          </p>
+                          <p className="mt-1 text-sm text-text-muted">
+                            Already on file: {existing.originalFilename}
+                          </p>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="md"
+                          disabled={pendingDocumentId === existing.id}
+                          onClick={() => attach(existing.id)}
+                        >
+                          {pendingDocumentId === existing.id
+                            ? 'Attaching…'
+                            : 'Attach to this application'}
+                        </Button>
+                      </div>
+                    );
+                  }
+
+                  return canReview ? (
+                    <AdminDocumentRow
+                      key={type}
+                      studentId={application.studentId}
+                      type={type}
+                      label={DOCUMENT_TYPE_LABELS[type] ?? humanize(type)}
+                      document={undefined}
+                      canReview={canReview}
+                      onChanged={handleDocumentChanged}
+                    />
+                  ) : (
+                    <div
+                      key={type}
+                      className="rounded-lg border border-border bg-surface p-4 text-sm text-text-muted"
+                    >
+                      {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)} — not uploaded.
+                    </div>
+                  );
+                })}
+                {documentsError && (
+                  <p role="alert" className="text-sm text-danger">
+                    {documentsError}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {canManage && application.attachedDocumentIds.length > 0 && (
+          <div className="mt-6">
+            <p className="text-sm font-semibold text-text">Attached</p>
+            <ul className="mt-2 flex flex-col gap-2">
+              {application.attachedDocumentIds.map((documentId) => {
+                const entry = documents?.find((doc) => doc.id === documentId);
+                return (
+                  <li
+                    key={documentId}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-4"
+                  >
+                    <p className="text-sm text-text">
+                      {entry
+                        ? (DOCUMENT_TYPE_LABELS[entry.type] ?? humanize(entry.type))
+                        : documentId}
+                      {entry ? ` — ${entry.originalFilename}` : ''}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="md"
+                      disabled={pendingDocumentId === documentId}
+                      onClick={() => detach(documentId)}
+                    >
+                      {pendingDocumentId === documentId ? 'Detaching…' : 'Detach'}
+                    </Button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

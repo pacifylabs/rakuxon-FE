@@ -41,6 +41,7 @@ const renderAuth = (ui = <Probe />) =>
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  window.localStorage.clear();
 });
 
 afterEach(() => {
@@ -72,17 +73,56 @@ describe('<AuthProvider/>', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
     await waitFor(() => expect(screen.getByTestId('user')).toHaveTextContent('a@b.test'));
 
-    expect(window.sessionStorage.getItem('rakuxon.session')).toContain('refresh-1');
+    expect(window.localStorage.getItem('rakuxon.session')).toContain('refresh-1');
   });
 
   it('restores a stored session on mount', async () => {
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       'rakuxon.session',
       JSON.stringify({ ...tokens(), expiresAt: Date.now() + 900_000 }),
     );
     mockFetch(() => json(200, {}));
     renderAuth();
     await waitFor(() => expect(screen.getByTestId('user')).toHaveTextContent('a@b.test'));
+  });
+
+  it('migrates an existing tab login into shared storage', async () => {
+    window.sessionStorage.setItem('rakuxon.session', JSON.stringify({ ...tokens(), expiresAt: Date.now() + 900_000 }));
+    renderAuth();
+    await waitFor(() => expect(screen.getByTestId('user')).toHaveTextContent('a@b.test'));
+    expect(window.localStorage.getItem('rakuxon.session')).toContain('refresh-1');
+    expect(window.sessionStorage.getItem('rakuxon.session')).toBeNull();
+  });
+
+  it('restores an email tab with no tab-local session and follows logout from another tab', async () => {
+    window.localStorage.setItem('rakuxon.session', JSON.stringify({ ...tokens(), expiresAt: Date.now() + 900_000 }));
+    const onUnauthenticated = vi.fn();
+    renderAuth(<RequireAuth onUnauthenticated={onUnauthenticated}><Probe /></RequireAuth>);
+    await waitFor(() => expect(screen.getByTestId('user')).toHaveTextContent('a@b.test'));
+    expect(onUnauthenticated).not.toHaveBeenCalled();
+    act(() => {
+      window.localStorage.removeItem('rakuxon.session');
+      window.dispatchEvent(new StorageEvent('storage', { key: 'rakuxon.session' }));
+    });
+    await waitFor(() => expect(onUnauthenticated).toHaveBeenCalled());
+  });
+
+  it('does not replay a refresh token rotated by another tab while waiting for the lock', async () => {
+    window.localStorage.setItem('rakuxon.session', JSON.stringify({ ...tokens(), expiresAt: Date.now() }));
+    const fetch = mockFetch(() => json(401, {}));
+    const request = vi.fn(async (_name: string, callback: () => Promise<void>) => {
+      window.localStorage.setItem('rakuxon.session', JSON.stringify({ ...tokens({ accessToken: 'new-access', refreshToken: 'new-refresh' }), expiresAt: Date.now() + 900_000 }));
+      await callback();
+    });
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } });
+    try {
+      renderAuth();
+      await waitFor(() => expect(request).toHaveBeenCalled());
+      expect(fetch).not.toHaveBeenCalled();
+      expect(window.localStorage.getItem('rakuxon.session')).toContain('new-refresh');
+    } finally {
+      Object.defineProperty(navigator, 'locks', { configurable: true, value: undefined });
+    }
   });
 
   it('surfaces a rejected sign-in instead of swallowing it', async () => {
@@ -125,7 +165,7 @@ describe('<AuthProvider/>', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sign out' }));
     // The user asked to leave; a failing network call must not keep them in.
     await waitFor(() => expect(screen.getByTestId('user')).toHaveTextContent('none'));
-    expect(window.sessionStorage.getItem('rakuxon.session')).toBeNull();
+    expect(window.localStorage.getItem('rakuxon.session')).toBeNull();
   });
 
   it('reports roles', async () => {
@@ -217,7 +257,7 @@ describe('<RequireAuth/>', () => {
   });
 
   it('admits a signed-in user', async () => {
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       'rakuxon.session',
       JSON.stringify({ ...tokens(), expiresAt: Date.now() + 900_000 }),
     );
@@ -235,7 +275,7 @@ describe('<RequireAuth/>', () => {
   });
 
   it('hides content from a signed-in user without the required role', async () => {
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       'rakuxon.session',
       JSON.stringify({
         ...tokens({ user: { ...tokens().user, role: 'counselor' } }),

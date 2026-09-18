@@ -17,7 +17,7 @@ import RegisterPage from './page';
 const SESSION_KEY = 'rakuxon.session';
 
 const seedSession = () => {
-  window.sessionStorage.setItem(
+  window.localStorage.setItem(
     SESSION_KEY,
     JSON.stringify({
       accessToken: 'access-1',
@@ -39,6 +39,7 @@ const renderApp = () =>
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  window.localStorage.clear();
   push.mockClear();
   replace.mockClear();
   query = '';

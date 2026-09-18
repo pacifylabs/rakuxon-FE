@@ -1426,6 +1426,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/applications/{id}/documents/{documentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach an admin-uploaded document to a student's draft application
+         * @description The document must already belong to this application's own student and be fully uploaded — see AdminDocumentRow/confirmUploadForAdmin for how it gets there.
+         */
+        post: operations["AdminApplicationsController_attachDocument_v1"];
+        /** Detach a document from a student's draft application */
+        delete: operations["AdminApplicationsController_detachDocument_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/admins/permissions": {
         parameters: {
             query?: never;
@@ -1940,6 +1961,41 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/site-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the site-wide contact/social/footer settings */
+        get: operations["SiteSettingsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/site-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the site-wide settings */
+        get: operations["AdminSiteSettingsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the site-wide settings */
+        patch: operations["AdminSiteSettingsController_update_v1"];
         trace?: never;
     };
     "/v1/admin/uploads/signature": {
@@ -3214,9 +3270,47 @@ export interface components {
             relatedArticleSlugs?: string[] | null;
             displayOrder?: number;
         };
+        SiteAddressDto: {
+            label: string;
+            lines: string[];
+        };
+        SiteSocialDto: {
+            label: string;
+            href: string;
+        };
+        SiteSettingsDto: {
+            contactEmail: string;
+            contactPhones: string[];
+            contactAddresses: components["schemas"]["SiteAddressDto"][];
+            socials: components["schemas"]["SiteSocialDto"][];
+            footerTagline: string;
+            footerBlurb: string;
+            logoUrl: string;
+            logoDarkUrl: string;
+        };
+        AdminSiteSettingsDto: {
+            contactEmail: string;
+            contactPhones: string[];
+            contactAddresses: components["schemas"]["SiteAddressDto"][];
+            socials: components["schemas"]["SiteSocialDto"][];
+            footerTagline: string;
+            footerBlurb: string;
+            logoUrl: string;
+            logoDarkUrl: string;
+        };
+        UpdateSiteSettingsDto: {
+            contactEmail?: string;
+            contactPhones?: string[];
+            contactAddresses?: components["schemas"]["SiteAddressDto"][];
+            socials?: components["schemas"]["SiteSocialDto"][];
+            footerTagline?: string;
+            footerBlurb?: string;
+            logoUrl?: string;
+            logoDarkUrl?: string;
+        };
         AdminUploadSignatureRequestDto: {
             /** @enum {string} */
-            folder: "testimonials" | "institutions" | "articles";
+            folder: "testimonials" | "institutions" | "articles" | "site-settings";
         };
         AdminUploadSignatureDto: {
             cloudName: string;
@@ -3539,12 +3633,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The authenticated user. */
+            /** @description The authenticated user, read fresh from the database. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AuthUserDto"];
+                };
             };
             /** @description Missing, invalid or expired bearer token. */
             401: {
@@ -5498,6 +5594,50 @@ export interface operations {
             };
         };
     };
+    AdminApplicationsController_attachDocument_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+        };
+    };
+    AdminApplicationsController_detachDocument_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+        };
+    };
     AdminsController_listPermissions_v1: {
         parameters: {
             query?: never;
@@ -6290,6 +6430,67 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminServiceSummaryDto"];
+                };
+            };
+        };
+    };
+    SiteSettingsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteSettingsDto"];
+                };
+            };
+        };
+    };
+    AdminSiteSettingsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSiteSettingsDto"];
+                };
+            };
+        };
+    };
+    AdminSiteSettingsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSiteSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSiteSettingsDto"];
                 };
             };
         };

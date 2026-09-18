@@ -10,6 +10,7 @@ import {
   Landmark,
   LayoutGrid,
   MessageSquareQuote,
+  Settings,
   ShieldCheck,
   Users,
   Wrench,
@@ -40,6 +41,7 @@ const NAV_ITEMS: AppShellNavItem[] = [
     children: [
       { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
       { href: '/dashboard/content/services', label: 'Services', icon: Compass },
+      { href: '/dashboard/content/site-settings', label: 'Site settings', icon: Settings },
     ],
   },
   { href: '/dashboard/applications', label: 'Applications', icon: Users },

@@ -104,7 +104,11 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
       <div className="flex items-start gap-3">
         <span
           className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
-            uploaded ? 'bg-primary/15 text-primary' : rejected ? 'bg-danger/15 text-danger' : 'bg-surface-muted text-text-muted'
+            uploaded
+              ? 'bg-primary/15 text-primary'
+              : rejected
+                ? 'bg-danger/15 text-danger'
+                : 'bg-surface-muted text-text-muted'
           }`}
         >
           {uploaded ? (

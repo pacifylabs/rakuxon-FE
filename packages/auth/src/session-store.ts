@@ -8,15 +8,15 @@ export interface Session {
   expiresAt: number;
 }
 
-const STORAGE_KEY = 'rakuxon.session';
+export const STORAGE_KEY = 'rakuxon.session';
+const MIGRATED_KEY = 'rakuxon.session.migrated';
 
 /**
  * Where the session lives.
  *
- * sessionStorage, not localStorage: the token is gone when the tab closes,
- * which meaningfully narrows the window for a stolen token on a shared
- * machine. Neither is proof against XSS — the real mitigation is httpOnly
- * cookies, which needs the API to set them and is a deliberate later change.
+ * localStorage shares the session with email links opened in another tab.
+ * Tokens remain scoped to this origin; logout clears the shared session.
+ * Refreshes are serialized with Web Locks in AuthProvider.
  *
  * Every accessor tolerates storage being unavailable. Private windows, cleared
  * site data and browsers configured to block storage all throw on access, and
@@ -39,6 +39,7 @@ export function readSession(storage: Storage | undefined = safeStorage()): Sessi
 export function writeSession(session: Session, storage: Storage | undefined = safeStorage()): void {
   try {
     storage?.setItem(STORAGE_KEY, JSON.stringify(session));
+    storage?.setItem(MIGRATED_KEY, 'true');
   } catch {
     /* Storage unavailable: the session stays in memory for this page only. */
   }
@@ -47,6 +48,7 @@ export function writeSession(session: Session, storage: Storage | undefined = sa
 export function clearSession(storage: Storage | undefined = safeStorage()): void {
   try {
     storage?.removeItem(STORAGE_KEY);
+    storage?.setItem(MIGRATED_KEY, 'true');
   } catch {
     /* Nothing to do — there was nothing to clear. */
   }
@@ -72,8 +74,19 @@ export function isExpired(session: Session, skewSeconds = 30, now = Date.now()):
 
 function safeStorage(): Storage | undefined {
   try {
-    return typeof window === 'undefined' ? undefined : window.sessionStorage;
+    return typeof window === 'undefined' ? undefined : window.localStorage;
   } catch {
     return undefined;
   }
+}
+
+/** Move an existing tab's session once; never overwrite a newer shared session. */
+export function migrateTabSession(): void {
+  try {
+    if (!readSession() && !window.localStorage.getItem(MIGRATED_KEY) && window.sessionStorage.getItem(STORAGE_KEY)) {
+      const legacy = readSession(window.sessionStorage);
+      if (legacy) writeSession(legacy);
+    }
+    window.sessionStorage.removeItem(STORAGE_KEY);
+  } catch { /* Storage may be unavailable. */ }
 }

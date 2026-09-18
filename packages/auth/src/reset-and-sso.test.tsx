@@ -30,6 +30,7 @@ const withTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeP
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  window.localStorage.clear();
 });
 
 afterEach(() => {

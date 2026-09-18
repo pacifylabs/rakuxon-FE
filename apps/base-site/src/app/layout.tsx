@@ -6,8 +6,10 @@ import { ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
 import { SessionProvider } from '@/components/SessionProvider';
 import { SiteChrome } from '@/components/SiteChrome';
 
-import { BRAND_LOGO, CONTACT_EMAIL, CONTACT_PHONES, SOCIALS } from '@/content/site';
+import { BRAND_LOGO_SIZE } from '@/content/site';
 import { ROUTES } from '@/content/routes';
+import { fetchCountries } from '@/lib/catalogue/api';
+import { fetchSiteSettings } from '@/lib/site-settings/api';
 import { SITE_URL, absoluteUrl } from '@/lib/site-url';
 
 import './globals.css';
@@ -48,19 +50,6 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-/** Organization + WebSite, so every page carries who publishes it and enables a sitelinks search box. */
-const ORGANIZATION_JSON_LD = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: baseTokens.brand.name,
-  url: SITE_URL,
-  logo: absoluteUrl('/logo-light.png'),
-  description,
-  email: CONTACT_EMAIL,
-  telephone: CONTACT_PHONES[0],
-  sameAs: SOCIALS.filter((social) => social.label !== 'WhatsApp').map((social) => social.href),
-};
-
 const WEBSITE_JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -81,7 +70,24 @@ export const viewport: Viewport = {
  * Global shell for every marketing page (docs/04b § 2). The header and footer
  * live here so a new page only supplies its own sections.
  */
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [destinations, siteSettings] = await Promise.all([fetchCountries(), fetchSiteSettings()]);
+
+  /* Organization + WebSite, so every page carries who publishes it and enables a sitelinks search box. */
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: baseTokens.brand.name,
+    url: SITE_URL,
+    logo: absoluteUrl(siteSettings.logoUrl),
+    description,
+    email: siteSettings.contactEmail,
+    telephone: siteSettings.contactPhones[0],
+    sameAs: siteSettings.socials
+      .filter((social) => social.label !== 'WhatsApp')
+      .map((social) => social.href),
+  };
+
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
@@ -95,7 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             show under the brand's own result. */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSON_LD) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         <script
           type="application/ld+json"
@@ -104,9 +110,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {/* No tenant overrides on the public site — always the base theme. */}
-        <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
+        <ThemeProvider
+          tokens={{
+            brand: {
+              logo: siteSettings.logoUrl,
+              logoDark: siteSettings.logoDarkUrl,
+              logoWidth: BRAND_LOGO_SIZE.width,
+              logoHeight: BRAND_LOGO_SIZE.height,
+            },
+          }}
+        >
           <SessionProvider>
-            <SiteChrome>{children}</SiteChrome>
+            <SiteChrome destinations={destinations} siteSettings={siteSettings}>
+              {children}
+            </SiteChrome>
           </SessionProvider>
         </ThemeProvider>
       </body>

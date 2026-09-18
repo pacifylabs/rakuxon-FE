@@ -47,6 +47,7 @@ const renderApp = (ui: React.ReactElement) =>
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  window.localStorage.clear();
   push.mockClear();
   replace.mockClear();
 });
@@ -195,7 +196,7 @@ describe('register screen', () => {
 
 describe('dashboard', () => {
   const signedIn = (role = 'agency_admin') =>
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       'rakuxon.session',
       JSON.stringify({
         ...tokens({ user: { ...tokens().user, role } }),

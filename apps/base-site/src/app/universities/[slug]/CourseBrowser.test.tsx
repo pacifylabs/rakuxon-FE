@@ -112,7 +112,7 @@ describe('CourseBrowser (dashboardApply)', () => {
 
   beforeEach(() => {
     push.mockClear();
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       'rakuxon.session',
       JSON.stringify({
         accessToken: 'access-1',
@@ -125,6 +125,7 @@ describe('CourseBrowser (dashboardApply)', () => {
 
   afterEach(() => {
     window.sessionStorage.clear();
+  window.localStorage.clear();
     vi.unstubAllGlobals();
   });
 

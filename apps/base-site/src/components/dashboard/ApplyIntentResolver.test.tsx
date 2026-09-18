@@ -17,7 +17,7 @@ const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
 function seedSession() {
-  window.sessionStorage.setItem(
+  window.localStorage.setItem(
     'rakuxon.session',
     JSON.stringify({
       accessToken: 'access-1',
@@ -39,6 +39,7 @@ const renderResolver = () =>
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  window.localStorage.clear();
   replace.mockClear();
   query = '';
   seedSession();

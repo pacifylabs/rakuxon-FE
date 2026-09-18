@@ -6,7 +6,6 @@ import { ContactForm } from '@rakuxon/ui';
 
 import { INTENT_TO_ROLE } from '@/content/contact';
 import { courseRoute, universityRoute } from '@/content/routes';
-import { CONTACT_EMAIL } from '@/content/site';
 import { findCourseBySlug, findInstitutionBySlug } from '@/lib/catalogue/bank';
 
 /**
@@ -17,7 +16,7 @@ import { findCourseBySlug, findInstitutionBySlug } from '@/lib/catalogue/bank';
  * is resolved back to a real record here rather than echoed, which means a
  * stale or invented slug shows nothing instead of a broken claim.
  */
-export function ContactPanel() {
+export function ContactPanel({ fallbackEmail }: { fallbackEmail: string }) {
   // Null when rendered outside a router context (tests, static export edges).
   const params = useSearchParams();
   const intent = params?.get('intent') ?? '';
@@ -42,11 +41,9 @@ export function ContactPanel() {
   return (
     <ContactForm
       defaultRole={INTENT_TO_ROLE[intent] ?? 'student'}
-      fallbackEmail={CONTACT_EMAIL}
+      fallbackEmail={fallbackEmail}
       selection={selection}
-      defaultMessage={
-        selection ? `I would like to apply for ${selection.label}.` : undefined
-      }
+      defaultMessage={selection ? `I would like to apply for ${selection.label}.` : undefined}
     />
   );
 }

@@ -10,19 +10,20 @@ import type { NavLink } from '@rakuxon/ui';
 import { PageBackdrop } from '@/sections/PageBackdrop';
 
 import {
-  CONTACT_ADDRESSES,
-  CONTACT_PHONES,
-  FOOTER_BLURB,
-  CONTACT_EMAIL,
-  FOOTER_COLUMNS,
   FOOTER_DOMAIN,
   FOOTER_LEGAL_LINKS,
-  FOOTER_TAGLINE,
   GET_STARTED_LINK,
   LOG_IN_LINK,
-  NAV_LINKS,
-  SOCIALS,
+  buildDestinationLinks,
+  buildFooterColumns,
+  buildNavLinks,
 } from '@/content/site';
+import type { ApiSiteSettings } from '@/lib/site-settings/api';
+
+interface ApiCountrySummary {
+  countryCode: string;
+  country: string;
+}
 
 /**
  * Routes that are their own focused screen, not a marketing page.
@@ -49,13 +50,22 @@ function isChromeless(pathname: string): boolean {
 /** Dashboard link shown in place of Log in/Get started once a session is confirmed. */
 const SIGNED_IN_LINK: NavLink = { label: 'Dashboard', href: '/dashboard' };
 
-export function SiteChrome({ children }: { children: ReactNode }) {
+export function SiteChrome({
+  children,
+  destinations,
+  siteSettings,
+}: {
+  children: ReactNode;
+  destinations: readonly ApiCountrySummary[];
+  siteSettings: ApiSiteSettings;
+}) {
   const pathname = usePathname();
   const chromeless = isChromeless(pathname ?? '');
   const { user, ready } = useAuth();
   /* Before `ready`, storage hasn't been read yet — keep the anonymous CTAs
      rather than flash "Dashboard" and then flip back. */
   const signedInAs = ready && user ? SIGNED_IN_LINK : undefined;
+  const destinationLinks = buildDestinationLinks(destinations);
 
   return (
     <>
@@ -67,7 +77,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         <>
           <PageBackdrop />
           <Header
-            navLinks={NAV_LINKS}
+            navLinks={buildNavLinks(destinationLinks)}
             logIn={LOG_IN_LINK}
             getStarted={GET_STARTED_LINK}
             signedInAs={signedInAs}
@@ -79,14 +89,14 @@ export function SiteChrome({ children }: { children: ReactNode }) {
 
       {!chromeless && (
         <Footer
-          tagline={FOOTER_TAGLINE}
+          tagline={siteSettings.footerTagline}
           domain={FOOTER_DOMAIN}
-          email={CONTACT_EMAIL}
-          addresses={CONTACT_ADDRESSES}
-          phones={CONTACT_PHONES}
-          blurb={FOOTER_BLURB}
-          columns={FOOTER_COLUMNS}
-          socials={SOCIALS}
+          email={siteSettings.contactEmail}
+          addresses={siteSettings.contactAddresses}
+          phones={siteSettings.contactPhones}
+          blurb={siteSettings.footerBlurb}
+          columns={buildFooterColumns(destinationLinks)}
+          socials={siteSettings.socials}
           legalLinks={FOOTER_LEGAL_LINKS}
         />
       )}

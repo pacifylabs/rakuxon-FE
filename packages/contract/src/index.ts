@@ -58,6 +58,10 @@ export type IntakeTerm = Schemas['IntakeTermDto'];
 export type Service = Schemas['ServiceDto'];
 export type ServiceFaq = Schemas['ServiceFaqDto'];
 
+export type SiteSettings = Schemas['SiteSettingsDto'];
+export type AdminSiteSettings = Schemas['AdminSiteSettingsDto'];
+export type UpdateSiteSettingsRequest = Schemas['UpdateSiteSettingsDto'];
+
 /*
  * Admin — a fully separate identity system from the above (own table, own
  * tokens), so these are kept in their own block rather than interleaved.

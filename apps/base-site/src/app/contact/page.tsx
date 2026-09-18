@@ -6,11 +6,12 @@ import { IconBubble, PageHeader, SectionBand } from '@rakuxon/ui';
 
 import { CONTACT_HEADER, CONTACT_IMAGE, CONTACT_ROUTES } from '@/content/contact';
 import { ROUTES } from '@/content/routes';
-import { CONTACT_EMAIL } from '@/content/site';
+import { fetchSiteSettings } from '@/lib/site-settings/api';
 
 import { ContactPanel } from './ContactPanel';
 
-export const dynamic = 'force-static';
+/* Revalidated rather than static: the contact email is admin-editable now. */
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -19,7 +20,9 @@ export const metadata: Metadata = {
   alternates: { canonical: ROUTES.contact },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { contactEmail } = await fetchSiteSettings();
+
   return (
     <>
       <PageHeader
@@ -43,7 +46,7 @@ export default function ContactPage() {
             </p>
 
             <Suspense fallback={null}>
-              <ContactPanel />
+              <ContactPanel fallbackEmail={contactEmail} />
             </Suspense>
           </div>
 
@@ -78,10 +81,10 @@ export default function ContactPage() {
             <p className="mt-10 text-sm text-text-muted">
               Prefer email?{' '}
               <a
-                href={`mailto:${CONTACT_EMAIL}`}
+                href={`mailto:${contactEmail}`}
                 className="rounded-sm font-semibold text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
               >
-                {CONTACT_EMAIL}
+                {contactEmail}
               </a>
             </p>
           </div>

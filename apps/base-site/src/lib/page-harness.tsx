@@ -5,20 +5,20 @@ import { AuthProvider } from '@rakuxon/auth';
 import { Footer, Header, ThemeProvider } from '@rakuxon/ui';
 
 import {
-  BRAND_LOGO,
-  CONTACT_ADDRESSES,
-  CONTACT_PHONES,
-  FOOTER_BLURB,
-  CONTACT_EMAIL,
-  FOOTER_COLUMNS,
+  BRAND_LOGO_SIZE,
   FOOTER_DOMAIN,
   FOOTER_LEGAL_LINKS,
-  FOOTER_TAGLINE,
   GET_STARTED_LINK,
   LOG_IN_LINK,
-  NAV_LINKS,
-  SOCIALS,
+  buildDestinationLinks,
+  buildFooterColumns,
+  buildNavLinks,
 } from '@/content/site';
+import { DEFAULT_SITE_SETTINGS } from '@/lib/site-settings/api';
+
+/* No live countries in tests — same fails-soft shape production falls back
+   to when the catalogue is unreachable (see `SiteChrome`). */
+const TEST_DESTINATION_LINKS = buildDestinationLinks([]);
 
 /**
  * Renders a page inside the same shell app/layout.tsx provides, so a page test
@@ -32,18 +32,31 @@ import {
 export function renderPage(page: ReactElement) {
   return render(
     <AuthProvider baseUrl="https://api.test">
-      <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
-        <Header navLinks={NAV_LINKS} logIn={LOG_IN_LINK} getStarted={GET_STARTED_LINK} />
+      <ThemeProvider
+        tokens={{
+          brand: {
+            logo: DEFAULT_SITE_SETTINGS.logoUrl,
+            logoDark: DEFAULT_SITE_SETTINGS.logoDarkUrl,
+            logoWidth: BRAND_LOGO_SIZE.width,
+            logoHeight: BRAND_LOGO_SIZE.height,
+          },
+        }}
+      >
+        <Header
+          navLinks={buildNavLinks(TEST_DESTINATION_LINKS)}
+          logIn={LOG_IN_LINK}
+          getStarted={GET_STARTED_LINK}
+        />
         <main id="main">{page}</main>
         <Footer
-          tagline={FOOTER_TAGLINE}
+          tagline={DEFAULT_SITE_SETTINGS.footerTagline}
           domain={FOOTER_DOMAIN}
-          email={CONTACT_EMAIL}
-          addresses={CONTACT_ADDRESSES}
-          phones={CONTACT_PHONES}
-          blurb={FOOTER_BLURB}
-          columns={FOOTER_COLUMNS}
-          socials={SOCIALS}
+          email={DEFAULT_SITE_SETTINGS.contactEmail}
+          addresses={DEFAULT_SITE_SETTINGS.contactAddresses}
+          phones={DEFAULT_SITE_SETTINGS.contactPhones}
+          blurb={DEFAULT_SITE_SETTINGS.footerBlurb}
+          columns={buildFooterColumns(TEST_DESTINATION_LINKS)}
+          socials={DEFAULT_SITE_SETTINGS.socials}
           legalLinks={FOOTER_LEGAL_LINKS}
         />
       </ThemeProvider>

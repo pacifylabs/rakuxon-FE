@@ -3,40 +3,45 @@ import { describe, expect, it } from 'vitest';
 
 import { ABOUT_STATS, ABOUT_VISION_MISSION } from './about';
 import { STATS } from './home';
-import { CONTACT_ADDRESSES, CONTACT_EMAIL, CONTACT_PHONES, FOOTER_COLUMNS, SOCIALS } from './site';
-import { ALL_ROUTES } from './routes';
+import { buildDestinationLinks, buildFooterColumns } from './site';
+import { ALL_ROUTES, ROUTES } from './routes';
 import { renderPage } from '../lib/page-harness';
+import { DEFAULT_SITE_SETTINGS } from '../lib/site-settings/api';
 
 /**
  * Rakuxon Ltd is a real company. These pin the details transcribed from
  * rakuxon.com so a refactor cannot quietly reinstate the invented placeholders
  * they replaced — a wrong phone number or a fictional success rate on a real
- * business is a different class of bug from a layout regression.
+ * business is a different class of bug from a layout regression. The
+ * contact/social/footer facts themselves are admin-authored now (see
+ * `lib/site-settings/api.ts`); what's pinned here is `DEFAULT_SITE_SETTINGS`,
+ * the fallback the site renders if that API is ever unreachable — it must
+ * never regress to a fabricated placeholder either.
  */
 
 describe('contact details', () => {
   it('uses the real enquiry address, not the invented one', () => {
-    expect(CONTACT_EMAIL).toBe('enquiries@rakuxon.com');
-    expect(CONTACT_EMAIL).not.toContain('hello@');
+    expect(DEFAULT_SITE_SETTINGS.contactEmail).toBe('enquiries@rakuxon.com');
+    expect(DEFAULT_SITE_SETTINGS.contactEmail).not.toContain('hello@');
   });
 
   it('lists both published phone numbers', () => {
-    expect(CONTACT_PHONES).toEqual(['+234 816 717 8847', '+44 776 094 4935']);
+    expect(DEFAULT_SITE_SETTINGS.contactPhones).toEqual(['+234 816 717 8847', '+44 776 094 4935']);
   });
 
   it('names both real offices rather than claiming remote-first', () => {
-    const flat = CONTACT_ADDRESSES.map(
-      (office) => `${office.label} ${office.lines.join(' ')}`,
-    ).join(' ');
+    const flat = DEFAULT_SITE_SETTINGS.contactAddresses
+      .map((office) => `${office.label} ${office.lines.join(' ')}`)
+      .join(' ');
 
-    expect(CONTACT_ADDRESSES).toHaveLength(2);
+    expect(DEFAULT_SITE_SETTINGS.contactAddresses).toHaveLength(2);
     expect(flat).toContain('London SE17 2PJ');
     expect(flat).toContain('Surulere, Lagos');
     expect(flat).not.toMatch(/remote-first/i);
   });
 
   it('points every social at a real Rakuxon profile', () => {
-    expect(SOCIALS.map((social) => social.label)).toEqual([
+    expect(DEFAULT_SITE_SETTINGS.socials.map((social) => social.label)).toEqual([
       'WhatsApp',
       'Instagram',
       'TikTok',
@@ -49,7 +54,7 @@ describe('contact details', () => {
     // has to reach the company's own account. WhatsApp is the exception by
     // nature — wa.me addresses a phone number, not a handle, so it carries the
     // real Nigerian line instead.
-    for (const social of SOCIALS) {
+    for (const social of DEFAULT_SITE_SETTINGS.socials) {
       const expected = social.label === 'WhatsApp' ? /wa\.me\/2348167178847/ : /rakuxon/i;
       expect(social.href).toMatch(expected);
     }
@@ -90,7 +95,8 @@ describe('vision and mission', () => {
 
 describe('footer links', () => {
   it('resolves every service link to its own page', () => {
-    const services = FOOTER_COLUMNS.find((column) => column.heading === 'Our services');
+    const columns = buildFooterColumns(buildDestinationLinks([]));
+    const services = columns.find((column) => column.heading === 'Our services');
     expect(services?.links).toHaveLength(6);
 
     for (const link of services?.links ?? []) {
@@ -98,14 +104,37 @@ describe('footer links', () => {
     }
   });
 
-  it('lists only destinations that have a page', () => {
-    // rakuxon.com's footer offers "Europe" and "Travel Packages"; neither is a
-    // page here, and shipping them would be two dead links.
-    const destinations = FOOTER_COLUMNS.find((column) => column.heading === 'Destinations');
+  it('points a destination with a written guide at that guide, and any other enabled country at the filtered catalogue', () => {
+    const links = buildDestinationLinks([
+      { countryCode: 'GB', country: 'United Kingdom' },
+      { countryCode: 'KE', country: 'Kenya' },
+    ]);
+
+    expect(links).toEqual([
+      { label: 'United Kingdom', href: '/destinations/uk', countryCode: 'GB' },
+      { label: 'Kenya', href: '/universities?country=KE', countryCode: 'KE' },
+      { label: 'All destinations', href: ROUTES.destinations },
+    ]);
+  });
+
+  it('resolves every destination link to a real route, whatever the catalogue currently holds', () => {
+    const links = buildDestinationLinks([
+      { countryCode: 'GB', country: 'United Kingdom' },
+      { countryCode: 'KE', country: 'Kenya' },
+    ]);
+    const columns = buildFooterColumns(links);
+    const destinations = columns.find((column) => column.heading === 'Destinations');
 
     for (const link of destinations?.links ?? []) {
-      expect(ALL_ROUTES).toContain(link.href);
+      // Filtered catalogue links carry a query string; ALL_ROUTES holds bare paths.
+      expect(ALL_ROUTES).toContain(link.href.split('?')[0]);
     }
+  });
+
+  it('falls back to just "All destinations" when the catalogue is unreachable', () => {
+    expect(buildDestinationLinks([])).toEqual([
+      { label: 'All destinations', href: ROUTES.destinations },
+    ]);
   });
 
   it('renders the real details in the rendered footer, not just the module', () => {

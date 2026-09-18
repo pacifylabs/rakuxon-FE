@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -18,7 +19,10 @@ function useConfirmVerification(token: string) {
     void (async () => {
       try {
         await new ApiClient({ baseUrl: API_BASE_URL }).confirmEmailVerification(token);
-        if (!cancelled) setState('verified');
+        if (!cancelled) {
+          setState('verified');
+          window.dispatchEvent(new Event('rakuxon:email-verified'));
+        }
       } catch {
         if (!cancelled) setState('invalid');
       }
@@ -53,9 +57,9 @@ export default function VerifyEmailPage() {
         subtitle="It may have expired, already been used, or been mistyped."
         ownsMainLandmark={false}
         footer={
-          <a href="/dashboard" className="rounded-sm font-semibold text-primary underline">
+          <Link href="/dashboard" className="rounded-sm font-semibold text-primary underline">
             Go to your dashboard
-          </a>
+          </Link>
         }
       >
         <p role="alert" className="text-base text-text-muted">
@@ -71,9 +75,9 @@ export default function VerifyEmailPage() {
       subtitle="Your address is verified."
       ownsMainLandmark={false}
       footer={
-        <a href="/dashboard" className="rounded-sm font-semibold text-primary underline">
+        <Link href="/dashboard" className="rounded-sm font-semibold text-primary underline">
           Go to your dashboard
-        </a>
+        </Link>
       }
     >
       <p role="status" className="text-base text-text-muted">

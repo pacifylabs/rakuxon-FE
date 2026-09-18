@@ -1,5 +1,6 @@
 import type { FooterColumn, NavLink } from '@rakuxon/ui';
 
+import { GUIDE_BY_CODE } from './destinations';
 import { LOG_IN, ROUTES, SIGN_UP, countryRoute, serviceRoute } from './routes';
 
 /**
@@ -21,109 +22,103 @@ const SERVICE_LINKS: readonly { title: string; slug: string }[] = [
 /** Global shell content (docs/04b § 2), shared by every page. */
 
 /**
- * The country menu, with the flag beside each name.
- *
- * These are the six destinations that have a page; the ISO code is carried
- * here rather than on CountryContent because the flag is a navigation affair —
- * the country pages themselves are titled, not flagged.
+ * The country menu, with the flag beside each name — built from whatever the
+ * admin-enabled catalogue actually holds (see `lib/catalogue/api.ts`'s
+ * `fetchCountries()`), not a hardcoded list. A country with a written guide
+ * (`GUIDE_BY_CODE`, `content/destinations.ts`) links to it; every other
+ * enabled country links to the catalogue pre-filtered to it, same as
+ * `/destinations`'s own cards do via `destinationCardContent()`.
  */
-const DESTINATION_LINKS: readonly NavLink[] = [
-  { label: 'United Kingdom', href: countryRoute('uk'), countryCode: 'GB' },
-  { label: 'United States', href: countryRoute('usa'), countryCode: 'US' },
-  { label: 'Canada', href: countryRoute('canada'), countryCode: 'CA' },
-  { label: 'Australia', href: countryRoute('australia'), countryCode: 'AU' },
-  { label: 'Ireland', href: countryRoute('ireland'), countryCode: 'IE' },
-  { label: 'Germany', href: countryRoute('germany'), countryCode: 'DE' },
-  { label: 'All destinations', href: ROUTES.destinations },
-];
+export function buildDestinationLinks(
+  destinations: readonly { countryCode: string; country: string }[],
+): NavLink[] {
+  return [
+    ...destinations.map((entry) => {
+      const guide = GUIDE_BY_CODE[entry.countryCode];
+      return {
+        label: entry.country,
+        href: guide ? countryRoute(guide) : `${ROUTES.universities}?country=${entry.countryCode}`,
+        countryCode: entry.countryCode,
+      };
+    }),
+    { label: 'All destinations', href: ROUTES.destinations },
+  ];
+}
 
-export const NAV_LINKS: readonly NavLink[] = [
-  /*
-   * Universities is the catalogue listing; Destinations is the same catalogue
-   * chosen by country, which is how most applicants start. Courses are not a
-   * top-level entry: a course belongs to a university, so the way in is the
-   * university page or the search bar, not a third door into the same rows.
-   *
-   * Students and Agents are the two audiences who arrive cold and need a page
-   * written for them. Institutions is in the footer instead — that audience
-   * arrives through a conversation or a direct link, not by browsing a menu.
-   */
-  { label: 'Universities', href: ROUTES.universities },
-  { label: 'Destinations', href: ROUTES.destinations, children: DESTINATION_LINKS },
-  { label: 'Students', href: ROUTES.students },
-  { label: 'Agents', href: ROUTES.agencies },
-  {
-    label: 'Services',
-    href: ROUTES.services,
-    children: SERVICE_LINKS.map((service) => ({
-      label: service.title,
-      href: serviceRoute(service.slug),
-    })),
-  },
-  /* "Guidance" named the shelf rather than what is on it; these are articles a
-     student reads before applying. */
-  { label: 'Study guides', href: ROUTES.resources },
-  { label: 'About', href: ROUTES.about },
-];
+export function buildNavLinks(destinationLinks: readonly NavLink[]): NavLink[] {
+  return [
+    /*
+     * Universities is the catalogue listing; Destinations is the same catalogue
+     * chosen by country, which is how most applicants start. Courses are not a
+     * top-level entry: a course belongs to a university, so the way in is the
+     * university page or the search bar, not a third door into the same rows.
+     *
+     * Students and Agents are the two audiences who arrive cold and need a page
+     * written for them. Institutions is in the footer instead — that audience
+     * arrives through a conversation or a direct link, not by browsing a menu.
+     */
+    { label: 'Universities', href: ROUTES.universities },
+    { label: 'Destinations', href: ROUTES.destinations, children: destinationLinks },
+    { label: 'Students', href: ROUTES.students },
+    { label: 'Agents', href: ROUTES.agencies },
+    {
+      label: 'Services',
+      href: ROUTES.services,
+      children: SERVICE_LINKS.map((service) => ({
+        label: service.title,
+        href: serviceRoute(service.slug),
+      })),
+    },
+    /* "Guidance" named the shelf rather than what is on it; these are articles a
+       student reads before applying. */
+    { label: 'Study guides', href: ROUTES.resources },
+    { label: 'About', href: ROUTES.about },
+  ];
+}
 
 export const LOG_IN_LINK: NavLink = { label: 'Log in', href: LOG_IN };
 export const GET_STARTED_LINK: NavLink = { label: 'Get started', href: SIGN_UP };
 
-/* rakuxon.com's real enquiry address. The site previously used a
-   hello@ address that does not exist. */
-export const CONTACT_EMAIL = 'enquiries@rakuxon.com';
-
-export const CONTACT_PHONES: readonly string[] = ['+234 816 717 8847', '+44 776 094 4935'];
-
-export const FOOTER_COLUMNS: readonly FooterColumn[] = [
-  {
-    heading: 'Get to know us',
-    links: [
-      { label: 'About', href: ROUTES.about },
-      { label: 'How we work', href: `${ROUTES.about}#how-we-work` },
-      { label: 'Success stories', href: ROUTES.testimonials },
-      { label: 'Contact', href: ROUTES.contact },
-    ],
-  },
-  {
-    /* The six real services from rakuxon.com, each with its own page. */
-    heading: 'Our services',
-    links: [
-      { label: 'Free consultancy', href: serviceRoute('free-consultancy') },
-      { label: 'University applications', href: serviceRoute('university-applications') },
-      { label: 'Visa support', href: serviceRoute('visa-support') },
-      { label: 'Travels & tourism', href: serviceRoute('travels-tourism') },
-      { label: 'Pre-departure & arrival', href: serviceRoute('pre-departure') },
-      { label: 'Ongoing support', href: serviceRoute('ongoing-support') },
-    ],
-  },
-  {
-    /*
-     * rakuxon.com's footer lists "Europe" and "Travel Packages", neither of
-     * which is a page here. These are the six country pages that actually
-     * exist, so every link resolves.
-     */
-    heading: 'Destinations',
-    links: [
-      { label: 'United Kingdom', href: countryRoute('uk') },
-      { label: 'United States', href: countryRoute('usa') },
-      { label: 'Canada', href: countryRoute('canada') },
-      { label: 'Ireland', href: countryRoute('ireland') },
-      { label: 'Australia', href: countryRoute('australia') },
-      { label: 'All destinations', href: ROUTES.destinations },
-    ],
-  },
-  {
-    heading: 'For',
-    links: [
-      { label: 'Students', href: ROUTES.students },
-      { label: 'Agencies', href: ROUTES.agencies },
-      { label: 'Institutions', href: ROUTES.institutions },
-      { label: 'Explore courses', href: ROUTES.explore },
-      { label: 'Study guides', href: ROUTES.resources },
-    ],
-  },
-];
+export function buildFooterColumns(destinationLinks: readonly NavLink[]): FooterColumn[] {
+  return [
+    {
+      heading: 'Get to know us',
+      links: [
+        { label: 'About', href: ROUTES.about },
+        { label: 'How we work', href: `${ROUTES.about}#how-we-work` },
+        { label: 'Success stories', href: ROUTES.testimonials },
+        { label: 'Contact', href: ROUTES.contact },
+      ],
+    },
+    {
+      /* The six real services from rakuxon.com, each with its own page. */
+      heading: 'Our services',
+      links: [
+        { label: 'Free consultancy', href: serviceRoute('free-consultancy') },
+        { label: 'University applications', href: serviceRoute('university-applications') },
+        { label: 'Visa support', href: serviceRoute('visa-support') },
+        { label: 'Travels & tourism', href: serviceRoute('travels-tourism') },
+        { label: 'Pre-departure & arrival', href: serviceRoute('pre-departure') },
+        { label: 'Ongoing support', href: serviceRoute('ongoing-support') },
+      ],
+    },
+    {
+      /* Whatever the admin has actually enabled — see `buildDestinationLinks`. */
+      heading: 'Destinations',
+      links: destinationLinks,
+    },
+    {
+      heading: 'For',
+      links: [
+        { label: 'Students', href: ROUTES.students },
+        { label: 'Agencies', href: ROUTES.agencies },
+        { label: 'Institutions', href: ROUTES.institutions },
+        { label: 'Explore courses', href: ROUTES.explore },
+        { label: 'Study guides', href: ROUTES.resources },
+      ],
+    },
+  ];
+}
 
 /** Sits in its own row beneath the columns, as in the rakuxon-care footer. */
 export const FOOTER_LEGAL_LINKS: readonly NavLink[] = [
@@ -131,44 +126,13 @@ export const FOOTER_LEGAL_LINKS: readonly NavLink[] = [
   { label: 'Terms of service', href: ROUTES.terms },
 ];
 
-/** Both real offices, labelled so each reads as a block rather than a run-on. */
-export const CONTACT_ADDRESSES: readonly { label: string; lines: readonly string[] }[] = [
-  { label: 'UK office', lines: ['Flat 15, St. Matthews House', 'Phelp Street, London SE17 2PJ'] },
-  { label: 'Nigeria office', lines: ['11 Akinsemoyin Street', 'Surulere, Lagos'] },
-];
-
-/* Real profiles, in rakuxon.com's own order. WhatsApp is first because it is
-   the channel the company actually runs on. */
-export const SOCIALS: readonly NavLink[] = [
-  { label: 'WhatsApp', href: 'https://wa.me/2348167178847' },
-  { label: 'Instagram', href: 'https://www.instagram.com/rakuxon' },
-  { label: 'TikTok', href: 'https://www.tiktok.com/@rakuxonltd' },
-  { label: 'X', href: 'https://x.com/rakuxon' },
-  { label: 'Facebook', href: 'https://www.facebook.com/rakuxon' },
-  { label: 'YouTube', href: 'https://youtube.com/@rakuxon' },
-];
-
-/** Falls back to the brand token; kept explicit so copy edits live in one file. */
 /**
- * The real logo, supplied to ThemeProvider the same way a tenant's would be.
+ * The logo's intrinsic pixel size, so `next/image` can reserve the box.
  *
- * logo-light.png is the same artwork knocked out to white: the cobalt original
- * is near-invisible on the dark scheme's #0B1220 ground.
+ * Kept as a frontend constant rather than admin-editable: it describes the
+ * artwork's own dimensions, not content — the admin-uploaded `logoUrl`/
+ * `logoDarkUrl` (see `lib/site-settings/api.ts`) are expected to share it.
  */
-export const BRAND_LOGO = {
-  /* -light is the artwork FOR light surfaces (cobalt ink); -dark is for dark
-     surfaces (white ink). Both shipped as opaque rectangles and were keyed to
-     transparency, or they paint a hard-edged box on anything that is not
-     exactly their own backdrop. */
-  logo: '/logo-light.png',
-  logoDark: '/logo-dark.png',
-  logoWidth: '1200',
-  logoHeight: '400',
-} as const;
+export const BRAND_LOGO_SIZE = { width: '1200', height: '400' } as const;
 
-export const FOOTER_TAGLINE = 'Where Minds Meet Maps.';
-
-/** rakuxon.com's own footer blurb. */
-export const FOOTER_BLURB =
-  'Transforming dreams into global education and travel opportunities. Your trusted partner for studying abroad and exploring the world.';
 export const FOOTER_DOMAIN = 'rakuxon.com';
