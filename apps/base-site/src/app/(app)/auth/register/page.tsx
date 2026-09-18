@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useAuth } from '@rakuxon/auth';
-import { AuthCard, Button, FormField } from '@rakuxon/ui';
+import { AuthCard, Button, FormField, useToast } from '@rakuxon/ui';
 
 const PASSWORD_MIN = 8;
 
@@ -29,6 +29,7 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { registerStudent, user, ready } = useAuth();
+  const toast = useToast();
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -76,8 +77,10 @@ function RegisterForm() {
         setFieldErrors({ email: error.message });
       } else if (error instanceof ApiError || error instanceof NetworkError) {
         setFormError(error.message);
+        toast.error(error.message);
       } else {
         setFormError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setPending(false);

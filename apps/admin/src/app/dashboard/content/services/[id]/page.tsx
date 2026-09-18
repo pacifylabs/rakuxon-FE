@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type { AdminServiceDetail, ServiceFaq } from '@rakuxon/contract';
 
 import { FaqsEditor } from '@/components/dashboard/editors/FaqsEditor';
@@ -86,6 +86,7 @@ function ServiceEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const toast = useToast();
   const isNew = params.id === 'new';
 
   const [form, setForm] = useState<FormState>(BLANK);
@@ -140,16 +141,19 @@ function ServiceEditor() {
     try {
       if (isNew) {
         const created = await client.createService(payload);
+        toast.success('Service created.');
         router.push(`/dashboard/content/services/${created.id}`);
       } else {
         await client.updateService(params.id, payload);
+        toast.success('Service saved.');
       }
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save this service. Please try again.',
-      );
+          : 'Could not save this service. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

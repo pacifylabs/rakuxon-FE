@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { ApplicationStatusBadge, Button } from '@rakuxon/ui';
+import { ApplicationStatusBadge, Button, useToast } from '@rakuxon/ui';
 import type { Application } from '@rakuxon/contract';
 
 import { RequiredDocumentsChecklist } from '@/components/dashboard/RequiredDocumentsChecklist';
@@ -13,6 +13,7 @@ import { RequiredDocumentsChecklist } from '@/components/dashboard/RequiredDocum
 export default function ApplicationDetailPage() {
   const params = useParams<{ id: string }>();
   const client = useApiClient();
+  const toast = useToast();
 
   const [application, setApplication] = useState<Application | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -40,12 +41,14 @@ export default function ApplicationDetailPage() {
     setSubmitError(null);
     try {
       setApplication(await client.submitApplication(params.id));
+      toast.success('Application submitted.');
     } catch (error) {
-      setSubmitError(
+      const message =
         error instanceof ApiError || error instanceof NetworkError
           ? error.message
-          : 'Could not submit this application. Please try again.',
-      );
+          : 'Could not submit this application. Please try again.';
+      setSubmitError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }

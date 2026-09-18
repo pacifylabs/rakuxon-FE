@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type { AdminAccount } from '@rakuxon/contract';
 
 import { useAdminApiClient } from '@/lib/admin-auth';
 
 export default function AdminProfilePage() {
   const client = useAdminApiClient();
+  const toast = useToast();
 
   const [account, setAccount] = useState<AdminAccount | null>(null);
   const [firstName, setFirstName] = useState('');
@@ -46,12 +47,14 @@ export default function AdminProfilePage() {
     try {
       setAccount(await client.updateAccountProfile({ firstName, lastName }));
       setSaved(true);
+      toast.success('Profile updated.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save these changes. Please try again.',
-      );
+          : 'Could not save these changes. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

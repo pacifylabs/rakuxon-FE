@@ -4,7 +4,7 @@ import { CheckCircle2, FileText, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DropzoneUploader } from '@rakuxon/ui';
+import { Button, ConfirmDialog, DropzoneUploader, useToast } from '@rakuxon/ui';
 import type { DocumentType, StudentDocument } from '@rakuxon/contract';
 
 import { useAdminApiClient } from '@/lib/admin-auth';
@@ -42,6 +42,7 @@ export function AdminDocumentRow({
   onChanged,
 }: AdminDocumentRowProps) {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [uploading, setUploading] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
@@ -81,14 +82,16 @@ export function AdminDocumentRow({
         mimeType: file.type || 'application/octet-stream',
       });
       onChanged(confirmed);
+      toast.success(`${label} uploaded.`);
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : caught instanceof Error
             ? caught.message
-            : 'Could not upload that file. Please try again.',
-      );
+            : 'Could not upload that file. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setUploading(false);
     }
@@ -103,12 +106,14 @@ export function AdminDocumentRow({
       onChanged(rejected);
       setRejecting(false);
       setReason('');
+      toast.success(`${label} rejected.`);
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not reject that document. Please try again.',
-      );
+          : 'Could not reject that document. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSubmittingReject(false);
     }
@@ -172,7 +177,7 @@ export function AdminDocumentRow({
               <Button
                 variant="ghost"
                 type="button"
-                onClick={() => setRejecting((current) => !current)}
+                onClick={() => setRejecting(true)}
               >
                 Reject
               </Button>
@@ -181,34 +186,32 @@ export function AdminDocumentRow({
         )}
       </div>
 
-      {rejecting && (
-        <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-          <label className="text-sm font-medium text-text" htmlFor={`reject-reason-${type}`}>
-            Reason
-          </label>
-          <textarea
-            id={`reject-reason-${type}`}
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={2}
-            placeholder="The scan is illegible — please re-upload a clearer copy."
-            className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-text focus-visible:outline-none focus-visible:ring"
-          />
-          <div className="flex gap-2">
-            <Button
-              variant="primary"
-              type="button"
-              disabled={!reason.trim() || submittingReject}
-              onClick={handleReject}
-            >
-              {submittingReject ? 'Rejecting…' : 'Confirm reject'}
-            </Button>
-            <Button variant="ghost" type="button" onClick={() => setRejecting(false)}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={rejecting}
+        onOpenChange={(open) => {
+          setRejecting(open);
+          if (!open) setReason('');
+        }}
+        title={`Reject ${label}?`}
+        description="The student will see this reason and can upload a replacement."
+        confirmLabel="Confirm reject"
+        tone="danger"
+        confirming={submittingReject}
+        confirmDisabled={!reason.trim()}
+        onConfirm={handleReject}
+      >
+        <label className="text-sm font-medium text-text" htmlFor={`reject-reason-${type}`}>
+          Reason
+        </label>
+        <textarea
+          id={`reject-reason-${type}`}
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          rows={2}
+          placeholder="The scan is illegible — please re-upload a clearer copy."
+          className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text focus-visible:outline-none focus-visible:ring"
+        />
+      </ConfirmDialog>
     </div>
   );
 }

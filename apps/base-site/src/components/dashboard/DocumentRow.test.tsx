@@ -2,15 +2,18 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '@rakuxon/auth';
+import { ToastProvider } from '@rakuxon/ui';
 import type { StudentDocument } from '@rakuxon/contract';
 
 import { DocumentRow } from './DocumentRow';
 
 function renderRow(document: StudentDocument | undefined) {
   return render(
-    <AuthProvider baseUrl="https://api.test">
-      <DocumentRow type="identity" label="Identity" document={document} onUploaded={vi.fn()} onDeleted={vi.fn()} />
-    </AuthProvider>,
+    <ToastProvider>
+      <AuthProvider baseUrl="https://api.test">
+        <DocumentRow type="identity" label="Identity" document={document} onUploaded={vi.fn()} onDeleted={vi.fn()} />
+      </AuthProvider>
+    </ToastProvider>,
   );
 }
 

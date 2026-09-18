@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { ApiClient, ApiError, NetworkError } from '@rakuxon/api-client';
-import { AuthCard, Button, FormField } from '@rakuxon/ui';
+import { AuthCard, Button, FormField, useToast } from '@rakuxon/ui';
 
 const PASSWORD_MIN = 8;
 
@@ -23,6 +23,7 @@ export function RequestPasswordResetForm({
   signInHref?: string;
   ownsMainLandmark?: boolean;
 }) {
+  const toast = useToast();
   const [fieldError, setFieldError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
@@ -45,8 +46,12 @@ export function RequestPasswordResetForm({
       await new ApiClient({ baseUrl }).requestPasswordReset(email);
       setSent(true);
     } catch (error) {
-      if (error instanceof ApiError || error instanceof NetworkError) setFormError(error.message);
-      else setFormError('Something went wrong. Please try again.');
+      const message =
+        error instanceof ApiError || error instanceof NetworkError
+          ? error.message
+          : 'Something went wrong. Please try again.';
+      setFormError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }
@@ -125,6 +130,7 @@ export function ConfirmPasswordResetForm({
   onComplete: () => void;
   ownsMainLandmark?: boolean;
 }) {
+  const toast = useToast();
   const [fieldError, setFieldError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -146,15 +152,16 @@ export function ConfirmPasswordResetForm({
       await new ApiClient({ baseUrl }).confirmPasswordReset(token, password);
       onComplete();
     } catch (error) {
-      if (error instanceof ApiError && error.isUnauthorized) {
-        /* The API deliberately does not distinguish expired from used from
-           unknown, so neither can this. */
-        setFormError('That link has expired or has already been used. Request a new one.');
-      } else if (error instanceof ApiError || error instanceof NetworkError) {
-        setFormError(error.message);
-      } else {
-        setFormError('Something went wrong. Please try again.');
-      }
+      const message =
+        error instanceof ApiError && error.isUnauthorized
+          ? /* The API deliberately does not distinguish expired from used from
+               unknown, so neither can this. */
+            'That link has expired or has already been used. Request a new one.'
+          : error instanceof ApiError || error instanceof NetworkError
+            ? error.message
+            : 'Something went wrong. Please try again.';
+      setFormError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }

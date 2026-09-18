@@ -4,19 +4,20 @@ import { GraduationCap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { DataTable, EmptyState, Pagination, StatusBadge } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, Pagination, StatusBadge } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminStudentSummary } from '@rakuxon/contract';
 
-import { RequirePermission, useAdminApiClient } from '@/lib/admin-auth';
+import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
 /**
- * View-only, same as applications: finding and opening a student to support
- * a document review or an application is in scope here, editing their
- * profile on their behalf is not.
+ * Finding and opening a student to support a document review or an
+ * application, editing their profile, and — for a student the partner
+ * already has elsewhere — bringing them onto the platform directly.
  */
 function StudentsList() {
   const client = useAdminApiClient();
+  const { hasPermission } = useAdminAuth();
   const [items, setItems] = useState<AdminStudentSummary[] | null>(null);
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
@@ -83,13 +84,22 @@ function StudentsList() {
 
   return (
     <section aria-labelledby="students-heading">
-      <h1 id="students-heading" className="font-heading text-3xl font-bold text-text">
-        Students
-      </h1>
-      <p className="mt-2 max-w-prose text-base text-text-muted">
-        Every applicant across every partner. Open a student to see their full profile and
-        documents.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 id="students-heading" className="font-heading text-3xl font-bold text-text">
+            Students
+          </h1>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            Every applicant across every partner. Open a student to see their full profile and
+            documents.
+          </p>
+        </div>
+        {hasPermission('students.manage') && (
+          <Button variant="primary" size="md" onClick={() => window.location.assign('/dashboard/students/new')}>
+            New student
+          </Button>
+        )}
+      </div>
 
       <label className="mt-6 flex max-w-sm items-center gap-2 text-sm text-text-muted">
         <span className="sr-only">Search by name or email</span>

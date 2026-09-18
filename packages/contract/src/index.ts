@@ -93,6 +93,12 @@ export type AdminList = Schemas['AdminListDto'];
 export type Tenant = Schemas['TenantDto'];
 export type TenantList = Schemas['TenantListDto'];
 export type TenantStatus = Schemas['TenantStatus'];
+export type AdminCreateTenantRequest = Schemas['AdminCreateTenantDto'];
+export type UpdateTenantRequest = Schemas['UpdateTenantDto'];
+export type TenantStaff = Schemas['TenantStaffDto'];
+export type TenantStaffList = Schemas['TenantStaffListDto'];
+export type CreateTenantStaffRequest = Schemas['CreateTenantStaffDto'];
+export type SetTenantStaffPasswordRequest = Schemas['SetTenantStaffPasswordDto'];
 
 export type AdminInstitutionSummary = Schemas['AdminInstitutionSummaryDto'];
 export type AdminInstitutionList = Schemas['AdminInstitutionListDto'];
@@ -138,6 +144,8 @@ export type AdminStudentSummary = Schemas['AdminStudentSummaryDto'];
 export type AdminStudentList = Schemas['AdminStudentListDto'];
 export type AdminStudentDetail = Schemas['AdminStudentDetailDto'];
 export type UpdateStudentAdminRequest = Schemas['UpdateStudentAdminDto'];
+export type AdminCreateStudentRequest = Schemas['AdminCreateStudentDto'];
+export type SetStudentPasswordRequest = Schemas['SetStudentPasswordDto'];
 
 export type StatusCount = Schemas['StatusCountDto'];
 export type AdminDashboardSummary = Schemas['AdminDashboardSummaryDto'];
@@ -167,3 +175,6 @@ export type Role = (typeof Role)[keyof typeof Role];
 
 /** Every path the API serves, for the client to key off. */
 export type ApiPath = keyof paths;
+
+export type AdminRoleSummary = Schemas['AdminRoleSummaryDto'];
+export type SaveAdminRoleRequest = Schemas['SaveAdminRoleDto'];

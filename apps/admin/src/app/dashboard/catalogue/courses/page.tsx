@@ -4,7 +4,7 @@ import { GraduationCap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, Pagination, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminCourseSummary, PublishStatus } from '@rakuxon/contract';
 
@@ -21,6 +21,7 @@ const STATUS_FILTERS: Array<{ value: PublishStatus | 'all'; label: string }> = [
 function CoursesList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [items, setItems] = useState<AdminCourseSummary[] | null>(null);
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
@@ -69,8 +70,15 @@ function CoursesList() {
             : await client.revertCourseToDraft(row.id);
 
       setItems((current) => current?.map((entry) => (entry.id === updated.id ? updated : entry)) ?? null);
+      toast.success(
+        action === 'publish'
+          ? 'Course published.'
+          : action === 'suspend'
+            ? 'Course suspended.'
+            : 'Course reverted to draft.',
+      );
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',

@@ -4,46 +4,16 @@ import { Globe2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, StatusBadge } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, StatusBadge, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminCountry } from '@rakuxon/contract';
 
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
 
-/** A small number field that only saves when its value actually changes on
-    blur — so tabbing through the table without touching a field never fires
-    a spurious write. */
-function HomepageOrderField({
-  value,
-  disabled,
-  onSave,
-}: {
-  value: number | null | undefined;
-  disabled: boolean;
-  onSave: (order: number | null) => void;
-}) {
-  return (
-    <input
-      type="number"
-      min={1}
-      defaultValue={value ?? ''}
-      disabled={disabled}
-      placeholder="Not featured"
-      aria-label="Homepage position"
-      className="w-28 rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-text focus-visible:outline-none focus-visible:ring disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-muted"
-      onBlur={(event) => {
-        const raw = event.target.value.trim();
-        const next = raw === '' ? null : Number(raw);
-        if (next === (value ?? null)) return;
-        onSave(next);
-      }}
-    />
-  );
-}
-
 function CountriesList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [countries, setCountries] = useState<AdminCountry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -73,8 +43,9 @@ function CountriesList() {
         ? await client.deactivateCountry(country.code)
         : await client.activateCountry(country.code);
       setCountries((current) => current?.map((row) => (row.code === updated.code ? updated : row)) ?? null);
+      toast.success(updated.isDestination ? `${updated.name} is now serving.` : `${updated.name} is no longer serving.`);
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',
@@ -84,13 +55,29 @@ function CountriesList() {
     }
   }
 
-  async function setFeatured(country: AdminCountry, homepageFeaturedOrder: number | null) {
+  /**
+   * A toggle, not a manually-typed position: turning it on appends the
+   * country to the end of the homepage row (current highest order + 1);
+   * turning it off clears the order entirely. Reordering an already-featured
+   * country isn't offered here — this is on/off, not a drag-to-reorder UI.
+   */
+  async function toggleFeatured(country: AdminCountry) {
     setPendingCode(country.code);
     try {
-      const updated = await client.setCountryHomepageFeatured(country.code, { homepageFeaturedOrder });
+      const nextOrder = country.homepageFeaturedOrder
+        ? null
+        : Math.max(0, ...(countries ?? []).map((row) => row.homepageFeaturedOrder ?? 0)) + 1;
+      const updated = await client.setCountryHomepageFeatured(country.code, {
+        homepageFeaturedOrder: nextOrder,
+      });
       setCountries((current) => current?.map((row) => (row.code === updated.code ? updated : row)) ?? null);
+      toast.success(
+        updated.homepageFeaturedOrder
+          ? `${updated.name} is now featured on the homepage.`
+          : `${updated.name} is no longer featured on the homepage.`,
+      );
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',
@@ -126,11 +113,15 @@ function CountriesList() {
     {
       header: 'Homepage',
       cell: (row) => (
-        <HomepageOrderField
-          value={row.homepageFeaturedOrder}
-          disabled={!hasPermission('catalogue.publish') || pendingCode === row.code}
-          onSave={(order) => setFeatured(row, order)}
-        />
+        <label className="inline-flex items-center gap-2 text-sm text-text">
+          <input
+            type="checkbox"
+            checked={Boolean(row.homepageFeaturedOrder)}
+            disabled={!hasPermission('catalogue.publish') || pendingCode === row.code}
+            onChange={() => toggleFeatured(row)}
+          />
+          {row.homepageFeaturedOrder ? 'Featured' : 'Not featured'}
+        </label>
       ),
     },
     {
@@ -154,9 +145,8 @@ function CountriesList() {
       </h1>
       <p className="mt-2 max-w-prose text-base text-text-muted">
         Which countries feed the "where do you want to study" dropdown. Nationality and address
-        fields always use the full reference list regardless of this setting. Give a country a
-        homepage position to show it in the marketing site's destinations row — leave it blank to
-        keep it off the homepage.
+        fields always use the full reference list regardless of this setting. Feature a country to
+        show it in the marketing site's homepage destinations row, in the order it was featured.
       </p>
 
       <label className="mt-6 flex max-w-xs items-center gap-2 text-sm text-text-muted">

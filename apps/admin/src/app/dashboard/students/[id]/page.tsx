@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField, StatusBadge } from '@rakuxon/ui';
+import { Button, ConfirmDialog, FormField, StatusBadge, useToast } from '@rakuxon/ui';
 import type { AdminStudentDetail, EducationHistoryEntry, StudentDocument, StudyLevel } from '@rakuxon/contract';
 
 import { AdminDocumentRow } from '@/components/dashboard/AdminDocumentRow';
@@ -24,6 +24,9 @@ function Field({ label, value }: { label: string; value: string }) {
 }
 
 interface FormState {
+  email: string;
+  firstName: string;
+  lastName: string;
   dateOfBirth: string;
   nationality: string;
   phone: string;
@@ -42,6 +45,9 @@ interface FormState {
 
 function fromDetail(student: AdminStudentDetail): FormState {
   return {
+    email: student.email,
+    firstName: student.firstName,
+    lastName: student.lastName,
     dateOfBirth: student.dateOfBirth ?? '',
     nationality: student.nationality ?? '',
     phone: student.phone ?? '',
@@ -60,6 +66,90 @@ function fromDetail(student: AdminStudentDetail): FormState {
 }
 
 /**
+ * New-student creation, behind `students.manage` — for students a partner
+ * already has, manually or through another system. Sets a real password
+ * directly, same pattern as `CreateAdminForm`: no auto-generated password,
+ * no email step.
+ */
+function NewStudentForm() {
+  const router = useRouter();
+  const client = useAdminApiClient();
+  const toast = useToast();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+
+    setPending(true);
+    setError(null);
+    try {
+      const created = await client.createAdminStudent({
+        email: String(data.get('email') ?? '').trim(),
+        firstName: String(data.get('firstName') ?? '').trim(),
+        lastName: String(data.get('lastName') ?? '').trim(),
+        password: String(data.get('password') ?? ''),
+      });
+      toast.success('Student created.');
+      router.push(`/dashboard/students/${created.id}`);
+    } catch (caught) {
+      const message =
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not create the student. Please try again.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="new-student-heading" className="max-w-xl">
+      <Button variant="ghost" size="md" onClick={() => router.push('/dashboard/students')}>
+        ← Back to students
+      </Button>
+
+      <h1 id="new-student-heading" className="mt-4 font-heading text-3xl font-bold text-text">
+        New student
+      </h1>
+      <p className="mt-2 text-base text-text-muted">
+        For a student the partner already has, manually or through another system. Sets a real
+        password directly — the student can change it via the reset flow afterwards.
+      </p>
+
+      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <FormField label="First name" name="firstName" autoComplete="given-name" required />
+          <FormField label="Last name" name="lastName" autoComplete="family-name" required />
+        </div>
+        <FormField label="Email address" name="email" type="email" autoComplete="email" required />
+        <FormField
+          label="Temporary password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          required
+        />
+
+        {error && (
+          <p role="alert" className="text-sm text-danger">
+            {error}
+          </p>
+        )}
+
+        <div>
+          <Button type="submit" variant="primary" size="lg" disabled={pending}>
+            {pending ? 'Creating…' : 'Create student'}
+          </Button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+/**
  * `students.view` sees this screen; `students.manage` can also switch it
  * into an edit form — a correction phoned in, or a document the student
  * cannot upload themselves. The two are separate permissions on the backend,
@@ -71,6 +161,7 @@ function StudentDetail() {
   const router = useRouter();
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
 
   const [student, setStudent] = useState<AdminStudentDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +171,9 @@ function StudentDetail() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [documents, setDocuments] = useState<StudentDocument[] | null>(null);
   const [documentsError, setDocumentsError] = useState<string | null>(null);
+  const [settingPassword, setSettingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordPending, setPasswordPending] = useState(false);
   const canReview = hasPermission('documents.review');
 
   const load = useCallback(async () => {
@@ -143,6 +237,9 @@ function StudentDetail() {
     setSaveError(null);
     try {
       const updated = await client.updateAdminStudent(params.id, {
+        email: form.email || undefined,
+        firstName: form.firstName || undefined,
+        lastName: form.lastName || undefined,
         dateOfBirth: form.dateOfBirth || undefined,
         nationality: form.nationality || undefined,
         phone: form.phone || undefined,
@@ -162,14 +259,35 @@ function StudentDetail() {
       });
       setStudent(updated);
       setEditing(false);
+      toast.success('Student updated.');
     } catch (caught) {
-      setSaveError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save these changes. Please try again.',
-      );
+          : 'Could not save these changes. Please try again.';
+      setSaveError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSetPassword() {
+    if (!newPassword.trim()) return;
+    setPasswordPending(true);
+    try {
+      await client.setAdminStudentPassword(params.id, { password: newPassword.trim() });
+      toast.success("Student's password updated.");
+      setSettingPassword(false);
+      setNewPassword('');
+    } catch (caught) {
+      toast.error(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not set this password. Please try again.',
+      );
+    } finally {
+      setPasswordPending(false);
     }
   }
 
@@ -207,6 +325,15 @@ function StudentDetail() {
         <p className="mt-2 text-base text-text-muted">{student.email}</p>
 
         <form onSubmit={handleSubmit} className="mt-8 flex max-w-2xl flex-col gap-6">
+          <fieldset className="grid gap-4">
+            <legend className="mb-1 text-sm font-semibold text-text">Account</legend>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <FormField label="First name" name="firstName" defaultValue={form.firstName} onChange={(e) => set('firstName', e.target.value)} />
+              <FormField label="Last name" name="lastName" defaultValue={form.lastName} onChange={(e) => set('lastName', e.target.value)} />
+            </div>
+            <FormField label="Email address" name="email" type="email" defaultValue={form.email} onChange={(e) => set('email', e.target.value)} />
+          </fieldset>
+
           <div className="grid gap-6 sm:grid-cols-2">
             <FormField label="Date of birth" name="dateOfBirth" type="date" defaultValue={form.dateOfBirth} onChange={(e) => set('dateOfBirth', e.target.value)} />
             <FormField label="Nationality" name="nationality" placeholder="NG" defaultValue={form.nationality} onChange={(e) => set('nationality', e.target.value.toUpperCase())} />
@@ -332,9 +459,14 @@ function StudentDetail() {
           ← Back to students
         </Button>
         {hasPermission('students.manage') && (
-          <Button variant="primary" size="md" onClick={startEditing}>
-            Edit
-          </Button>
+          <div className="flex gap-3">
+            <Button variant="ghost" size="md" onClick={() => setSettingPassword(true)}>
+              Set new password
+            </Button>
+            <Button variant="primary" size="md" onClick={startEditing}>
+              Edit
+            </Button>
+          </div>
         )}
       </div>
 
@@ -427,11 +559,46 @@ function StudentDetail() {
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={settingPassword}
+        onOpenChange={(open) => {
+          setSettingPassword(open);
+          if (!open) setNewPassword('');
+        }}
+        title={`Set a new password for ${student.fullName}?`}
+        description="They will need to sign in with this password. Share it with them directly."
+        confirmLabel="Set password"
+        confirming={passwordPending}
+        confirmDisabled={!newPassword.trim()}
+        onConfirm={handleSetPassword}
+      >
+        <FormField
+          label="New password"
+          name="newPassword"
+          type="password"
+          autoComplete="new-password"
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
+      </ConfirmDialog>
     </section>
   );
 }
 
 export default function StudentDetailPage() {
+  const params = useParams<{ id: string }>();
+
+  if (params.id === 'new') {
+    return (
+      <RequirePermission
+        permissions={['students.manage']}
+        denied={<p className="text-base text-text-muted">Your account does not have permission to create students.</p>}
+      >
+        <NewStudentForm />
+      </RequirePermission>
+    );
+  }
+
   return (
     <RequirePermission
       permissions={['students.view']}

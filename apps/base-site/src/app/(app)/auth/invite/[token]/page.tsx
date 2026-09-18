@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { ApiClient, ApiError, NetworkError } from '@rakuxon/api-client';
 import { useAuth } from '@rakuxon/auth';
-import { AuthCard, Button, FormField } from '@rakuxon/ui';
+import { AuthCard, Button, FormField, useToast } from '@rakuxon/ui';
 import type { PeekedLink } from '@rakuxon/contract';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
@@ -44,6 +44,7 @@ export default function InvitePage() {
   const token = params.token;
   const router = useRouter();
   const { registerViaOnboardingLink } = useAuth();
+  const toast = useToast();
 
   const peeked = usePeekedLink(token);
 
@@ -76,11 +77,12 @@ export default function InvitePage() {
       await registerViaOnboardingLink({ token, ...values });
       router.push('/dashboard');
     } catch (error) {
-      if (error instanceof ApiError || error instanceof NetworkError) {
-        setFormError(error.message);
-      } else {
-        setFormError('Something went wrong. Please try again.');
-      }
+      const message =
+        error instanceof ApiError || error instanceof NetworkError
+          ? error.message
+          : 'Something went wrong. Please try again.';
+      setFormError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }

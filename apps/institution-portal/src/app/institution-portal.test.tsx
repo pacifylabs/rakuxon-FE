@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '@rakuxon/auth';
-import { ThemeProvider } from '@rakuxon/ui';
+import { ThemeProvider, ToastProvider } from '@rakuxon/ui';
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -35,7 +35,9 @@ const signedInAs = (role: string) =>
 const renderApp = (ui: React.ReactElement) =>
   render(
     <ThemeProvider>
-      <AuthProvider baseUrl="https://api.test">{ui}</AuthProvider>
+      <ToastProvider>
+        <AuthProvider baseUrl="https://api.test">{ui}</AuthProvider>
+      </ToastProvider>
     </ThemeProvider>,
   );
 

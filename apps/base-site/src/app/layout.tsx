@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
-import { ThemeProvider, baseTokens, themeScript } from '@rakuxon/ui';
+import { ThemeProvider, ToastProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
 import { SessionProvider } from '@/components/SessionProvider';
 import { SiteChrome } from '@/components/SiteChrome';
@@ -120,11 +120,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             },
           }}
         >
-          <SessionProvider>
-            <SiteChrome destinations={destinations} siteSettings={siteSettings}>
-              {children}
-            </SiteChrome>
-          </SessionProvider>
+          <ToastProvider>
+            <SessionProvider>
+              <SiteChrome destinations={destinations} siteSettings={siteSettings}>
+                {children}
+              </SiteChrome>
+            </SessionProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -4,54 +4,67 @@ import { UserPlus, Users } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, EmptyState, FormField } from '@rakuxon/ui';
-import type { AdminSummary, Permission } from '@rakuxon/contract';
+import { Button, ConfirmDialog, EmptyState, FormField, useToast } from '@rakuxon/ui';
+import type { AdminSummary, AdminRoleSummary } from '@rakuxon/contract';
 
 import { RequirePermission, useAdminApiClient } from '@/lib/admin-auth';
 
-function PermissionCheckboxes({
-  permissions,
-  selected,
-  onToggle,
+function RoleSelect({
+  roles,
+  value,
+  onChange,
 }: {
-  permissions: Permission[];
-  selected: Set<string>;
-  onToggle: (key: string) => void;
+  roles: AdminRoleSummary[];
+  value: string;
+  onChange: (id: string) => void;
 }) {
+  const selected = roles.find((role) => role.id === value);
   return (
-    <fieldset className="grid gap-2 sm:grid-cols-2">
-      <legend className="sr-only">Permissions</legend>
-      {permissions.map((permission) => (
-        <label key={permission.key} className="flex items-start gap-2 text-sm text-text">
-          <input
-            type="checkbox"
-            checked={selected.has(permission.key)}
-            onChange={() => onToggle(permission.key)}
-            className="mt-1"
-          />
-          <span>
-            <span className="font-semibold">{permission.key}</span>
-            <span className="block text-text-muted">{permission.description}</span>
-          </span>
-        </label>
-      ))}
-    </fieldset>
+    <div>
+      <label className="block text-sm font-semibold text-text">
+        Role
+        <select
+          required
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="mt-2 block w-full rounded-lg border border-border bg-surface px-3 py-2 text-base text-text"
+        >
+          <option value="">Choose a role</option>
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      {roles.length === 0 && (
+        <p className="mt-2 text-sm text-text-muted">
+          Create a role in Roles &amp; permissions first.
+        </p>
+      )}
+      {selected && (
+        <p className="mt-2 text-sm text-text-muted">
+          {selected.description} {selected.permissions.length} permissions inherited from this role.
+        </p>
+      )}
+    </div>
   );
 }
 
-function EditPermissions({
+function EditRole({
   admin,
-  permissions,
+  roles,
   onSaved,
   onCancel,
 }: {
   admin: AdminSummary;
-  permissions: Permission[];
+  roles: AdminRoleSummary[];
   onSaved: (updated: AdminSummary) => void;
   onCancel: () => void;
 }) {
   const client = useAdminApiClient();
-  const [selected, setSelected] = useState(new Set(admin.permissions));
+  const toast = useToast();
+  const [roleId, setRoleId] = useState(admin.role?.id ?? '');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,13 +72,16 @@ function EditPermissions({
     setPending(true);
     setError(null);
     try {
-      onSaved(await client.updateAdminPermissions(admin.id, [...selected]));
+      onSaved(await client.assignAdminRole(admin.id, roleId));
+      window.dispatchEvent(new Event('rakuxon:admin-access-changed'));
+      toast.success('Role updated.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save permissions. Please try again.',
-      );
+          : 'Could not assign this role. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }
@@ -73,26 +89,15 @@ function EditPermissions({
 
   return (
     <div className="mt-4 rounded-lg border border-border bg-surface-muted p-4">
-      <PermissionCheckboxes
-        permissions={permissions}
-        selected={selected}
-        onToggle={(key) =>
-          setSelected((current) => {
-            const next = new Set(current);
-            if (next.has(key)) next.delete(key);
-            else next.add(key);
-            return next;
-          })
-        }
-      />
+      <RoleSelect roles={roles} value={roleId} onChange={setRoleId} />
       {error && (
         <p role="alert" className="mt-3 text-sm text-danger">
           {error}
         </p>
       )}
       <div className="mt-4 flex gap-3">
-        <Button variant="primary" size="md" disabled={pending} onClick={save}>
-          {pending ? 'Saving…' : 'Save permissions'}
+        <Button variant="primary" size="md" disabled={pending || !roleId} onClick={save}>
+          {pending ? 'Saving…' : 'Save role'}
         </Button>
         <Button variant="ghost" size="md" disabled={pending} onClick={onCancel}>
           Cancel
@@ -103,21 +108,23 @@ function EditPermissions({
 }
 
 function CreateAdminForm({
-  permissions,
+  roles,
   onCreated,
 }: {
-  permissions: Permission[];
+  roles: AdminRoleSummary[];
   onCreated: (created: AdminSummary) => void;
 }) {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [roleId, setRoleId] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
 
     setPending(true);
     setError(null);
@@ -127,18 +134,20 @@ function CreateAdminForm({
         firstName: String(data.get('firstName') ?? '').trim(),
         lastName: String(data.get('lastName') ?? '').trim(),
         password: String(data.get('password') ?? ''),
-        permissionKeys: [...selected],
+        roleId,
       });
       onCreated(created);
       setOpen(false);
-      setSelected(new Set());
-      event.currentTarget.reset();
+      setRoleId('');
+      form.reset();
+      toast.success('Admin created.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not create the admin. Please try again.',
-      );
+          : 'Could not create the admin. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }
@@ -164,23 +173,16 @@ function CreateAdminForm({
         <FormField label="First name" name="firstName" autoComplete="given-name" />
         <FormField label="Last name" name="lastName" autoComplete="family-name" />
         <FormField label="Email address" name="email" type="email" autoComplete="email" />
-        <FormField label="Temporary password" name="password" type="password" autoComplete="new-password" />
+        <FormField
+          label="Temporary password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+        />
       </div>
 
       <div className="mt-4">
-        <p className="mb-2 text-sm font-semibold text-text">Permissions</p>
-        <PermissionCheckboxes
-          permissions={permissions}
-          selected={selected}
-          onToggle={(key) =>
-            setSelected((current) => {
-              const next = new Set(current);
-              if (next.has(key)) next.delete(key);
-              else next.add(key);
-              return next;
-            })
-          }
-        />
+        <RoleSelect roles={roles} value={roleId} onChange={setRoleId} />
       </div>
 
       {error && (
@@ -190,10 +192,16 @@ function CreateAdminForm({
       )}
 
       <div className="mt-6 flex gap-3">
-        <Button type="submit" variant="primary" size="md" disabled={pending}>
+        <Button type="submit" variant="primary" size="md" disabled={pending || !roleId}>
           {pending ? 'Creating…' : 'Create admin'}
         </Button>
-        <Button type="button" variant="ghost" size="md" disabled={pending} onClick={() => setOpen(false)}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="md"
+          disabled={pending}
+          onClick={() => setOpen(false)}
+        >
           Cancel
         </Button>
       </div>
@@ -203,20 +211,22 @@ function CreateAdminForm({
 
 function AdminsList() {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [admins, setAdmins] = useState<AdminSummary[] | null>(null);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [roles, setRoles] = useState<AdminRoleSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
+  const [statusTarget, setStatusTarget] = useState<AdminSummary | null>(null);
 
   const load = useCallback(async () => {
     try {
-      const [adminList, permissionList] = await Promise.all([
+      const [adminList, roleList] = await Promise.all([
         client.listAdmins(),
-        client.listAdminPermissions(),
+        client.listAdminRoles(),
       ]);
       setAdmins(adminList.items);
-      setPermissions(permissionList);
+      setRoles(roleList);
       setError(null);
     } catch (caught) {
       setError(
@@ -238,9 +248,11 @@ function AdminsList() {
   async function toggleStatus(admin: AdminSummary) {
     setPendingStatusId(admin.id);
     try {
-      replace(admin.status === 'active' ? await client.suspendAdmin(admin.id) : await client.reactivateAdmin(admin.id));
+      const wasActive = admin.status === 'active';
+      replace(wasActive ? await client.suspendAdmin(admin.id) : await client.reactivateAdmin(admin.id));
+      toast.success(wasActive ? 'Admin suspended.' : 'Admin reactivated.');
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',
@@ -248,6 +260,12 @@ function AdminsList() {
     } finally {
       setPendingStatusId(null);
     }
+  }
+
+  async function confirmToggleStatus() {
+    if (!statusTarget) return;
+    await toggleStatus(statusTarget);
+    setStatusTarget(null);
   }
 
   return (
@@ -258,11 +276,15 @@ function AdminsList() {
             Admins
           </h1>
           <p className="mt-2 max-w-prose text-base text-text-muted">
-            Every admin's permission set is independent — granting admins.manage lets an admin
-            grant any key to anyone, including ones they do not hold themselves.
+            Assign one role to each admin. Manage shared permissions in Roles &amp; permissions.
           </p>
         </div>
-        {admins && <CreateAdminForm permissions={permissions} onCreated={(created) => setAdmins((c) => [...(c ?? []), created])} />}
+        {admins && (
+          <CreateAdminForm
+            roles={roles}
+            onCreated={(created) => setAdmins((c) => [...(c ?? []), created])}
+          />
+        )}
       </div>
 
       {error && (
@@ -301,7 +323,7 @@ function AdminsList() {
                     variant="ghost"
                     size="md"
                     disabled={pendingStatusId === admin.id}
-                    onClick={() => toggleStatus(admin)}
+                    onClick={() => setStatusTarget(admin)}
                   >
                     {admin.status === 'active' ? 'Suspend' : 'Reactivate'}
                   </Button>
@@ -310,26 +332,32 @@ function AdminsList() {
                     size="md"
                     onClick={() => setEditingId(editingId === admin.id ? null : admin.id)}
                   >
-                    {editingId === admin.id ? 'Close' : 'Edit permissions'}
+                    {editingId === admin.id ? 'Close' : 'Change role'}
                   </Button>
                 </div>
               </div>
 
+              <p className="mt-3 text-sm font-semibold text-text">
+                Role: {admin.role?.name ?? 'Legacy permissions — assign a role'}
+              </p>
               <ul className="mt-3 flex flex-wrap gap-2">
                 {admin.permissions.length === 0 && (
                   <li className="text-sm text-text-muted">No permissions granted.</li>
                 )}
                 {admin.permissions.map((key) => (
-                  <li key={key} className="rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted">
+                  <li
+                    key={key}
+                    className="rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted"
+                  >
                     {key}
                   </li>
                 ))}
               </ul>
 
               {editingId === admin.id && (
-                <EditPermissions
+                <EditRole
                   admin={admin}
-                  permissions={permissions}
+                  roles={roles}
                   onCancel={() => setEditingId(null)}
                   onSaved={(updated) => {
                     replace(updated);
@@ -341,6 +369,25 @@ function AdminsList() {
           ))}
         </ul>
       )}
+
+      <ConfirmDialog
+        open={statusTarget !== null}
+        onOpenChange={(open) => !open && setStatusTarget(null)}
+        title={
+          statusTarget?.status === 'active'
+            ? `Suspend ${statusTarget.firstName} ${statusTarget.lastName}?`
+            : `Reactivate ${statusTarget?.firstName} ${statusTarget?.lastName}?`
+        }
+        description={
+          statusTarget?.status === 'active'
+            ? 'They will lose access to the admin immediately.'
+            : 'They will regain access to the admin immediately.'
+        }
+        confirmLabel={statusTarget?.status === 'active' ? 'Suspend' : 'Reactivate'}
+        tone={statusTarget?.status === 'active' ? 'danger' : 'default'}
+        confirming={pendingStatusId === statusTarget?.id}
+        onConfirm={confirmToggleStatus}
+      />
     </section>
   );
 }
@@ -349,7 +396,11 @@ export default function AdminsPage() {
   return (
     <RequirePermission
       permissions={['admins.manage']}
-      denied={<p className="text-base text-text-muted">Your account does not have permission to manage admins.</p>}
+      denied={
+        <p className="text-base text-text-muted">
+          Your account does not have permission to manage admins.
+        </p>
+      }
     >
       <AdminsList />
     </RequirePermission>

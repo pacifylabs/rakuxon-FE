@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
+import { useToast } from '@rakuxon/ui';
 import type { AdminUploadSignatureRequest } from '@rakuxon/contract';
 
 import { useAdminApiClient } from './admin-auth';
@@ -14,6 +15,7 @@ import { useAdminApiClient } from './admin-auth';
  */
 export function useCloudinaryUpload(folder: AdminUploadSignatureRequest['folder']) {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,13 +46,14 @@ export function useCloudinaryUpload(folder: AdminUploadSignatureRequest['folder'
 
       return uploadBody.secure_url;
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : caught instanceof Error
             ? caught.message
-            : 'Could not upload that image. Please try again.',
-      );
+            : 'Could not upload that image. Please try again.';
+      setError(message);
+      toast.error(message);
       return null;
     } finally {
       setUploading(false);

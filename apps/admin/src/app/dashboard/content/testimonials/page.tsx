@@ -4,7 +4,7 @@ import { MessageSquareQuote } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import { Button, ConfirmDialog, DataTable, EmptyState, Pagination, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminTestimonialSummary, PublishStatus } from '@rakuxon/contract';
 
@@ -21,12 +21,14 @@ const STATUS_FILTERS: Array<{ value: PublishStatus | 'all'; label: string }> = [
 function TestimonialsList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [items, setItems] = useState<AdminTestimonialSummary[] | null>(null);
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<PublishStatus | 'all'>('all');
   const [page, setPage] = useState(1);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<AdminTestimonialSummary | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -66,8 +68,15 @@ function TestimonialsList() {
             : await client.revertTestimonialToDraft(row.id);
 
       setItems((current) => current?.map((entry) => (entry.id === updated.id ? updated : entry)) ?? null);
+      toast.success(
+        action === 'publish'
+          ? 'Testimonial published.'
+          : action === 'suspend'
+            ? 'Testimonial suspended.'
+            : 'Testimonial reverted to draft.',
+      );
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',
@@ -75,6 +84,12 @@ function TestimonialsList() {
     } finally {
       setPendingId(null);
     }
+  }
+
+  async function confirmSuspend() {
+    if (!suspendTarget) return;
+    await runAction(suspendTarget, 'suspend');
+    setSuspendTarget(null);
   }
 
   const columns: DataTableColumn<AdminTestimonialSummary>[] = [
@@ -102,7 +117,7 @@ function TestimonialsList() {
             </Button>
           )}
           {row.status === 'published' && hasPermission('content.manage') && (
-            <Button variant="ghost" size="md" disabled={pendingId === row.id} onClick={() => runAction(row, 'suspend')}>
+            <Button variant="ghost" size="md" disabled={pendingId === row.id} onClick={() => setSuspendTarget(row)}>
               Suspend
             </Button>
           )}
@@ -182,6 +197,17 @@ function TestimonialsList() {
           <Pagination page={pageInfo.page} pageCount={pageInfo.pageCount} onPageChange={setPage} />
         </div>
       )}
+
+      <ConfirmDialog
+        open={suspendTarget !== null}
+        onOpenChange={(open) => !open && setSuspendTarget(null)}
+        title={`Suspend "${suspendTarget?.authorName}"?`}
+        description="It will no longer appear on the site until republished."
+        confirmLabel="Suspend"
+        tone="danger"
+        confirming={pendingId === suspendTarget?.id}
+        onConfirm={confirmSuspend}
+      />
     </section>
   );
 }

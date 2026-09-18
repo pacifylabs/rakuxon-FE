@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type { AdminTestimonialDetail } from '@rakuxon/contract';
 
 import { ImageUploadField } from '@/components/dashboard/ImageUploadField';
@@ -52,6 +52,7 @@ function TestimonialEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const toast = useToast();
   const isNew = params.id === 'new';
 
   const [form, setForm] = useState<FormState>(BLANK);
@@ -108,6 +109,7 @@ function TestimonialEditor() {
           placement: form.placement,
           displayOrder: Number(form.displayOrder) || 0,
         });
+        toast.success('Testimonial created.');
         router.push(`/dashboard/content/testimonials/${created.id}`);
       } else {
         await client.updateTestimonial(params.id, {
@@ -119,13 +121,15 @@ function TestimonialEditor() {
           placement: form.placement,
           displayOrder: Number(form.displayOrder) || 0,
         });
+        toast.success('Testimonial saved.');
       }
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save this testimonial. Please try again.',
-      );
+          : 'Could not save this testimonial. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

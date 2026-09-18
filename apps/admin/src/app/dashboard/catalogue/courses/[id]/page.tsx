@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type {
   AdminCourseDetail,
   EnglishTestShape,
@@ -112,6 +112,7 @@ function CourseEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const toast = useToast();
   const isNew = params.id === 'new';
 
   const [form, setForm] = useState<FormState>(BLANK);
@@ -157,6 +158,7 @@ function CourseEditor() {
           level: form.level,
           disciplines: form.disciplines.filter((v) => v.trim()),
         });
+        toast.success('Course created.');
         router.push(`/dashboard/catalogue/courses/${created.id}`);
       } else {
         await client.updateCourse(params.id, {
@@ -183,13 +185,15 @@ function CourseEditor() {
           offerResponseWeeks: form.offerResponseWeeks ? Number(form.offerResponseWeeks) : null,
           fastTrackOffer: form.fastTrackOffer,
         });
+        toast.success('Course saved.');
       }
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save this course. Please try again.',
-      );
+          : 'Could not save this course. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

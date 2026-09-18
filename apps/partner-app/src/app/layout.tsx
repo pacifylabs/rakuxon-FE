@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
-import { ThemeProvider, baseTokens } from '@rakuxon/ui';
+import { ThemeProvider, ToastProvider, baseTokens } from '@rakuxon/ui';
 
 import { SessionProvider } from '@/components/SessionProvider';
 import './globals.css';
@@ -23,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.variable}>
       <body>
         <ThemeProvider>
-          <SessionProvider>{children}</SessionProvider>
+          <ToastProvider>
+            <SessionProvider>{children}</SessionProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

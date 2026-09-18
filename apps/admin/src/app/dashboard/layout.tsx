@@ -46,7 +46,14 @@ const NAV_ITEMS: AppShellNavItem[] = [
   },
   { href: '/dashboard/applications', label: 'Applications', icon: Users },
   { href: '/dashboard/students', label: 'Students', icon: GraduationCap },
-  { href: '/dashboard/admins', label: 'Admins', icon: Users },
+  {
+    label: 'Admins',
+    icon: Users,
+    children: [
+      { href: '/dashboard/admins', label: 'Administrators', icon: Users },
+      { href: '/dashboard/admins/roles', label: 'Roles & permissions', icon: ShieldCheck },
+    ],
+  },
   {
     label: 'Utilities',
     icon: Wrench,

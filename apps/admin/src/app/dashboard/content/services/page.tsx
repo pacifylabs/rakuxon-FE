@@ -4,7 +4,7 @@ import { Compass } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import { Button, ConfirmDialog, DataTable, EmptyState, Pagination, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminServiceSummary, PublishStatus } from '@rakuxon/contract';
 
@@ -21,12 +21,14 @@ const STATUS_FILTERS: Array<{ value: PublishStatus | 'all'; label: string }> = [
 function ServicesList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [items, setItems] = useState<AdminServiceSummary[] | null>(null);
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<PublishStatus | 'all'>('all');
   const [page, setPage] = useState(1);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<AdminServiceSummary | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -68,8 +70,15 @@ function ServicesList() {
       setItems(
         (current) => current?.map((entry) => (entry.id === updated.id ? updated : entry)) ?? null,
       );
+      toast.success(
+        action === 'publish'
+          ? 'Service published.'
+          : action === 'suspend'
+            ? 'Service suspended.'
+            : 'Service reverted to draft.',
+      );
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',
@@ -77,6 +86,12 @@ function ServicesList() {
     } finally {
       setPendingId(null);
     }
+  }
+
+  async function confirmSuspend() {
+    if (!suspendTarget) return;
+    await runAction(suspendTarget, 'suspend');
+    setSuspendTarget(null);
   }
 
   const columns: DataTableColumn<AdminServiceSummary>[] = [
@@ -113,7 +128,7 @@ function ServicesList() {
               variant="ghost"
               size="md"
               disabled={pendingId === row.id}
-              onClick={() => runAction(row, 'suspend')}
+              onClick={() => setSuspendTarget(row)}
             >
               Suspend
             </Button>
@@ -202,6 +217,17 @@ function ServicesList() {
           <Pagination page={pageInfo.page} pageCount={pageInfo.pageCount} onPageChange={setPage} />
         </div>
       )}
+
+      <ConfirmDialog
+        open={suspendTarget !== null}
+        onOpenChange={(open) => !open && setSuspendTarget(null)}
+        title={`Suspend "${suspendTarget?.title}"?`}
+        description="It will no longer appear on the site until republished."
+        confirmLabel="Suspend"
+        tone="danger"
+        confirming={pendingId === suspendTarget?.id}
+        onConfirm={confirmSuspend}
+      />
     </section>
   );
 }

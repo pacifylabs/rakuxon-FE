@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { Button, ProgressBar, Tabs } from '@rakuxon/ui';
+import { Button, ProgressBar, Tabs, useToast } from '@rakuxon/ui';
 import type { EducationHistoryEntry, IntakeTerm, ReferenceCountry, StudentProfile } from '@rakuxon/contract';
 
 import { AddressSection } from '@/components/dashboard/profile/AddressSection';
@@ -19,6 +19,7 @@ const emptyEntry: EducationHistoryEntry = { institutionName: '', qualification: 
 
 export default function ProfilePage() {
   const client = useApiClient();
+  const toast = useToast();
 
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [countries, setCountries] = useState<ReferenceCountry[]>([]);
@@ -132,12 +133,14 @@ export default function ProfilePage() {
       });
       setProfile(updated);
       setSaved(true);
+      toast.success('Profile saved.');
     } catch (error) {
-      setSaveError(
+      const message =
         error instanceof ApiError || error instanceof NetworkError
           ? error.message
-          : 'Could not save your profile. Please try again.',
-      );
+          : 'Could not save your profile. Please try again.';
+      setSaveError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

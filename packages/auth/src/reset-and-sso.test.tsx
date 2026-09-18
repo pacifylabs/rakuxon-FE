@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ThemeProvider } from '@rakuxon/ui';
+import { ThemeProvider, ToastProvider } from '@rakuxon/ui';
 
 import {
   AuthProvider,
@@ -26,7 +26,12 @@ const json = (status: number, body: unknown = {}) =>
     headers: { 'content-type': 'application/json' },
   });
 
-const withTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);
+const withTheme = (ui: React.ReactElement) =>
+  render(
+    <ThemeProvider>
+      <ToastProvider>{ui}</ToastProvider>
+    </ThemeProvider>,
+  );
 
 beforeEach(() => {
   window.sessionStorage.clear();
@@ -93,7 +98,7 @@ describe('<RequestPasswordResetForm/>', () => {
     await userEvent.type(screen.getByLabelText('Email address'), 'ada@b.test');
     await userEvent.click(screen.getByRole('button', { name: 'Email me a link' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/could not reach the server/i);
+    expect(await screen.findAllByText(/could not reach the server/i)).not.toHaveLength(0);
   });
 });
 
@@ -141,7 +146,7 @@ describe('<ConfirmPasswordResetForm/>', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Set new password' }));
 
     // The API refuses to distinguish expired / used / unknown, so neither does this.
-    expect(await screen.findByRole('alert')).toHaveTextContent(/expired or has already been used/i);
+    expect(await screen.findAllByText(/expired or has already been used/i)).not.toHaveLength(0);
   });
 
   it('warns that other sessions end', () => {

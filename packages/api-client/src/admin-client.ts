@@ -1,3 +1,4 @@
+import type { AdminRoleSummary, SaveAdminRoleRequest } from '@rakuxon/contract';
 import type {
   AdminAccount,
   AdminUploadSignature,
@@ -12,6 +13,8 @@ import type {
   AdminCourseDetail,
   AdminCourseList,
   AdminCourseSummary,
+  AdminCreateStudentRequest,
+  AdminCreateTenantRequest,
   AdminDashboardSummary,
   AdminInstitutionDetail,
   AdminInstitutionList,
@@ -39,14 +42,19 @@ import type {
   CreateInstitutionRequest,
   CreateIntakeTermRequest,
   CreateServiceRequest,
+  CreateTenantStaffRequest,
   CreateTestimonialRequest,
   DisableTotpRequest,
   Permission,
   RejectDocumentRequest,
   SetCountryHomepageFeaturedRequest,
+  SetStudentPasswordRequest,
+  SetTenantStaffPasswordRequest,
   StudentDocument,
   Tenant,
   TenantList,
+  TenantStaff,
+  TenantStaffList,
   TotpEnabled,
   TotpSetup,
   UpdateAdminProfileRequest,
@@ -57,6 +65,7 @@ import type {
   UpdateServiceRequest,
   UpdateSiteSettingsRequest,
   UpdateStudentAdminRequest,
+  UpdateTenantRequest,
   UpdateTestimonialRequest,
   UploadSignature,
   UploadSignatureRequest,
@@ -208,6 +217,38 @@ export class AdminApiClient {
   reactivateTenant(id: string): Promise<Tenant> {
     return this.request<Tenant>(`/v1/admin/tenants/${id}/reactivate`, {
       method: 'POST',
+      auth: true,
+    });
+  }
+
+  createTenant(body: AdminCreateTenantRequest): Promise<Tenant> {
+    return this.request<Tenant>('/v1/admin/tenants', { method: 'POST', body, auth: true });
+  }
+
+  updateTenant(id: string, body: UpdateTenantRequest): Promise<Tenant> {
+    return this.request<Tenant>(`/v1/admin/tenants/${id}`, { method: 'PATCH', body, auth: true });
+  }
+
+  listTenantStaff(tenantId: string): Promise<TenantStaffList> {
+    return this.request<TenantStaffList>(`/v1/admin/tenants/${tenantId}/staff`, { auth: true });
+  }
+
+  addTenantStaff(tenantId: string, body: CreateTenantStaffRequest): Promise<TenantStaff> {
+    return this.request<TenantStaff>(`/v1/admin/tenants/${tenantId}/staff`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  setTenantStaffPassword(
+    tenantId: string,
+    userId: string,
+    body: SetTenantStaffPasswordRequest,
+  ): Promise<void> {
+    return this.request<void>(`/v1/admin/tenants/${tenantId}/staff/${userId}/set-password`, {
+      method: 'POST',
+      body,
       auth: true,
     });
   }
@@ -570,6 +611,30 @@ export class AdminApiClient {
 
   /* --------------------------------------------------------------- admins */
 
+  getCurrentAdminPermissions(): Promise<string[]> {
+    return this.request('/v1/admin/account/permissions', { auth: true });
+  }
+
+  listAdminRoles(): Promise<AdminRoleSummary[]> {
+    return this.request('/v1/admin/admins/roles', { auth: true });
+  }
+
+  createAdminRole(body: SaveAdminRoleRequest): Promise<AdminRoleSummary> {
+    return this.request('/v1/admin/admins/roles', { method: 'POST', body, auth: true });
+  }
+
+  updateAdminRole(id: string, body: SaveAdminRoleRequest): Promise<AdminRoleSummary> {
+    return this.request(`/v1/admin/admins/roles/${id}`, { method: 'PATCH', body, auth: true });
+  }
+
+  deleteAdminRole(id: string): Promise<void> {
+    return this.request(`/v1/admin/admins/roles/${id}`, { method: 'DELETE', auth: true });
+  }
+
+  assignAdminRole(id: string, roleId: string): Promise<AdminSummary> {
+    return this.request(`/v1/admin/admins/${id}/role`, { method: 'PATCH', body: { roleId }, auth: true });
+  }
+
   listAdminPermissions(): Promise<Permission[]> {
     return this.request<Permission[]>('/v1/admin/admins/permissions', { auth: true });
   }
@@ -619,6 +684,18 @@ export class AdminApiClient {
   updateAdminStudent(id: string, body: UpdateStudentAdminRequest): Promise<AdminStudentDetail> {
     return this.request<AdminStudentDetail>(`/v1/admin/students/${id}`, {
       method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  createAdminStudent(body: AdminCreateStudentRequest): Promise<AdminStudentDetail> {
+    return this.request<AdminStudentDetail>('/v1/admin/students', { method: 'POST', body, auth: true });
+  }
+
+  setAdminStudentPassword(id: string, body: SetStudentPasswordRequest): Promise<void> {
+    return this.request<void>(`/v1/admin/students/${id}/set-password`, {
+      method: 'POST',
       body,
       auth: true,
     });

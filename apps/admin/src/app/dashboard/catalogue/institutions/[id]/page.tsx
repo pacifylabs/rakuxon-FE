@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type {
   AdminInstitutionDetail,
   CampusShape,
@@ -122,6 +122,7 @@ function InstitutionEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const toast = useToast();
   const isNew = params.id === 'new';
 
   const [form, setForm] = useState<FormState>(BLANK);
@@ -169,6 +170,7 @@ function InstitutionEditor() {
           website: form.website || undefined,
           about: form.about || undefined,
         });
+        toast.success('Institution created.');
         router.push(`/dashboard/catalogue/institutions/${created.id}`);
       } else {
         await client.updateInstitution(params.id, {
@@ -203,13 +205,15 @@ function InstitutionEditor() {
           faqs: form.faqs,
           qualityRatings: form.qualityRatings,
         });
+        toast.success('Institution saved.');
       }
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save this institution. Please try again.',
-      );
+          : 'Could not save this institution. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

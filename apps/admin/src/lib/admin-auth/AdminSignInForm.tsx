@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { AuthCard, Button, FormField } from '@rakuxon/ui';
+import { AuthCard, Button, FormField, useToast } from '@rakuxon/ui';
 
 import { useAdminAuth } from './AdminAuthProvider';
 
@@ -28,6 +28,7 @@ interface FieldErrors {
  */
 export function AdminSignInForm({ subtitle, onSignedIn }: AdminSignInFormProps) {
   const { signIn, verifyTotp } = useAdminAuth();
+  const toast = useToast();
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -60,8 +61,12 @@ export function AdminSignInForm({ subtitle, onSignedIn }: AdminSignInFormProps) 
         onSignedIn();
       }
     } catch (error) {
-      if (error instanceof ApiError || error instanceof NetworkError) setFormError(error.message);
-      else setFormError('Something went wrong. Please try again.');
+      const message =
+        error instanceof ApiError || error instanceof NetworkError
+          ? error.message
+          : 'Something went wrong. Please try again.';
+      setFormError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }
@@ -77,8 +82,12 @@ export function AdminSignInForm({ subtitle, onSignedIn }: AdminSignInFormProps) 
       await verifyTotp(challengeToken, code.trim());
       onSignedIn();
     } catch (error) {
-      if (error instanceof ApiError || error instanceof NetworkError) setFormError(error.message);
-      else setFormError('Something went wrong. Please try again.');
+      const message =
+        error instanceof ApiError || error instanceof NetworkError
+          ? error.message
+          : 'Something went wrong. Please try again.';
+      setFormError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }

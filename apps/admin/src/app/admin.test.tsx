@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ThemeProvider } from '@rakuxon/ui';
+import { ThemeProvider, ToastProvider } from '@rakuxon/ui';
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -37,7 +37,9 @@ const signedInWith = (permissions: string[] = []) =>
 const renderApp = (ui: React.ReactElement) =>
   render(
     <ThemeProvider>
-      <AdminAuthProvider baseUrl="https://api.test">{ui}</AdminAuthProvider>
+      <ToastProvider>
+        <AdminAuthProvider baseUrl="https://api.test">{ui}</AdminAuthProvider>
+      </ToastProvider>
     </ThemeProvider>,
   );
 
@@ -143,6 +145,6 @@ describe('admin dashboard', () => {
     await screen.findByRole('heading', { name: 'Platform administration' });
     const nav = within(screen.getByRole('navigation', { name: 'Primary' }));
     expect(nav.getByRole('link', { name: /partners/i })).toBeInTheDocument();
-    expect(nav.getByRole('link', { name: /admins/i })).toBeInTheDocument();
+    expect(nav.getByText('Admins').closest('summary')).toBeInTheDocument();
   });
 });

@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField, StatusBadge } from '@rakuxon/ui';
+import { Button, FormField, StatusBadge, useToast } from '@rakuxon/ui';
 import type { AdminAccount, TotpSetup } from '@rakuxon/contract';
 
 import { useAdminApiClient } from '@/lib/admin-auth';
 
 function ChangePasswordForm() {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -29,12 +30,14 @@ function ChangePasswordForm() {
       });
       form.reset();
       setSaved(true);
+      toast.success('Password changed.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not change your password. Please try again.',
-      );
+          : 'Could not change your password. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -75,6 +78,7 @@ function TotpSetupFlow({
   onDone: () => void;
 }) {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [setup, setSetup] = useState<TotpSetup | null>(null);
   const [code, setCode] = useState('');
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
@@ -87,11 +91,12 @@ function TotpSetupFlow({
     try {
       setSetup(await client.setupTotp());
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not start 2FA setup. Please try again.',
-      );
+          : 'Could not start 2FA setup. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }
@@ -106,12 +111,14 @@ function TotpSetupFlow({
       const result = await client.enableTotp({ code: code.trim() });
       setBackupCodes(result.backupCodes);
       onJustEnabled();
+      toast.success('Two-factor authentication enabled.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'That code was not accepted. Please try again.',
-      );
+          : 'That code was not accepted. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }
@@ -192,6 +199,7 @@ function TotpSetupFlow({
 
 function DisableTotpForm({ onDisabled }: { onDisabled: () => void }) {
   const client = useAdminApiClient();
+  const toast = useToast();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -204,12 +212,14 @@ function DisableTotpForm({ onDisabled }: { onDisabled: () => void }) {
     try {
       await client.disableTotp({ password });
       onDisabled();
+      toast.success('Two-factor authentication turned off.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not turn off 2FA. Please try again.',
-      );
+          : 'Could not turn off 2FA. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setPending(false);
     }

@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type { AdminArticleDetail } from '@rakuxon/contract';
 
 import { StringArrayEditor } from '@/components/dashboard/editors/StringArrayEditor';
@@ -57,6 +57,7 @@ function ArticleEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const client = useAdminApiClient();
+  const toast = useToast();
   const isNew = params.id === 'new';
 
   const [form, setForm] = useState<FormState>(BLANK);
@@ -107,6 +108,7 @@ function ArticleEditor() {
           author: form.author || undefined,
           publishedAt: form.publishedAt || undefined,
         });
+        toast.success('Article created.');
         router.push(`/dashboard/catalogue/articles/${created.id}`);
       } else {
         await client.updateArticle(params.id, {
@@ -121,13 +123,15 @@ function ArticleEditor() {
           author: form.author || null,
           publishedAt: form.publishedAt || null,
         });
+        toast.success('Article saved.');
       }
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save this article. Please try again.',
-      );
+          : 'Could not save this article. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

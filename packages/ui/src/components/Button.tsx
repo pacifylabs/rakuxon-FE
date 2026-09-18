@@ -1,13 +1,14 @@
 import clsx from 'clsx';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'ghost' | 'accent';
+export type ButtonVariant = 'primary' | 'ghost' | 'accent' | 'danger';
 export type ButtonSize = 'md' | 'lg';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary: 'bg-primary text-on-primary shadow-sm hover:bg-primary-hover',
   ghost: 'bg-transparent text-primary border border-border hover:bg-accent-soft',
   accent: 'bg-accent-soft text-primary hover:bg-accent hover:text-on-primary',
+  danger: 'bg-danger text-on-primary shadow-sm hover:opacity-90',
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

@@ -4,7 +4,7 @@ import { CalendarDays } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, FormField, StatusBadge } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, FormField, StatusBadge, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminIntakeTerm } from '@rakuxon/contract';
 
@@ -13,6 +13,7 @@ import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-
 function IntakeTermsList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [terms, setTerms] = useState<AdminIntakeTerm[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -47,8 +48,9 @@ function IntakeTermsList() {
       const created = await client.createIntakeTerm({ label, sortOrder: nextOrder });
       setTerms((current) => [...(current ?? []), created]);
       form.reset();
+      toast.success('Intake term added.');
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'Could not add that intake term. Please try again.',
@@ -63,8 +65,9 @@ function IntakeTermsList() {
     try {
       const updated = await client.updateIntakeTerm(term.id, { active: !term.active });
       setTerms((current) => current?.map((row) => (row.id === updated.id ? updated : row)) ?? null);
+      toast.success(updated.active ? 'Intake term activated.' : 'Intake term deactivated.');
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',

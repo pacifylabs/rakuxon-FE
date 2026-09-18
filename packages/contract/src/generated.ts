@@ -1098,7 +1098,11 @@ export interface paths {
         /** List students, searchable by name or email */
         get: operations["AdminStudentsController_list_v1"];
         put?: never;
-        post?: never;
+        /**
+         * Create a student on their behalf
+         * @description For students a partner already has, manually or through another system. The creating admin sets a real password directly; the student can change it via the reset flow like anyone else. No self-verification is needed — the admin is vouching for the account.
+         */
+        post: operations["AdminStudentsController_create_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1121,6 +1125,23 @@ export interface paths {
         head?: never;
         /** Edit a student's applicant profile on their behalf */
         patch: operations["AdminStudentsController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/students/{id}/set-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set a student's password directly — a reset done for them, not by them. */
+        post: operations["AdminStudentsController_setPassword_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/notifications": {
@@ -1447,6 +1468,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The platform-wide activity log, filterable and paginated */
+        get: operations["AuditLogController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/admins/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminsController_listRoles_v1"];
+        put?: never;
+        post: operations["AdminsController_createRole_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/admins/roles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["AdminsController_deleteRole_v1"];
+        options?: never;
+        head?: never;
+        patch: operations["AdminsController_updateRole_v1"];
+        trace?: never;
+    };
+    "/v1/admin/admins/{id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminsController_assignRole_v1"];
+        trace?: never;
+    };
     "/v1/admin/admins/permissions": {
         parameters: {
             query?: never;
@@ -1476,7 +1562,7 @@ export interface paths {
         put?: never;
         /**
          * Create an admin
-         * @description The creating admin sets a real password directly, and assigns the new admin’s initial permission set. The new admin can change their password via the reset flow like anyone else.
+         * @description The creating admin sets a real password directly, and assigns the new admin’s initial role. The new admin can change their password via the reset flow like anyone else.
          */
         post: operations["AdminsController_create_v1"];
         delete?: never;
@@ -1499,7 +1585,8 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Replace an admin’s permission set
+         * Replace legacy direct permissions (admins without a role only)
+         * @deprecated
          * @description Sets the permission set to exactly the given list — not additive. An admin holding admins.manage may grant or revoke any permission key, including ones they do not themselves hold; there is no hierarchy check in this first slice.
          */
         patch: operations["AdminsController_updatePermissions_v1"];
@@ -1533,6 +1620,23 @@ export interface paths {
         put?: never;
         /** Reactivate a suspended admin account */
         post: operations["AdminsController_reactivate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/account/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current permissions, including changes to the assigned role */
+        get: operations["AdminAccountController_getPermissions_v1"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1641,7 +1745,11 @@ export interface paths {
         /** List tenants, filterable by status */
         get: operations["TenantsController_list_v1"];
         put?: never;
-        post?: never;
+        /**
+         * Create a partner directly
+         * @description For a partner the client already has a relationship with — no self-service signup, no approval wait. Creates the partner active immediately, plus its first staff user with a password set directly by the creating admin. Gated by tenants.approve: creating and vouching for a partner is the same trust tier as approving one.
+         */
+        post: operations["TenantsController_create_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1662,7 +1770,8 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** Edit a partner's name or subdomain */
+        patch: operations["TenantsController_update_v1"];
         trace?: never;
     };
     "/v1/admin/tenants/{id}/approve": {
@@ -1719,6 +1828,44 @@ export interface paths {
          * @description Suspended -> active only.
          */
         post: operations["TenantsController_reactivate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{tenantId}/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List a partner's staff users */
+        get: operations["TenantsController_listStaff_v1"];
+        put?: never;
+        /**
+         * Add a staff user to an existing partner
+         * @description The creating admin sets a real password directly, same as creating the partner itself.
+         */
+        post: operations["TenantsController_addStaff_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{tenantId}/staff/{userId}/set-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set a staff member's password directly — a reset done for them, not by them. */
+        post: operations["TenantsController_setStaffPassword_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2813,6 +2960,48 @@ export interface components {
             /** @example 2026-09 */
             preferredIntake?: string;
         };
+        AdminCreateStudentDto: {
+            /** @example ada@example.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /**
+             * @description Set directly by the creating admin. The student can change it via the password-reset flow.
+             * @example correct-horse-battery
+             */
+            password: string;
+            /**
+             * Format: uuid
+             * @description The partner this student belongs to. Defaults to the house tenant.
+             */
+            tenantId?: string;
+        };
+        AdminStudentDetailDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            tenantId: string;
+            email: string;
+            fullName: string;
+            firstName: string;
+            lastName: string;
+            /** Format: date */
+            dateOfBirth: string | null;
+            nationality: string | null;
+            phone: string | null;
+            passportNumber: string | null;
+            address: components["schemas"]["AddressDto"];
+            educationHistory: components["schemas"]["EducationHistoryEntryDto"][];
+            intendedStudyLevel: components["schemas"]["StudyLevel"] | null;
+            intendedCountry: string | null;
+            preferredIntake: string | null;
+            /** Format: date-time */
+            profileCompletedAt: string | null;
+        };
         AdminStudentSummaryDto: {
             /** Format: uuid */
             id: string;
@@ -2831,29 +3020,13 @@ export interface components {
             page: number;
             pageCount: number;
         };
-        AdminStudentDetailDto: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            userId: string;
-            /** Format: uuid */
-            tenantId: string;
-            email: string;
-            fullName: string;
-            /** Format: date */
-            dateOfBirth: string | null;
-            nationality: string | null;
-            phone: string | null;
-            passportNumber: string | null;
-            address: components["schemas"]["AddressDto"];
-            educationHistory: components["schemas"]["EducationHistoryEntryDto"][];
-            intendedStudyLevel: components["schemas"]["StudyLevel"] | null;
-            intendedCountry: string | null;
-            preferredIntake: string | null;
-            /** Format: date-time */
-            profileCompletedAt: string | null;
-        };
         UpdateStudentAdminDto: {
+            /** @example ada@example.com */
+            email?: string;
+            /** @example Ada */
+            firstName?: string;
+            /** @example Lovelace */
+            lastName?: string;
             /** @example 2001-04-12 */
             dateOfBirth?: string;
             /** @example NG */
@@ -2868,6 +3041,10 @@ export interface components {
             intendedCountry?: string;
             /** @example 2026-09 */
             preferredIntake?: string;
+        };
+        SetStudentPasswordDto: {
+            /** @example correct-horse-battery */
+            password: string;
         };
         NotificationDto: {
             /** Format: uuid */
@@ -2974,6 +3151,9 @@ export interface components {
             submittedAt: string | null;
             /** Format: date-time */
             createdAt: string;
+            /** Format: uuid */
+            assignedAdminId: string | null;
+            assignedAdminName: string | null;
         };
         AdminApplicationListDto: {
             items: components["schemas"]["AdminApplicationSummaryDto"][];
@@ -3002,9 +3182,77 @@ export interface components {
             submittedAt: string | null;
             /** Format: date-time */
             createdAt: string;
+            /** Format: uuid */
+            assignedAdminId: string | null;
+            assignedAdminName: string | null;
             attachedDocumentIds: string[];
             missingDocumentTypes: components["schemas"]["DocumentType"][];
             readyToSubmit: boolean;
+        };
+        AuditLogEntryDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            actorType: "admin" | "student" | "system";
+            /** Format: uuid */
+            actorId: string | null;
+            actorName: string | null;
+            action: string;
+            description: string;
+            resourceType: string | null;
+            /** Format: uuid */
+            resourceId: string | null;
+            metadata: Record<string, never>;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AuditLogListDto: {
+            items: components["schemas"]["AuditLogEntryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        AdminRoleSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description: string;
+            permissions: string[];
+            adminCount: number;
+        };
+        SaveAdminRoleDto: {
+            /** @example Customer Support */
+            name: string;
+            /** @example Helps students with their applications. */
+            description: string;
+            permissionKeys: string[];
+        };
+        AssignAdminRoleDto: {
+            /** Format: uuid */
+            roleId: string;
+        };
+        /** @enum {string} */
+        UserStatus: "invited" | "active" | "suspended";
+        AdminSummaryDto: {
+            role: components["schemas"]["AdminRoleSummaryDto"] | null;
+            /** Format: uuid */
+            id: string;
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            status: components["schemas"]["UserStatus"];
+            /**
+             * @example [
+             *       "tenants.view",
+             *       "tenants.approve"
+             *     ]
+             */
+            permissions: string[];
+            /** Format: date-time */
+            createdAt: string;
         };
         PermissionDto: {
             /** @example tenants.approve */
@@ -3025,34 +3273,15 @@ export interface components {
              */
             password: string;
             /**
-             * @description Permission keys to grant on creation.
-             * @example [
-             *       "tenants.view"
-             *     ]
+             * Format: uuid
+             * @description Assign one reusable role.
              */
-            permissionKeys: string[];
-        };
-        /** @enum {string} */
-        UserStatus: "invited" | "active" | "suspended";
-        AdminSummaryDto: {
-            /** Format: uuid */
-            id: string;
-            /** @example ada@rakuxon.com */
-            email: string;
-            /** @example Ada */
-            firstName: string;
-            /** @example Lovelace */
-            lastName: string;
-            status: components["schemas"]["UserStatus"];
+            roleId?: string;
             /**
-             * @example [
-             *       "tenants.view",
-             *       "tenants.approve"
-             *     ]
+             * @deprecated
+             * @description Legacy clients only. Cannot be combined with roleId.
              */
-            permissions: string[];
-            /** Format: date-time */
-            createdAt: string;
+            permissionKeys?: string[];
         };
         AdminListDto: {
             items: components["schemas"]["AdminSummaryDto"][];
@@ -3107,6 +3336,32 @@ export interface components {
             /** @description Re-confirms the account before turning 2FA off. */
             password: string;
         };
+        AdminCreateTenantDto: {
+            /**
+             * @description Partner name.
+             * @example Northwind Education
+             */
+            name: string;
+            /**
+             * @description Subdomain label. Lowercase letters, digits and hyphens.
+             * @example northwind
+             */
+            slug: string;
+            /**
+             * @description The first staff user's email.
+             * @example ada@northwind.example
+             */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /**
+             * @description Set directly by the creating admin. The new staff user can change it via the reset flow.
+             * @example correct-horse-battery
+             */
+            password: string;
+        };
         /** @enum {string} */
         TenantStatus: "pending" | "active" | "suspended";
         TenantDto: {
@@ -3123,6 +3378,46 @@ export interface components {
             total: number;
             page: number;
             pageCount: number;
+        };
+        UpdateTenantDto: {
+            /** @example Northwind Education */
+            name?: string;
+            /** @example northwind */
+            slug?: string;
+        };
+        TenantStaffDto: {
+            /** Format: uuid */
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
+            role: components["schemas"]["Role"];
+            status: components["schemas"]["UserStatus"];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        TenantStaffListDto: {
+            items: components["schemas"]["TenantStaffDto"][];
+        };
+        CreateTenantStaffDto: {
+            /** @example ada@northwind.example */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /** @example correct-horse-battery */
+            password: string;
+            /**
+             * @description Defaults to agency_admin.
+             * @default agency_admin
+             * @enum {string}
+             */
+            role: "agency_admin" | "counselor";
+        };
+        SetTenantStaffPasswordDto: {
+            /** @example correct-horse-battery */
+            password: string;
         };
         StatusCountDto: {
             key: string;
@@ -5113,6 +5408,36 @@ export interface operations {
             };
         };
     };
+    AdminStudentsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminCreateStudentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentDetailDto"];
+                };
+            };
+            /** @description Missing the students.manage permission. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AdminStudentsController_get_v1: {
         parameters: {
             query?: never;
@@ -5163,6 +5488,36 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminStudentDetailDto"];
                 };
+            };
+            /** @description No student with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminStudentsController_setPassword_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetStudentPasswordDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description No student with that id. */
             404: {
@@ -5638,6 +5993,142 @@ export interface operations {
             };
         };
     };
+    AuditLogController_list_v1: {
+        parameters: {
+            query?: {
+                actorType?: "admin" | "student" | "system";
+                /** @description e.g. application, student, tenant, admin, document */
+                resourceType?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditLogListDto"];
+                };
+            };
+        };
+    };
+    AdminsController_listRoles_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminRoleSummaryDto"][];
+                };
+            };
+        };
+    };
+    AdminsController_createRole_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAdminRoleDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminRoleSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminsController_deleteRole_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminsController_updateRole_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAdminRoleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminRoleSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminsController_assignRole_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignAdminRoleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSummaryDto"];
+                };
+            };
+        };
+    };
     AdminsController_listPermissions_v1: {
         parameters: {
             query?: never;
@@ -5769,6 +6260,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminAccountController_getPermissions_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
                 };
             };
         };
@@ -5945,6 +6455,36 @@ export interface operations {
             };
         };
     };
+    TenantsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminCreateTenantDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDto"];
+                };
+            };
+            /** @description Missing the tenants.approve permission. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     TenantsController_get_v1: {
         parameters: {
             query?: never;
@@ -5955,6 +6495,38 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDto"];
+                };
+            };
+            /** @description No tenant with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TenantsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTenantDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -6040,6 +6612,97 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TenantDto"];
                 };
+            };
+        };
+    };
+    TenantsController_listStaff_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantStaffListDto"];
+                };
+            };
+            /** @description No tenant with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TenantsController_addStaff_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTenantStaffDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantStaffDto"];
+                };
+            };
+            /** @description No tenant with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TenantsController_setStaffPassword_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetTenantStaffPasswordDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No staff member with that id at this partner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

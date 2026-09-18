@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 
 import { AuthProvider } from '@rakuxon/auth';
-import { Footer, Header, ThemeProvider } from '@rakuxon/ui';
+import { Footer, Header, ThemeProvider, ToastProvider } from '@rakuxon/ui';
 
 import {
   BRAND_LOGO_SIZE,
@@ -42,23 +42,25 @@ export function renderPage(page: ReactElement) {
           },
         }}
       >
-        <Header
-          navLinks={buildNavLinks(TEST_DESTINATION_LINKS)}
-          logIn={LOG_IN_LINK}
-          getStarted={GET_STARTED_LINK}
-        />
-        <main id="main">{page}</main>
-        <Footer
-          tagline={DEFAULT_SITE_SETTINGS.footerTagline}
-          domain={FOOTER_DOMAIN}
-          email={DEFAULT_SITE_SETTINGS.contactEmail}
-          addresses={DEFAULT_SITE_SETTINGS.contactAddresses}
-          phones={DEFAULT_SITE_SETTINGS.contactPhones}
-          blurb={DEFAULT_SITE_SETTINGS.footerBlurb}
-          columns={buildFooterColumns(TEST_DESTINATION_LINKS)}
-          socials={DEFAULT_SITE_SETTINGS.socials}
-          legalLinks={FOOTER_LEGAL_LINKS}
-        />
+        <ToastProvider>
+          <Header
+            navLinks={buildNavLinks(TEST_DESTINATION_LINKS)}
+            logIn={LOG_IN_LINK}
+            getStarted={GET_STARTED_LINK}
+          />
+          <main id="main">{page}</main>
+          <Footer
+            tagline={DEFAULT_SITE_SETTINGS.footerTagline}
+            domain={FOOTER_DOMAIN}
+            email={DEFAULT_SITE_SETTINGS.contactEmail}
+            addresses={DEFAULT_SITE_SETTINGS.contactAddresses}
+            phones={DEFAULT_SITE_SETTINGS.contactPhones}
+            blurb={DEFAULT_SITE_SETTINGS.footerBlurb}
+            columns={buildFooterColumns(TEST_DESTINATION_LINKS)}
+            socials={DEFAULT_SITE_SETTINGS.socials}
+            legalLinks={FOOTER_LEGAL_LINKS}
+          />
+        </ToastProvider>
       </ThemeProvider>
     </AuthProvider>,
   );

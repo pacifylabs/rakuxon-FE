@@ -102,6 +102,37 @@ export function AdminAuthProvider({ baseUrl, children }: { baseUrl: string; chil
     return () => window.clearTimeout(timer);
   }, [session, client, apply]);
 
+  // Refresh UI access without rotating tokens; the API independently checks every request.
+  useEffect(() => {
+    if (!session?.admin.id) return undefined;
+    let cancelled = false;
+    const syncPermissions = async () => {
+      const current = sessionRef.current;
+      if (!current) return;
+      try {
+        const permissions = await client.getCurrentAdminPermissions();
+        const latest = sessionRef.current;
+        if (cancelled || latest?.admin.id !== current.admin.id || !Array.isArray(permissions))
+          return;
+        if (JSON.stringify(latest.admin.permissions) !== JSON.stringify(permissions)) {
+          apply({ ...latest, admin: { ...latest.admin, permissions } });
+        }
+      } catch {
+        /* Transient network failures must not end a valid session. */
+      }
+    };
+    void syncPermissions();
+    window.addEventListener('focus', syncPermissions);
+    window.addEventListener('rakuxon:admin-access-changed', syncPermissions);
+    const timer = window.setInterval(syncPermissions, 30_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      window.removeEventListener('focus', syncPermissions);
+      window.removeEventListener('rakuxon:admin-access-changed', syncPermissions);
+    };
+  }, [session?.admin.id, client, apply]);
+
   const signIn = useCallback(
     async (credentials: AdminLoginRequest) => {
       const result = await client.login(credentials);
@@ -139,7 +170,8 @@ export function AdminAuthProvider({ baseUrl, children }: { baseUrl: string; chil
       signIn,
       verifyTotp,
       signOut,
-      hasPermission: (...keys) => (session ? keys.every((key) => session.admin.permissions.includes(key)) : false),
+      hasPermission: (...keys) =>
+        session ? keys.every((key) => session.admin.permissions.includes(key)) : false,
       apiClient: client,
     }),
     [session, ready, signIn, verifyTotp, signOut, client],

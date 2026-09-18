@@ -4,7 +4,7 @@ import { BookOpen } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, Pagination, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminArticleSummary, PublishStatus } from '@rakuxon/contract';
 
@@ -21,6 +21,7 @@ const STATUS_FILTERS: Array<{ value: PublishStatus | 'all'; label: string }> = [
 function ArticlesList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [items, setItems] = useState<AdminArticleSummary[] | null>(null);
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
@@ -66,8 +67,15 @@ function ArticlesList() {
             : await client.revertArticleToDraft(row.id);
 
       setItems((current) => current?.map((entry) => (entry.id === updated.id ? updated : entry)) ?? null);
+      toast.success(
+        action === 'publish'
+          ? 'Article published.'
+          : action === 'suspend'
+            ? 'Article suspended.'
+            : 'Article reverted to draft.',
+      );
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',

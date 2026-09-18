@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, FormField } from '@rakuxon/ui';
+import { Button, FormField, useToast } from '@rakuxon/ui';
 import type { AdminSiteSettings } from '@rakuxon/contract';
 
 import { ImageUploadField } from '@/components/dashboard/ImageUploadField';
@@ -49,6 +49,7 @@ function SiteSettingsEditor() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
   const canManage = hasPermission('content.manage');
+  const toast = useToast();
 
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
@@ -88,12 +89,14 @@ function SiteSettingsEditor() {
       const updated = await client.updateSiteSettings(form);
       setForm(fromSettings(updated));
       setSaved(true);
+      toast.success('Site settings saved.');
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not save site settings. Please try again.',
-      );
+          : 'Could not save site settings. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

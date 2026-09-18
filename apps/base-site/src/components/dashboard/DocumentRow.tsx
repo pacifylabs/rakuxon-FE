@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { DropzoneUploader } from '@rakuxon/ui';
+import { ConfirmDialog, DropzoneUploader, useToast } from '@rakuxon/ui';
 import type { DocumentType, StudentDocument } from '@rakuxon/contract';
 
 function formatBytes(bytes: number | null): string {
@@ -29,9 +29,11 @@ export interface DocumentRowProps {
  */
 export function DocumentRow({ type, label, document, onUploaded, onDeleted }: DocumentRowProps) {
   const client = useApiClient();
+  const toast = useToast();
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   async function handleFile(file: File) {
     setUploading(true);
@@ -65,14 +67,16 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
         mimeType: file.type || 'application/octet-stream',
       });
       onUploaded(confirmed);
+      toast.success(`${label} uploaded.`);
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : caught instanceof Error
             ? caught.message
-            : 'Could not upload that file. Please try again.',
-      );
+            : 'Could not upload that file. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setUploading(false);
     }
@@ -85,12 +89,15 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
     try {
       await client.deleteDocument(document.id);
       onDeleted(document.id);
+      toast.success(`${label} removed.`);
+      setConfirmingRemove(false);
     } catch (caught) {
-      setError(
+      const message =
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
-          : 'Could not delete that file. Please try again.',
-      );
+          : 'Could not delete that file. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setDeleting(false);
     }
@@ -151,7 +158,7 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
             />
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setConfirmingRemove(true)}
               disabled={deleting}
               aria-label={`Remove ${label}`}
               className="rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-danger disabled:opacity-50"
@@ -170,6 +177,17 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
           />
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmingRemove}
+        onOpenChange={setConfirmingRemove}
+        title={`Remove ${label}?`}
+        description="You will need to upload it again before submitting an application that requires it."
+        confirmLabel="Remove"
+        tone="danger"
+        confirming={deleting}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

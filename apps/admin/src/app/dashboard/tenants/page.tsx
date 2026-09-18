@@ -4,7 +4,7 @@ import { ShieldCheck } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import { Button, ConfirmDialog, DataTable, EmptyState, Pagination, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { Tenant, TenantStatus } from '@rakuxon/contract';
 
@@ -21,12 +21,17 @@ const STATUS_FILTERS: Array<{ value: TenantStatus | 'all'; label: string }> = [
 function TenantsList() {
   const client = useAdminApiClient();
   const { hasPermission } = useAdminAuth();
+  const toast = useToast();
   const [tenants, setTenants] = useState<Tenant[] | null>(null);
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<TenantStatus | 'all'>('all');
   const [page, setPage] = useState(1);
   const [pendingActionId, setPendingActionId] = useState<string | null>(null);
+  const [actionTarget, setActionTarget] = useState<{
+    tenant: Tenant;
+    action: 'approve' | 'suspend' | 'reactivate';
+  } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -56,9 +61,6 @@ function TenantsList() {
   }, [statusFilter]);
 
   async function runAction(tenant: Tenant, action: 'approve' | 'suspend' | 'reactivate') {
-    const verb = action === 'approve' ? 'approve' : action === 'suspend' ? 'suspend' : 'reactivate';
-    if (!window.confirm(`${verb[0]?.toUpperCase()}${verb.slice(1)} "${tenant.name}"?`)) return;
-
     setPendingActionId(tenant.id);
     try {
       const updated =
@@ -71,8 +73,15 @@ function TenantsList() {
       setTenants(
         (current) => current?.map((row) => (row.id === updated.id ? updated : row)) ?? null,
       );
+      toast.success(
+        action === 'approve'
+          ? 'Partner approved.'
+          : action === 'suspend'
+            ? 'Partner suspended.'
+            : 'Partner reactivated.',
+      );
     } catch (caught) {
-      setError(
+      toast.error(
         caught instanceof ApiError || caught instanceof NetworkError
           ? caught.message
           : 'That action could not be completed. Please try again.',
@@ -80,6 +89,12 @@ function TenantsList() {
     } finally {
       setPendingActionId(null);
     }
+  }
+
+  async function confirmAction() {
+    if (!actionTarget) return;
+    await runAction(actionTarget.tenant, actionTarget.action);
+    setActionTarget(null);
   }
 
   const columns: DataTableColumn<Tenant>[] = [
@@ -98,12 +113,18 @@ function TenantsList() {
       className: 'text-right',
       cell: (tenant) => (
         <div className="flex justify-end gap-3">
+          <a
+            href={`/dashboard/tenants/${tenant.id}`}
+            className="rounded-sm text-sm font-semibold text-primary underline focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+          >
+            View
+          </a>
           {tenant.status === 'pending' && hasPermission('tenants.approve') && (
             <Button
               variant="primary"
               size="md"
               disabled={pendingActionId === tenant.id}
-              onClick={() => runAction(tenant, 'approve')}
+              onClick={() => setActionTarget({ tenant, action: 'approve' })}
             >
               Approve
             </Button>
@@ -113,7 +134,7 @@ function TenantsList() {
               variant="ghost"
               size="md"
               disabled={pendingActionId === tenant.id}
-              onClick={() => runAction(tenant, 'suspend')}
+              onClick={() => setActionTarget({ tenant, action: 'suspend' })}
             >
               Suspend
             </Button>
@@ -123,7 +144,7 @@ function TenantsList() {
               variant="ghost"
               size="md"
               disabled={pendingActionId === tenant.id}
-              onClick={() => runAction(tenant, 'reactivate')}
+              onClick={() => setActionTarget({ tenant, action: 'reactivate' })}
             >
               Reactivate
             </Button>
@@ -135,13 +156,22 @@ function TenantsList() {
 
   return (
     <section aria-labelledby="tenants-heading">
-      <h1 id="tenants-heading" className="font-heading text-3xl font-bold text-text">
-        Partners
-      </h1>
-      <p className="mt-2 max-w-prose text-base text-text-muted">
-        Agencies that have registered on the platform. Approve a pending agency before it can invite
-        students.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 id="tenants-heading" className="font-heading text-3xl font-bold text-text">
+            Partners
+          </h1>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            Agencies that have registered on the platform, plus any brought in directly. Approve a
+            pending agency before it can invite students.
+          </p>
+        </div>
+        {hasPermission('tenants.approve') && (
+          <Button variant="primary" size="md" onClick={() => window.location.assign('/dashboard/tenants/new')}>
+            New partner
+          </Button>
+        )}
+      </div>
 
       <div role="group" aria-label="Filter by status" className="mt-6 flex flex-wrap gap-2">
         {STATUS_FILTERS.map((filter) => (
@@ -190,6 +220,41 @@ function TenantsList() {
           <Pagination page={pageInfo.page} pageCount={pageInfo.pageCount} onPageChange={setPage} />
         </div>
       )}
+
+      <ConfirmDialog
+        open={actionTarget !== null}
+        onOpenChange={(open) => !open && setActionTarget(null)}
+        title={
+          actionTarget
+            ? `${
+                actionTarget.action === 'approve'
+                  ? 'Approve'
+                  : actionTarget.action === 'suspend'
+                    ? 'Suspend'
+                    : 'Reactivate'
+              } "${actionTarget.tenant.name}"?`
+            : ''
+        }
+        description={
+          actionTarget?.action === 'approve'
+            ? 'They will be able to sign in and invite students immediately.'
+            : actionTarget?.action === 'suspend'
+              ? 'Every user at this partner will lose access immediately.'
+              : actionTarget?.action === 'reactivate'
+                ? 'Every user at this partner will regain access immediately.'
+                : undefined
+        }
+        confirmLabel={
+          actionTarget?.action === 'approve'
+            ? 'Approve'
+            : actionTarget?.action === 'suspend'
+              ? 'Suspend'
+              : 'Reactivate'
+        }
+        tone={actionTarget?.action === 'suspend' ? 'danger' : 'default'}
+        confirming={pendingActionId === actionTarget?.tenant.id}
+        onConfirm={confirmAction}
+      />
     </section>
   );
 }
