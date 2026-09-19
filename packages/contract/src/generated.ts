@@ -4,6 +4,176 @@
  */
 
 export interface paths {
+    "/v1/admin/notification-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List every configurable notification template */
+        get: operations["AdminNotificationTemplatesController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/notification-templates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminNotificationTemplatesController_getDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminNotificationTemplatesController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/notification-templates/{id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Render the editor's in-progress fields against sample data, without saving */
+        post: operations["AdminNotificationTemplatesController_preview_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange admin credentials for a token pair
+         * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered. When the account has 2FA on, this returns `{ requiresTotp: true, challengeToken }` instead of tokens — call `/admin-auth/login/verify-totp` next.
+         */
+        post: operations["AdminAuthController_login_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/login/verify-totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish a 2FA login
+         * @description Trades the challenge token from `/admin-auth/login` plus a TOTP or backup code for a real session.
+         */
+        post: operations["AdminAuthController_verifyTotpLogin_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate an admin refresh token
+         * @description Single-use. Presenting one that has already been rotated revokes every token in its family. Permission keys on the returned access token are reloaded fresh, so a permission change takes effect the next time the admin refreshes, at the latest.
+         */
+        post: operations["AdminAuthController_refresh_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End the admin session behind a refresh token
+         * @description Idempotent: an unknown token succeeds rather than reporting whether it existed.
+         */
+        post: operations["AdminAuthController_logout_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/password-reset/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request an admin password reset link
+         * @description Always answers 204, whether or not the address has an admin account.
+         */
+        post: operations["AdminAuthController_requestPasswordReset_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin-auth/password-reset/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set a new admin password from a reset link
+         * @description Single-use, and every existing admin session for that account is revoked.
+         */
+        post: operations["AdminAuthController_confirmPasswordReset_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -848,126 +1018,6 @@ export interface paths {
         head?: never;
         /** Edit, activate or deactivate an intake term */
         patch: operations["AdminCatalogueController_updateIntakeTerm_v1"];
-        trace?: never;
-    };
-    "/v1/admin-auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Exchange admin credentials for a token pair
-         * @description Returns the same message whether the address is unknown or the password is wrong, so the response cannot be used to discover which addresses are registered. When the account has 2FA on, this returns `{ requiresTotp: true, challengeToken }` instead of tokens — call `/admin-auth/login/verify-totp` next.
-         */
-        post: operations["AdminAuthController_login_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin-auth/login/verify-totp": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Finish a 2FA login
-         * @description Trades the challenge token from `/admin-auth/login` plus a TOTP or backup code for a real session.
-         */
-        post: operations["AdminAuthController_verifyTotpLogin_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin-auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Rotate an admin refresh token
-         * @description Single-use. Presenting one that has already been rotated revokes every token in its family. Permission keys on the returned access token are reloaded fresh, so a permission change takes effect the next time the admin refreshes, at the latest.
-         */
-        post: operations["AdminAuthController_refresh_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin-auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * End the admin session behind a refresh token
-         * @description Idempotent: an unknown token succeeds rather than reporting whether it existed.
-         */
-        post: operations["AdminAuthController_logout_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin-auth/password-reset/request": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Request an admin password reset link
-         * @description Always answers 204, whether or not the address has an admin account.
-         */
-        post: operations["AdminAuthController_requestPasswordReset_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin-auth/password-reset/confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Set a new admin password from a reset link
-         * @description Single-use, and every existing admin session for that account is revoked.
-         */
-        post: operations["AdminAuthController_confirmPasswordReset_v1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/v1/onboarding-links": {
@@ -2461,6 +2511,114 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        NotificationTemplateSummaryDto: {
+            id: string;
+            key: string;
+            channel: string;
+            heading: string;
+            enabled: boolean;
+        };
+        NotificationTemplateDetailDto: {
+            id: string;
+            key: string;
+            channel: string;
+            subject?: string | null;
+            heading: string;
+            body: string[];
+            ctaLabel?: string | null;
+            ctaUrl?: string | null;
+            footnote?: string | null;
+            enabled: boolean;
+            availableTokens: string[];
+        };
+        UpdateNotificationTemplateDto: {
+            subject?: string | null;
+            heading?: string;
+            body?: string[];
+            ctaLabel?: string | null;
+            ctaUrl?: string | null;
+            footnote?: string | null;
+            enabled?: boolean;
+        };
+        PreviewNotificationTemplateDto: {
+            subject?: string | null;
+            heading: string;
+            body: string[];
+            ctaLabel?: string | null;
+            ctaUrl?: string | null;
+            footnote?: string | null;
+        };
+        NotificationTemplatePreviewDto: {
+            subject: string;
+            html: string;
+            text: string;
+            inAppTitle: string;
+            inAppBody: string;
+        };
+        AdminSessionDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /**
+             * @example [
+             *       "tenants.view",
+             *       "tenants.approve"
+             *     ]
+             */
+            permissions: string[];
+        };
+        AdminAuthTokensDto: {
+            /** @description Short-lived JWT. Send as `Authorization: Bearer <token>`. */
+            accessToken: string;
+            /** @description Opaque, single-use. Rotated on every refresh. */
+            refreshToken: string;
+            /**
+             * @description Access token lifetime in seconds.
+             * @example 900
+             */
+            expiresIn: number;
+            admin: components["schemas"]["AdminSessionDto"];
+        };
+        AdminLoginChallengeDto: {
+            /** @enum {boolean} */
+            requiresTotp: true;
+            /** @description Trade this, plus a TOTP or backup code, for a real session. Expires in 5 minutes. */
+            challengeToken: string;
+        };
+        AdminLoginDto: {
+            /** @example ada@rakuxon.com */
+            email: string;
+            /** @example correct-horse-battery */
+            password: string;
+        };
+        VerifyAdminTotpLoginDto: {
+            /** @description From the `requiresTotp` login response. */
+            challengeToken: string;
+            /**
+             * @description A 6-digit authenticator code, or an unused backup code.
+             * @example 123456
+             */
+            code: string;
+        };
+        AdminRefreshDto: {
+            /** @description The refresh token from the previous login or refresh. */
+            refreshToken: string;
+        };
+        RequestAdminPasswordResetDto: {
+            /** @example ada@rakuxon.com */
+            email: string;
+        };
+        ConfirmAdminPasswordResetDto: {
+            /** @description The token from the reset link. */
+            token: string;
+            /** @example a-brand-new-passphrase */
+            password: string;
+        };
         HealthDependenciesDto: {
             /**
              * @description Postgres reachability.
@@ -3080,70 +3238,6 @@ export interface components {
             label?: string;
             sortOrder?: number;
             active?: boolean;
-        };
-        AdminSessionDto: {
-            /** Format: uuid */
-            id: string;
-            /** @example ada@rakuxon.com */
-            email: string;
-            /** @example Ada */
-            firstName: string;
-            /** @example Lovelace */
-            lastName: string;
-            /**
-             * @example [
-             *       "tenants.view",
-             *       "tenants.approve"
-             *     ]
-             */
-            permissions: string[];
-        };
-        AdminAuthTokensDto: {
-            /** @description Short-lived JWT. Send as `Authorization: Bearer <token>`. */
-            accessToken: string;
-            /** @description Opaque, single-use. Rotated on every refresh. */
-            refreshToken: string;
-            /**
-             * @description Access token lifetime in seconds.
-             * @example 900
-             */
-            expiresIn: number;
-            admin: components["schemas"]["AdminSessionDto"];
-        };
-        AdminLoginChallengeDto: {
-            /** @enum {boolean} */
-            requiresTotp: true;
-            /** @description Trade this, plus a TOTP or backup code, for a real session. Expires in 5 minutes. */
-            challengeToken: string;
-        };
-        AdminLoginDto: {
-            /** @example ada@rakuxon.com */
-            email: string;
-            /** @example correct-horse-battery */
-            password: string;
-        };
-        VerifyAdminTotpLoginDto: {
-            /** @description From the `requiresTotp` login response. */
-            challengeToken: string;
-            /**
-             * @description A 6-digit authenticator code, or an unused backup code.
-             * @example 123456
-             */
-            code: string;
-        };
-        AdminRefreshDto: {
-            /** @description The refresh token from the previous login or refresh. */
-            refreshToken: string;
-        };
-        RequestAdminPasswordResetDto: {
-            /** @example ada@rakuxon.com */
-            email: string;
-        };
-        ConfirmAdminPasswordResetDto: {
-            /** @description The token from the reset link. */
-            token: string;
-            /** @example a-brand-new-passphrase */
-            password: string;
         };
         IssueOnboardingLinkDto: {
             /**
@@ -4032,6 +4126,256 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    AdminNotificationTemplatesController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationTemplateSummaryDto"][];
+                };
+            };
+        };
+    };
+    AdminNotificationTemplatesController_getDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationTemplateDetailDto"];
+                };
+            };
+        };
+    };
+    AdminNotificationTemplatesController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateNotificationTemplateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationTemplateDetailDto"];
+                };
+            };
+        };
+    };
+    AdminNotificationTemplatesController_preview_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreviewNotificationTemplateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationTemplatePreviewDto"];
+                };
+            };
+        };
+    };
+    AdminAuthController_login_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminLoginDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuthTokensDto"] | components["schemas"]["AdminLoginChallengeDto"];
+                };
+            };
+            /** @description Credentials are not valid, or the account is inactive. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_verifyTotpLogin_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyAdminTotpLoginDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuthTokensDto"];
+                };
+            };
+            /** @description The challenge has expired, or the code is not valid. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_refresh_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminRefreshDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuthTokensDto"];
+                };
+            };
+            /** @description Token unknown, expired, or already used. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_logout_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminRefreshDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_requestPasswordReset_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestAdminPasswordResetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuthController_confirmPasswordReset_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmAdminPasswordResetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The link is unknown, expired or already used. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     HealthController_check_v1: {
         parameters: {
             query?: never;
@@ -5435,166 +5779,6 @@ export interface operations {
             };
             /** @description No intake term with that id. */
             404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminAuthController_login_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AdminLoginDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminAuthTokensDto"] | components["schemas"]["AdminLoginChallengeDto"];
-                };
-            };
-            /** @description Credentials are not valid, or the account is inactive. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminAuthController_verifyTotpLogin_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VerifyAdminTotpLoginDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminAuthTokensDto"];
-                };
-            };
-            /** @description The challenge has expired, or the code is not valid. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminAuthController_refresh_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AdminRefreshDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminAuthTokensDto"];
-                };
-            };
-            /** @description Token unknown, expired, or already used. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminAuthController_logout_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AdminRefreshDto"];
-            };
-        };
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminAuthController_requestPasswordReset_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RequestAdminPasswordResetDto"];
-            };
-        };
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AdminAuthController_confirmPasswordReset_v1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConfirmAdminPasswordResetDto"];
-            };
-        };
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The link is unknown, expired or already used. */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };
