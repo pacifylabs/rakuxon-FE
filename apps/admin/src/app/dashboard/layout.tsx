@@ -17,12 +17,24 @@ import {
   Wrench,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { AppShell, Wordmark } from '@rakuxon/ui';
-import type { AppShellNavItem } from '@rakuxon/ui';
+import type { AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
+import type { Notification } from '@rakuxon/contract';
 
-import { RequirePermission, useAdminAuth } from '@/lib/admin-auth';
+import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
+
+function toShellItem(notification: Notification): AppShellNotificationItem {
+  return {
+    id: notification.id,
+    title: notification.title,
+    body: notification.body,
+    link: notification.link,
+    readAt: notification.readAt,
+  };
+}
 
 function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
   return [
@@ -81,6 +93,41 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { admin, signOut, hasPermission } = useAdminAuth();
+  const client = useAdminApiClient();
+  const [notifications, setNotifications] = useState<Notification[] | null>(null);
+
+  useEffect(() => {
+    if (!admin) return;
+    client
+      .listNotifications()
+      .then(setNotifications)
+      .catch(() => {
+        /* The bell falling back to "nothing here yet" is a fine outcome for a
+           failed fetch — nothing on this page depends on notifications loading. */
+      });
+  }, [client, admin]);
+
+  async function handleOpenNotification(id: string) {
+    const target = notifications?.find((notification) => notification.id === id);
+    if (!target) return;
+
+    setNotifications((current) =>
+      (current ?? []).map((notification) =>
+        notification.id === id
+          ? { ...notification, readAt: notification.readAt ?? new Date().toISOString() }
+          : notification,
+      ),
+    );
+
+    try {
+      await client.markNotificationRead(id);
+    } catch {
+      /* The optimistic update already reflects "read" — a failed confirmation
+         is not worth surfacing over what is a low-stakes housekeeping call. */
+    }
+
+    if (target.link) router.push(target.link);
+  }
 
   return (
     <RequirePermission
@@ -111,6 +158,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           profileHref: '/dashboard/settings/profile',
           securityHref: '/dashboard/settings/security',
         }}
+        notifications={
+          notifications
+            ? {
+                items: notifications.map(toShellItem),
+                unreadCount: notifications.filter((notification) => !notification.readAt).length,
+                onOpen: handleOpenNotification,
+              }
+            : undefined
+        }
       >
         {children}
       </AppShell>

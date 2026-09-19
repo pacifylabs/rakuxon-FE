@@ -65,6 +65,9 @@ beforeEach(() => {
           studentsWithIncompleteProfile: 0,
         });
       }
+      if (url.includes('/admin/notifications')) {
+        return json(200, []);
+      }
       return json(200, { status: 'ok', dependencies: { database: 'up' } });
     }),
   );

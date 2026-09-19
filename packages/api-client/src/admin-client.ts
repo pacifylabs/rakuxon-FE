@@ -52,6 +52,7 @@ import type {
   CreateTenantStaffRequest,
   CreateTestimonialRequest,
   DisableTotpRequest,
+  Notification,
   Permission,
   RejectDocumentRequest,
   ResourceAuditLog,
@@ -76,6 +77,7 @@ import type {
   UpdateStudentAdminRequest,
   UpdateTenantRequest,
   UpdateTestimonialRequest,
+  UnreadCount,
   UploadSignature,
   UploadSignatureRequest,
   VerifyAdminTotpLoginRequest,
@@ -864,6 +866,23 @@ export class AdminApiClient {
 
   approveDocument(documentId: string): Promise<StudentDocument> {
     return this.request<StudentDocument>(`/v1/admin/documents/${documentId}/approve`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  /* -------------------------------------------------------------- notifications */
+
+  listNotifications(): Promise<Notification[]> {
+    return this.request<Notification[]>('/v1/admin/notifications', { auth: true });
+  }
+
+  getUnreadNotificationCount(): Promise<UnreadCount> {
+    return this.request<UnreadCount>('/v1/admin/notifications/unread-count', { auth: true });
+  }
+
+  markNotificationRead(id: string): Promise<Notification> {
+    return this.request<Notification>(`/v1/admin/notifications/${id}/read`, {
       method: 'POST',
       auth: true,
     });

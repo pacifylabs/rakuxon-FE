@@ -50,9 +50,9 @@ export interface AppShellProps {
   onSignOut: () => void;
   signOutLabel?: string;
   /**
-   * Backs the bell icon with real data. Omitted (admin's case today, since
-   * only students receive a notification) leaves the bell rendering exactly
-   * the static "nothing here yet" panel it always has.
+   * Backs the bell icon with real data. Omitted, the bell renders exactly
+   * the static "nothing here yet" panel it always has — a page still loading
+   * its notifications, say.
    */
   notifications?: AppShellNotificationsSlot;
   /** A small pill next to the wordmark — "Admin", say — so the shell reads as a distinct area at a glance. */
