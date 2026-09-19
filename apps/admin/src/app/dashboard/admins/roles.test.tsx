@@ -84,11 +84,35 @@ describe('admin role management', () => {
             name: 'Catalogue Editor',
             description: '',
             permissionKeys: ['tenants.view'],
+            isSuccessManagerPool: false,
           }),
         }),
       ),
     );
   });
+  it('flags a role as the success manager pool for automatic case assignment', async () => {
+    const user = userEvent.setup();
+    renderPage(<RolesPage />);
+    await user.click(await screen.findByRole('button', { name: 'New role' }));
+    await user.type(screen.getByLabelText('Role name'), 'Success Managers');
+    await user.click(screen.getByRole('switch', { name: 'Success manager pool' }));
+    await user.click(screen.getByRole('button', { name: 'Save role' }));
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://api.test/v1/admin/admins/roles',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            name: 'Success Managers',
+            description: '',
+            permissionKeys: [],
+            isSuccessManagerPool: true,
+          }),
+        }),
+      ),
+    );
+  });
+
   it('assigns a single role when creating an admin without individual checkboxes', async () => {
     const user = userEvent.setup();
     renderPage(<AdminsPage />);

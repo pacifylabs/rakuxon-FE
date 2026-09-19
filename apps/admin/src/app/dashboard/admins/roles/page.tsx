@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import type { AdminRoleSummary, Permission } from '@rakuxon/contract';
-import { Button, EmptyState, FormField } from '@rakuxon/ui';
+import { Button, EmptyState, FormField, Switch } from '@rakuxon/ui';
 import { RequirePermission, useAdminApiClient } from '@/lib/admin-auth';
 
 const errorMessage = (error: unknown) =>
@@ -25,6 +25,7 @@ function RoleForm({
 }) {
   const client = useAdminApiClient();
   const [selected, setSelected] = useState(new Set(role?.permissions ?? []));
+  const [isSuccessManagerPool, setIsSuccessManagerPool] = useState(role?.isSuccessManagerPool ?? false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const groups = new Map<string, Permission[]>();
@@ -43,6 +44,7 @@ function RoleForm({
         name: String(data.get('name')).trim(),
         description: String(data.get('description')).trim(),
         permissionKeys: [...selected],
+        isSuccessManagerPool,
       };
       if (role) await client.updateAdminRole(role.id, body);
       else await client.createAdminRole(body);
@@ -74,6 +76,20 @@ function RoleForm({
           placeholder="Customer Support"
         />
         <FormField label="Description" name="description" defaultValue={role?.description} />
+      </div>
+      <div className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-surface-muted p-4">
+        <Switch
+          checked={isSuccessManagerPool}
+          onChange={() => setIsSuccessManagerPool((current) => !current)}
+          label="Success manager pool"
+        />
+        <span className="text-sm text-text">
+          <span className="font-semibold text-text">Success manager pool</span>
+          <span className="ml-1 text-text-muted">
+            — admins with this role are candidates for automatic case assignment when a student
+            submits an application. The least-loaded one gets it.
+          </span>
+        </span>
       </div>
       <p className="mt-6 text-sm font-semibold text-text">{selected.size} permissions selected</p>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -226,6 +242,7 @@ function RolesList() {
                   <p className="mt-1 text-sm text-text-muted">{role.description}</p>
                   <p className="mt-2 text-sm text-text-muted">
                     {role.adminCount} admins · {role.permissions.length} permissions
+                    {role.isSuccessManagerPool && ' · Success manager pool'}
                   </p>
                 </div>
                 <div className="flex gap-2">

@@ -59,6 +59,16 @@ function draftApplication(attachedDocumentIds: string[] = []) {
     attachedDocumentIds,
     missingDocumentTypes,
     readyToSubmit: missingDocumentTypes.length === 0,
+    assignedAdminName: null,
+  };
+}
+
+function submittedApplication(assignedAdminName: string | null = null) {
+  return {
+    ...draftApplication(['doc-1']),
+    status: 'submitted',
+    submittedAt: new Date().toISOString(),
+    assignedAdminName,
   };
 }
 
@@ -174,5 +184,35 @@ describe('<ApplicationDetailPage/>', () => {
     renderPage();
 
     expect(await screen.findByText('Already approved: passport.pdf')).toBeInTheDocument();
+  });
+
+  it('shows the assigned success manager once submitted and assigned', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const href = String(url);
+      if (href.endsWith('/v1/applications/app-1')) return json(200, submittedApplication('Ada Lovelace'));
+      if (href.endsWith('/v1/documents')) return json(200, [document]);
+      return json(404, {});
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    expect(await screen.findByText(/Your success manager:/)).toBeInTheDocument();
+    expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
+  });
+
+  it('does not show a success manager line when submitted but not yet assigned', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const href = String(url);
+      if (href.endsWith('/v1/applications/app-1')) return json(200, submittedApplication(null));
+      if (href.endsWith('/v1/documents')) return json(200, [document]);
+      return json(404, {});
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    await screen.findByText(/Review and offer updates/);
+    expect(screen.queryByText(/Your success manager:/)).not.toBeInTheDocument();
   });
 });

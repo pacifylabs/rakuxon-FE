@@ -178,11 +178,18 @@ export default function ApplicationDetailPage() {
       </div>
 
       {submitted ? (
-        <p className="mt-4 max-w-prose text-base text-text-muted">
-          Submitted{' '}
-          {application.submittedAt ? new Date(application.submittedAt).toLocaleDateString() : ''}.
-          Review and offer updates will appear here once available.
-        </p>
+        <>
+          <p className="mt-4 max-w-prose text-base text-text-muted">
+            Submitted{' '}
+            {application.submittedAt ? new Date(application.submittedAt).toLocaleDateString() : ''}.
+            Review and offer updates will appear here once available.
+          </p>
+          {application.assignedAdminName && (
+            <p className="mt-4 max-w-prose text-base text-text">
+              Your success manager: <span className="font-semibold">{application.assignedAdminName}</span>
+            </p>
+          )}
+        </>
       ) : (
         <>
           <p className="mt-4 max-w-prose text-base text-text-muted">
