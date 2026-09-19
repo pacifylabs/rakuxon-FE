@@ -862,6 +862,13 @@ export class AdminApiClient {
     });
   }
 
+  approveDocument(documentId: string): Promise<StudentDocument> {
+    return this.request<StudentDocument>(`/v1/admin/documents/${documentId}/approve`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
   /* ---------------------------------------------------------------- account */
 
   getAccount(): Promise<AdminAccount> {

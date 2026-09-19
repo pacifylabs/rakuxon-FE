@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, Trash2, XCircle } from 'lucide-react';
+import { CheckCircle2, Clock, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
@@ -104,15 +104,25 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
   }
 
   const uploaded = document?.status === 'uploaded';
+  const approved = document?.status === 'approved';
   const rejected = document?.status === 'rejected';
+  const hasFile = uploaded || approved;
 
   return (
     <div className="flex flex-col gap-3 p-4">
-      {uploaded ? (
+      {hasFile ? (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-primary/15 text-primary">
-              <CheckCircle2 aria-hidden="true" className="size-4" />
+            <span
+              className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
+                approved ? 'bg-primary/15 text-primary' : 'bg-warning/15 text-warning'
+              }`}
+            >
+              {approved ? (
+                <CheckCircle2 aria-hidden="true" className="size-4" />
+              ) : (
+                <Clock aria-hidden="true" className="size-4" />
+              )}
             </span>
             <div>
               <p className="font-heading text-sm font-semibold text-text">{label}</p>
@@ -120,6 +130,7 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
                 <p className="mt-1 text-sm text-text-muted">
                   {document.originalFilename}
                   {document.bytes ? ` · ${formatBytes(document.bytes)}` : ''}
+                  {uploaded ? ' · Pending review' : ''}
                 </p>
               )}
               {error && (

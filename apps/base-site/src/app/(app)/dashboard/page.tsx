@@ -116,8 +116,14 @@ export default function DashboardPage() {
   const { profile, documents, applications } = useDashboardStats();
   const { destinations, articles } = useDashboardDiscover();
 
-  const uploadedCount = documents?.filter((document) => document.status === 'uploaded').length;
-  const submittedCount = applications?.filter((application) => application.status === 'submitted').length;
+  /* A document counts toward "uploaded" whether it's still pending review or
+     already approved — rejected is the only status that means try again. */
+  const uploadedCount = documents?.filter(
+    (document) => document.status === 'uploaded' || document.status === 'approved',
+  ).length;
+  const submittedCount = applications?.filter(
+    (application) => application.status === 'submitted',
+  ).length;
 
   const profileDone = profile ? profileCompleteness(profile) === 100 : false;
   const documentsDone = documents ? uploadedCount === DOCUMENT_TYPES.length : false;

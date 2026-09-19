@@ -52,6 +52,17 @@ describe('<DocumentRow/>', () => {
     expect(screen.queryByText(/^Rejected:/)).not.toBeInTheDocument();
   });
 
+  it('marks an uploaded document as pending review, distinct from an approved one', () => {
+    renderRow(base);
+    expect(screen.getByText(/Pending review/)).toBeInTheDocument();
+  });
+
+  it('does not say "pending review" once a document is approved', () => {
+    renderRow({ ...base, status: 'approved' });
+    expect(screen.getByText(/passport\.pdf/)).toBeInTheDocument();
+    expect(screen.queryByText(/Pending review/)).not.toBeInTheDocument();
+  });
+
   it('offers a real drag-and-drop dropzone, not a plain button, when nothing has been uploaded yet', () => {
     renderRow(undefined);
 

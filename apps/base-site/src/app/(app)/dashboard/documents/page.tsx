@@ -8,7 +8,11 @@ import { ProgressBar } from '@rakuxon/ui';
 import type { StudentDocument } from '@rakuxon/contract';
 
 import { DocumentRow } from '@/components/dashboard/DocumentRow';
-import { DOCUMENT_CATEGORIES, DOCUMENT_TYPE_META, DOCUMENT_TYPES } from '@/components/dashboard/documentTypes';
+import {
+  DOCUMENT_CATEGORIES,
+  DOCUMENT_TYPE_META,
+  DOCUMENT_TYPES,
+} from '@/components/dashboard/documentTypes';
 
 export default function DocumentsPage() {
   const client = useApiClient();
@@ -42,7 +46,12 @@ export default function DocumentsPage() {
     setDocuments((current) => (current ?? []).filter((entry) => entry.id !== id));
   }
 
-  const uploadedCount = documents?.filter((document) => document.status === 'uploaded').length ?? 0;
+  /* Pending review counts the same as approved — rejected is the only
+     status that means the slot still needs work. */
+  const uploadedCount =
+    documents?.filter(
+      (document) => document.status === 'uploaded' || document.status === 'approved',
+    ).length ?? 0;
 
   return (
     <section aria-labelledby="documents-heading">
@@ -90,7 +99,9 @@ export default function DocumentsPage() {
                     key={type}
                     type={type}
                     label={DOCUMENT_TYPE_META[type].label}
-                    document={documents.find((document) => document.type === type && document.status !== 'deleted')}
+                    document={documents.find(
+                      (document) => document.type === type && document.status !== 'deleted',
+                    )}
                     onUploaded={handleUploaded}
                     onDeleted={handleDeleted}
                   />

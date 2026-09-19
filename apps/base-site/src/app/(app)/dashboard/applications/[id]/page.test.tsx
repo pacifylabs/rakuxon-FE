@@ -120,7 +120,7 @@ describe('<ApplicationDetailPage/>', () => {
     const attachButton = await screen.findByRole('button', { name: 'Attach to this application' });
     await userEvent.click(attachButton);
 
-    expect(await screen.findByText('passport.pdf')).toBeInTheDocument();
+    expect(await screen.findByText(/passport\.pdf/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Detach' })).toBeInTheDocument();
   });
 
@@ -138,7 +138,41 @@ describe('<ApplicationDetailPage/>', () => {
     const submit = await screen.findByRole('button', { name: 'Submit application' });
     expect(submit).toBeDisabled();
     expect(
-      screen.getByText('Attach every required document before submitting.'),
+      screen.getByText('Every required document needs to be attached and approved before you can submit.'),
     ).toBeInTheDocument();
+  });
+
+  it('shows a document as pending review, not approved, once attached but not yet reviewed', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      const href = String(url);
+      const method = init?.method ?? 'GET';
+      if (href.endsWith('/v1/applications/app-1') && method === 'GET') {
+        return json(200, draftApplication(['doc-1']));
+      }
+      if (href.endsWith('/v1/documents')) return json(200, [document]);
+      return json(404, {});
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    expect(await screen.findByText(/Pending review/)).toBeInTheDocument();
+    // Not attachable again — it's already attached, just not approved yet.
+    expect(screen.queryByRole('button', { name: 'Attach to this application' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Detach' })).toBeInTheDocument();
+  });
+
+  it('offers to attach an already-approved document without an extra review step', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const href = String(url);
+      if (href.endsWith('/v1/applications/app-1')) return json(200, draftApplication());
+      if (href.endsWith('/v1/documents')) return json(200, [{ ...document, status: 'approved' }]);
+      return json(404, {});
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    expect(await screen.findByText('Already approved: passport.pdf')).toBeInTheDocument();
   });
 });

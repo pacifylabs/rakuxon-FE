@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, FileText, XCircle } from 'lucide-react';
+import { CheckCircle2, Clock, ExternalLink, FileText, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
@@ -47,6 +47,7 @@ export function AdminDocumentRow({
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
   const [submittingReject, setSubmittingReject] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
@@ -97,6 +98,26 @@ export function AdminDocumentRow({
     }
   }
 
+  async function handleApprove() {
+    if (!document) return;
+    setApproving(true);
+    setError(null);
+    try {
+      const approved = await client.approveDocument(document.id);
+      onChanged(approved);
+      toast.success(`${label} approved.`);
+    } catch (caught) {
+      const message =
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not approve that document. Please try again.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setApproving(false);
+    }
+  }
+
   async function handleReject() {
     if (!document || !reason.trim()) return;
     setSubmittingReject(true);
@@ -120,7 +141,9 @@ export function AdminDocumentRow({
   }
 
   const uploaded = document?.status === 'uploaded';
+  const approved = document?.status === 'approved';
   const rejected = document?.status === 'rejected';
+  const canDecide = canReview && Boolean(document) && (uploaded || rejected);
 
   return (
     <div className="p-4">
@@ -128,33 +151,49 @@ export function AdminDocumentRow({
         <div className="flex items-start gap-3">
           <span
             className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
-              uploaded
+              approved
                 ? 'bg-primary/15 text-primary'
                 : rejected
                   ? 'bg-danger/15 text-danger'
-                  : 'bg-surface-muted text-text-muted'
+                  : uploaded
+                    ? 'bg-warning/15 text-warning'
+                    : 'bg-surface-muted text-text-muted'
             }`}
           >
-            {uploaded ? (
+            {approved ? (
               <CheckCircle2 aria-hidden="true" className="size-4" />
             ) : rejected ? (
               <XCircle aria-hidden="true" className="size-4" />
+            ) : uploaded ? (
+              <Clock aria-hidden="true" className="size-4" />
             ) : (
               <FileText aria-hidden="true" className="size-4" />
             )}
           </span>
           <div>
             <p className="font-heading text-sm font-semibold text-text">{label}</p>
-            {uploaded && document && (
+            {document && (approved || uploaded) && (
               <p className="mt-1 text-sm text-text-muted">
                 {document.originalFilename}
                 {document.bytes ? ` · ${formatBytes(document.bytes)}` : ''}
+                {uploaded ? ' · Pending review' : ''}
               </p>
             )}
             {rejected && document?.rejectionReason && (
               <p className="mt-1 text-sm text-danger">Rejected: {document.rejectionReason}</p>
             )}
             {!document && <p className="mt-1 text-sm text-text-muted">Not uploaded</p>}
+            {document?.url && (
+              <a
+                href={document.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+              >
+                View
+                <ExternalLink aria-hidden="true" className="size-3" />
+              </a>
+            )}
             {error && (
               <p role="alert" className="mt-1 text-sm text-danger">
                 {error}
@@ -166,21 +205,27 @@ export function AdminDocumentRow({
         {canReview && (
           <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
             <DropzoneUploader
-              label={uploaded ? 'Replace' : 'Upload on behalf'}
+              label={document ? 'Replace' : 'Upload on behalf'}
               layout="inline"
               variant="document"
               onUpload={handleFile}
               uploading={uploading}
               disabled={uploading}
             />
-            {uploaded && (
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => setRejecting(true)}
-              >
-                Reject
-              </Button>
+            {canDecide && (
+              <>
+                <Button
+                  variant="primary"
+                  type="button"
+                  disabled={approving}
+                  onClick={handleApprove}
+                >
+                  {approving ? 'Approving…' : 'Approve'}
+                </Button>
+                <Button variant="ghost" type="button" onClick={() => setRejecting(true)}>
+                  Reject
+                </Button>
+              </>
             )}
           </div>
         )}

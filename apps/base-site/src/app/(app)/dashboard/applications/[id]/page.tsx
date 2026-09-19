@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -186,8 +186,8 @@ export default function ApplicationDetailPage() {
       ) : (
         <>
           <p className="mt-4 max-w-prose text-base text-text-muted">
-            Attach each required document — upload it here, or attach one already on file — then
-            submit.
+            Attach each required document — upload it here, or attach one already on file. An
+            admissions team member reviews each one before you can submit.
           </p>
 
           <div className="mt-8">
@@ -201,21 +201,42 @@ export default function ApplicationDetailPage() {
                 );
 
                 if (attachedDocument) {
+                  const attachedApproved = attachedDocument.status === 'approved';
+                  const attachedRejected = attachedDocument.status === 'rejected';
+
                   return (
                     <div
                       key={type}
                       className="flex flex-wrap items-center justify-between gap-3 p-4"
                     >
                       <div className="flex items-start gap-3">
-                        <CheckCircle2
-                          aria-hidden="true"
-                          className="mt-0.5 size-5 shrink-0 text-primary"
-                        />
+                        {attachedApproved ? (
+                          <CheckCircle2
+                            aria-hidden="true"
+                            className="mt-0.5 size-5 shrink-0 text-primary"
+                          />
+                        ) : attachedRejected ? (
+                          <XCircle
+                            aria-hidden="true"
+                            className="mt-0.5 size-5 shrink-0 text-danger"
+                          />
+                        ) : (
+                          <Clock
+                            aria-hidden="true"
+                            className="mt-0.5 size-5 shrink-0 text-warning"
+                          />
+                        )}
                         <div>
                           <p className="font-heading text-sm font-semibold text-text">{label}</p>
                           <p className="mt-1 text-sm text-text-muted">
                             {attachedDocument.originalFilename}
+                            {!attachedApproved && !attachedRejected ? ' · Pending review' : ''}
                           </p>
+                          {attachedRejected && attachedDocument.rejectionReason && (
+                            <p className="mt-1 text-sm text-danger">
+                              Rejected: {attachedDocument.rejectionReason}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <Button
@@ -231,7 +252,8 @@ export default function ApplicationDetailPage() {
                 }
 
                 const unattachedUpload = documents.find(
-                  (doc) => doc.type === type && doc.status === 'uploaded',
+                  (doc) =>
+                    doc.type === type && (doc.status === 'uploaded' || doc.status === 'approved'),
                 );
 
                 if (unattachedUpload) {
@@ -243,7 +265,7 @@ export default function ApplicationDetailPage() {
                       <div>
                         <p className="font-heading text-sm font-semibold text-text">{label}</p>
                         <p className="mt-1 text-sm text-text-muted">
-                          Already on file: {unattachedUpload.originalFilename}
+                          {`${unattachedUpload.status === 'approved' ? 'Already approved' : 'Already on file'}: ${unattachedUpload.originalFilename}`}
                         </p>
                       </div>
                       <Button
@@ -287,7 +309,7 @@ export default function ApplicationDetailPage() {
             </Button>
             {!application.readyToSubmit && (
               <p className="text-sm text-text-muted">
-                Attach every required document before submitting.
+                Every required document needs to be attached and approved before you can submit.
               </p>
             )}
             {submitError && (

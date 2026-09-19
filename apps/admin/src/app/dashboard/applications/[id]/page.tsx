@@ -51,9 +51,10 @@ function ApplicationDetail() {
   const [pendingDocumentId, setPendingDocumentId] = useState<string | null>(null);
   const [admins, setAdmins] = useState<AssignableAdmin[]>([]);
   const [assigning, setAssigning] = useState(false);
-  const [confirmingAssign, setConfirmingAssign] = useState<{ adminId: string | null; label: string } | null>(
-    null,
-  );
+  const [confirmingAssign, setConfirmingAssign] = useState<{
+    adminId: string | null;
+    label: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -86,7 +87,9 @@ function ApplicationDetail() {
     if (!application || confirmingAssign === undefined || confirmingAssign === null) return;
     setAssigning(true);
     try {
-      setApplication(await client.assignApplication(application.id, { adminId: confirmingAssign.adminId }));
+      setApplication(
+        await client.assignApplication(application.id, { adminId: confirmingAssign.adminId }),
+      );
       toast.success(
         confirmingAssign.adminId ? `Assigned to ${confirmingAssign.label}.` : 'Unassigned.',
       );
@@ -196,12 +199,12 @@ function ApplicationDetail() {
     );
   }
 
-  /** The already-uploaded document (if any) of a given type, not yet attached here. */
+  /** The already-uploaded (or already-approved) document of a given type, not yet attached here. */
   function unattachedUploadOf(type: string): StudentDocument | undefined {
     return documents?.find(
       (entry) =>
         entry.type === type &&
-        entry.status === 'uploaded' &&
+        (entry.status === 'uploaded' || entry.status === 'approved') &&
         !application?.attachedDocumentIds.includes(entry.id),
     );
   }
@@ -295,6 +298,9 @@ function ApplicationDetail() {
         {application.missingDocumentTypes.length > 0 && (
           <div className="mt-4">
             <p className="text-sm font-semibold text-text">Still missing</p>
+            <p className="mt-1 text-sm text-text-muted">
+              Not yet approved — including anything attached below that's still pending review.
+            </p>
 
             {!canManage ? (
               <ul className="mt-2 flex flex-wrap gap-2">
@@ -306,53 +312,61 @@ function ApplicationDetail() {
               </ul>
             ) : (
               <div className="mt-4 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
-                {application.missingDocumentTypes.map((type) => {
-                  const existing = unattachedUploadOf(type);
+                {application.missingDocumentTypes
+                  .filter(
+                    (type) =>
+                      !documents?.some(
+                        (doc) =>
+                          doc.type === type && application.attachedDocumentIds.includes(doc.id),
+                      ),
+                  )
+                  .map((type) => {
+                    const existing = unattachedUploadOf(type);
 
-                  if (existing) {
-                    return (
-                      <div
-                        key={type}
-                        className="flex flex-wrap items-center justify-between gap-3 p-4"
-                      >
-                        <div>
-                          <p className="font-heading text-sm font-semibold text-text">
-                            {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)}
-                          </p>
-                          <p className="mt-1 text-sm text-text-muted">
-                            Already on file: {existing.originalFilename}
-                          </p>
-                        </div>
-                        <Button
-                          variant="primary"
-                          size="md"
-                          disabled={pendingDocumentId === existing.id}
-                          onClick={() => attach(existing.id)}
+                    if (existing) {
+                      return (
+                        <div
+                          key={type}
+                          className="flex flex-wrap items-center justify-between gap-3 p-4"
                         >
-                          {pendingDocumentId === existing.id
-                            ? 'Attaching…'
-                            : 'Attach to this application'}
-                        </Button>
+                          <div>
+                            <p className="font-heading text-sm font-semibold text-text">
+                              {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)}
+                            </p>
+                            <p className="mt-1 text-sm text-text-muted">
+                              Already on file: {existing.originalFilename}
+                            </p>
+                          </div>
+                          <Button
+                            variant="primary"
+                            size="md"
+                            disabled={pendingDocumentId === existing.id}
+                            onClick={() => attach(existing.id)}
+                          >
+                            {pendingDocumentId === existing.id
+                              ? 'Attaching…'
+                              : 'Attach to this application'}
+                          </Button>
+                        </div>
+                      );
+                    }
+
+                    return canReview ? (
+                      <AdminDocumentRow
+                        key={type}
+                        studentId={application.studentId}
+                        type={type}
+                        label={DOCUMENT_TYPE_LABELS[type] ?? humanize(type)}
+                        document={undefined}
+                        canReview={canReview}
+                        onChanged={handleDocumentChanged}
+                      />
+                    ) : (
+                      <div key={type} className="p-4 text-sm text-text-muted">
+                        {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)} — not uploaded.
                       </div>
                     );
-                  }
-
-                  return canReview ? (
-                    <AdminDocumentRow
-                      key={type}
-                      studentId={application.studentId}
-                      type={type}
-                      label={DOCUMENT_TYPE_LABELS[type] ?? humanize(type)}
-                      document={undefined}
-                      canReview={canReview}
-                      onChanged={handleDocumentChanged}
-                    />
-                  ) : (
-                    <div key={type} className="p-4 text-sm text-text-muted">
-                      {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)} — not uploaded.
-                    </div>
-                  );
-                })}
+                  })}
                 {documentsError && (
                   <p role="alert" className="p-4 text-sm text-danger">
                     {documentsError}
@@ -369,6 +383,34 @@ function ApplicationDetail() {
             <ul className="mt-2 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
               {application.attachedDocumentIds.map((documentId) => {
                 const entry = documents?.find((doc) => doc.id === documentId);
+
+                if (entry && canReview) {
+                  return (
+                    <li key={documentId} className="flex flex-wrap items-start justify-between">
+                      <div className="flex-1">
+                        <AdminDocumentRow
+                          studentId={application.studentId}
+                          type={entry.type}
+                          label={DOCUMENT_TYPE_LABELS[entry.type] ?? humanize(entry.type)}
+                          document={entry}
+                          canReview={canReview}
+                          onChanged={handleDocumentChanged}
+                        />
+                      </div>
+                      <div className="p-4">
+                        <Button
+                          variant="ghost"
+                          size="md"
+                          disabled={pendingDocumentId === documentId}
+                          onClick={() => detach(documentId)}
+                        >
+                          {pendingDocumentId === documentId ? 'Detaching…' : 'Detach'}
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                }
+
                 return (
                   <li
                     key={documentId}
@@ -406,7 +448,11 @@ function ApplicationDetail() {
       <ConfirmDialog
         open={confirmingAssign !== null}
         onOpenChange={(open) => !open && setConfirmingAssign(null)}
-        title={confirmingAssign?.adminId ? `Assign to ${confirmingAssign.label}?` : 'Unassign this application?'}
+        title={
+          confirmingAssign?.adminId
+            ? `Assign to ${confirmingAssign.label}?`
+            : 'Unassign this application?'
+        }
         confirmLabel={confirmingAssign?.adminId ? 'Assign' : 'Unassign'}
         confirming={assigning}
         onConfirm={confirmAssign}

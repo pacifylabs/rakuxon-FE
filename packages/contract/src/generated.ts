@@ -1371,6 +1371,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/documents/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve an uploaded document
+         * @description Notifies the student in-app and by email. Approval, not upload, is what an application submission actually requires.
+         */
+        post: operations["AdminDocumentsController_approve_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/applications": {
         parameters: {
             query?: never;
@@ -3341,7 +3361,7 @@ export interface components {
             mimeType: string;
         };
         /** @enum {string} */
-        DocumentStatus: "pending_upload" | "uploaded" | "deleted" | "rejected";
+        DocumentStatus: "pending_upload" | "uploaded" | "approved" | "deleted" | "rejected";
         DocumentDto: {
             /** Format: uuid */
             id: string;
@@ -6139,6 +6159,27 @@ export interface operations {
                 "application/json": components["schemas"]["RejectDocumentDto"];
             };
         };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"];
+                };
+            };
+        };
+    };
+    AdminDocumentsController_approve_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
