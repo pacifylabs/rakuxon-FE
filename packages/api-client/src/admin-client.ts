@@ -53,7 +53,11 @@ import type {
   CreateTestimonialRequest,
   DisableTotpRequest,
   Notification,
+  NotificationTemplateDetail,
+  NotificationTemplatePreview,
+  NotificationTemplateSummary,
   Permission,
+  PreviewNotificationTemplateRequest,
   RejectDocumentRequest,
   ResourceAuditLog,
   SetCountryHomepageFeaturedRequest,
@@ -72,6 +76,7 @@ import type {
   UpdateDestinationRequest,
   UpdateInstitutionRequest,
   UpdateIntakeTermRequest,
+  UpdateNotificationTemplateRequest,
   UpdateServiceRequest,
   UpdateSiteSettingsRequest,
   UpdateStudentAdminRequest,
@@ -884,6 +889,38 @@ export class AdminApiClient {
   markNotificationRead(id: string): Promise<Notification> {
     return this.request<Notification>(`/v1/admin/notifications/${id}/read`, {
       method: 'POST',
+      auth: true,
+    });
+  }
+
+  /* ------------------------------------------------------ notification templates */
+
+  listNotificationTemplates(): Promise<NotificationTemplateSummary[]> {
+    return this.request<NotificationTemplateSummary[]>('/v1/admin/notification-templates', { auth: true });
+  }
+
+  getNotificationTemplateDetail(id: string): Promise<NotificationTemplateDetail> {
+    return this.request<NotificationTemplateDetail>(`/v1/admin/notification-templates/${id}`, { auth: true });
+  }
+
+  updateNotificationTemplate(
+    id: string,
+    body: UpdateNotificationTemplateRequest,
+  ): Promise<NotificationTemplateDetail> {
+    return this.request<NotificationTemplateDetail>(`/v1/admin/notification-templates/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  previewNotificationTemplate(
+    id: string,
+    body: PreviewNotificationTemplateRequest,
+  ): Promise<NotificationTemplatePreview> {
+    return this.request<NotificationTemplatePreview>(`/v1/admin/notification-templates/${id}/preview`, {
+      method: 'POST',
+      body,
       auth: true,
     });
   }

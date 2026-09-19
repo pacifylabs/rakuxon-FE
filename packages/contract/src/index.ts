@@ -178,6 +178,12 @@ export type AdminServiceDetail = Schemas['AdminServiceDetailDto'];
 export type CreateServiceRequest = Schemas['CreateServiceDto'];
 export type UpdateServiceRequest = Schemas['UpdateServiceDto'];
 
+export type NotificationTemplateSummary = Schemas['NotificationTemplateSummaryDto'];
+export type NotificationTemplateDetail = Schemas['NotificationTemplateDetailDto'];
+export type UpdateNotificationTemplateRequest = Schemas['UpdateNotificationTemplateDto'];
+export type PreviewNotificationTemplateRequest = Schemas['PreviewNotificationTemplateDto'];
+export type NotificationTemplatePreview = Schemas['NotificationTemplatePreviewDto'];
+
 /** Mirrors the backend enum. Kept as a const object so it survives erasure. */
 export const Role = {
   PlatformAdmin: 'platform_admin',

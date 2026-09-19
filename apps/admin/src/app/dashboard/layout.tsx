@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Bell,
   Building2,
   BookOpen,
   CalendarDays,
@@ -57,6 +58,7 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
         { href: '/dashboard/content/services', label: 'Services', icon: Compass },
         { href: '/dashboard/content/destinations', label: 'Destinations', icon: Globe2 },
         { href: '/dashboard/content/site-settings', label: 'Site settings', icon: Settings },
+        { href: '/dashboard/content/notification-templates', label: 'Notification templates', icon: Bell },
       ],
     },
     { href: '/dashboard/applications', label: 'Applications', icon: Users },
