@@ -1138,6 +1138,26 @@ export interface paths {
         patch: operations["StudentsController_updateOwnProfile_v1"];
         trace?: never;
     };
+    "/v1/students/me/heartbeat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record that the caller is currently active
+         * @description Polled by the frontend every ~60s while a session is open — drives the "online" indicator in messaging.
+         */
+        post: operations["StudentsController_heartbeat_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/students": {
         parameters: {
             query?: never;
@@ -2008,6 +2028,26 @@ export interface paths {
         head?: never;
         /** Update the caller's own name */
         patch: operations["AdminAccountController_updateProfile_v1"];
+        trace?: never;
+    };
+    "/v1/admin/account/me/heartbeat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record that the caller is currently active
+         * @description Polled by the frontend every ~60s while a session is open — drives the "online" indicator in messaging.
+         */
+        post: operations["AdminAccountController_heartbeat_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/admin/account/me/password": {
@@ -3622,6 +3662,8 @@ export interface components {
         ConversationSummaryDto: {
             id: string;
             counterpartName: string;
+            /** @description Seen in the last two minutes, via their own polling heartbeat. */
+            counterpartOnline: boolean;
             lastMessage?: string | null;
             /** Format: date-time */
             lastMessageAt?: string | null;
@@ -3640,6 +3682,8 @@ export interface components {
         ConversationDetailDto: {
             id: string;
             counterpartName: string;
+            /** @description Seen in the last two minutes, via their own polling heartbeat. */
+            counterpartOnline: boolean;
             messages: components["schemas"]["MessageDto"][];
         };
         SendMessageDto: {
@@ -3650,6 +3694,8 @@ export interface components {
             id: string;
             firstName: string;
             lastName: string;
+            /** @description Seen in the last two minutes, via their own polling heartbeat. */
+            online: boolean;
         };
         StartConversationDto: {
             body: string;
@@ -6183,6 +6229,23 @@ export interface operations {
             };
         };
     };
+    StudentsController_heartbeat_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AdminStudentsController_list_v1: {
         parameters: {
             query?: {
@@ -7503,6 +7566,23 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminAccountDto"];
                 };
+            };
+        };
+    };
+    AdminAccountController_heartbeat_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
