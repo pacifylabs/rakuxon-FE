@@ -3545,6 +3545,8 @@ export interface components {
             missingDocumentTypes: components["schemas"]["DocumentType"][];
             /** @description Whether the profile and document gates are both satisfied. */
             readyToSubmit: boolean;
+            /** @description The success manager assigned to this case, once one is — manually or automatically on submit. */
+            assignedAdminName: string | null;
             /** Format: date-time */
             createdAt: string;
         };
@@ -3627,6 +3629,7 @@ export interface components {
             description: string;
             permissions: string[];
             adminCount: number;
+            isSuccessManagerPool: boolean;
         };
         SaveAdminRoleDto: {
             /** @example Customer Support */
@@ -3634,6 +3637,11 @@ export interface components {
             /** @example Helps students with their applications. */
             description: string;
             permissionKeys: string[];
+            /**
+             * @description Eligible for automatic case assignment when a student submits an application.
+             * @default false
+             */
+            isSuccessManagerPool: boolean;
         };
         AssignAdminRoleDto: {
             /** Format: uuid */
