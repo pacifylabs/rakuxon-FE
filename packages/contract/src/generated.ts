@@ -1330,6 +1330,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/messages/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own conversations, most recently active first */
+        get: operations["MessagesController_list_v1"];
+        put?: never;
+        /** Start (or continue) a conversation with an admin currently assigned to one of your applications */
+        post: operations["MessagesController_start_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/messages/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One conversation, marking the other side read */
+        get: operations["MessagesController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/messages/conversations/{id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reply on an existing conversation */
+        post: operations["MessagesController_reply_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/messages/assigned-admins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admins currently assigned across the caller's applications — who they can message */
+        get: operations["MessagesController_assignedAdmins_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/messages/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own conversations, most recently active first */
+        get: operations["AdminMessagesController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/messages/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One conversation, marking the student's messages read */
+        get: operations["AdminMessagesController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/messages/conversations/{id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reply on an existing conversation */
+        post: operations["AdminMessagesController_reply_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/messages/compose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send one message to a targeted or broadcast audience of students
+         * @description Fans out into one private conversation per recipient — sent once, immediately, to whoever the scope resolves to right now.
+         */
+        post: operations["AdminMessagesController_compose_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/documents/upload-signature": {
         parameters: {
             query?: never;
@@ -3479,6 +3619,69 @@ export interface components {
         UnreadCountDto: {
             count: number;
         };
+        ConversationSummaryDto: {
+            id: string;
+            counterpartName: string;
+            lastMessage?: string | null;
+            /** Format: date-time */
+            lastMessageAt?: string | null;
+            unreadCount: number;
+        };
+        MessageDto: {
+            id: string;
+            /** @enum {string} */
+            senderType: "student" | "admin";
+            body: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            readAt: string | null;
+        };
+        ConversationDetailDto: {
+            id: string;
+            counterpartName: string;
+            messages: components["schemas"]["MessageDto"][];
+        };
+        SendMessageDto: {
+            body: string;
+        };
+        AssignedAdminDto: {
+            /** Format: uuid */
+            id: string;
+            firstName: string;
+            lastName: string;
+        };
+        StartConversationDto: {
+            body: string;
+            /** Format: uuid */
+            adminId: string;
+        };
+        /**
+         * @description Required when scope is "status".
+         * @enum {string}
+         */
+        ApplicationStatus: "draft" | "submitted";
+        ComposeMessageDto: {
+            /** @enum {string} */
+            scope: "student" | "tenant" | "status" | "all";
+            /**
+             * Format: uuid
+             * @description Required when scope is "student".
+             */
+            studentId?: string;
+            /**
+             * Format: uuid
+             * @description Required when scope is "tenant".
+             */
+            tenantId?: string;
+            /** @description Required when scope is "status". */
+            status?: components["schemas"]["ApplicationStatus"];
+            body: string;
+        };
+        ComposeResultDto: {
+            /** @description How many students this message was sent to. */
+            recipientCount: number;
+        };
         /** @enum {string} */
         DocumentType: "academic_certificate" | "english_test" | "identity" | "medical" | "secondary_marksheet" | "senior_secondary_marksheet" | "academic_transcript" | "cv_resume" | "recommendation_letter" | "research_proposal";
         UploadSignatureRequestDto: {
@@ -3528,8 +3731,6 @@ export interface components {
             /** Format: uuid */
             courseId: string;
         };
-        /** @enum {string} */
-        ApplicationStatus: "draft" | "submitted";
         ApplicationDto: {
             /** Format: uuid */
             id: string;
@@ -6286,6 +6487,201 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NotificationDto"];
+                };
+            };
+        };
+    };
+    MessagesController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationSummaryDto"][];
+                };
+            };
+        };
+    };
+    MessagesController_start_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartConversationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetailDto"];
+                };
+            };
+        };
+    };
+    MessagesController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetailDto"];
+                };
+            };
+        };
+    };
+    MessagesController_reply_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMessageDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetailDto"];
+                };
+            };
+        };
+    };
+    MessagesController_assignedAdmins_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignedAdminDto"][];
+                };
+            };
+        };
+    };
+    AdminMessagesController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationSummaryDto"][];
+                };
+            };
+        };
+    };
+    AdminMessagesController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetailDto"];
+                };
+            };
+        };
+    };
+    AdminMessagesController_reply_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMessageDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetailDto"];
+                };
+            };
+        };
+    };
+    AdminMessagesController_compose_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ComposeMessageDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComposeResultDto"];
                 };
             };
         };

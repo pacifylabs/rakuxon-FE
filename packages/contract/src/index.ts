@@ -184,6 +184,15 @@ export type UpdateNotificationTemplateRequest = Schemas['UpdateNotificationTempl
 export type PreviewNotificationTemplateRequest = Schemas['PreviewNotificationTemplateDto'];
 export type NotificationTemplatePreview = Schemas['NotificationTemplatePreviewDto'];
 
+export type Message = Schemas['MessageDto'];
+export type ConversationSummary = Schemas['ConversationSummaryDto'];
+export type ConversationDetail = Schemas['ConversationDetailDto'];
+export type SendMessageRequest = Schemas['SendMessageDto'];
+export type StartConversationRequest = Schemas['StartConversationDto'];
+export type AssignedAdmin = Schemas['AssignedAdminDto'];
+export type ComposeMessageRequest = Schemas['ComposeMessageDto'];
+export type ComposeResult = Schemas['ComposeResultDto'];
+
 /** Mirrors the backend enum. Kept as a const object so it survives erasure. */
 export const Role = {
   PlatformAdmin: 'platform_admin',
