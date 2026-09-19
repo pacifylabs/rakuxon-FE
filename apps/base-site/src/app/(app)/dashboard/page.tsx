@@ -1,6 +1,6 @@
 'use client';
 
-import { ClipboardList, FileCheck, UserCheck } from 'lucide-react';
+import { CheckCircle2, ClipboardList, FileCheck, UserCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { useApiClient, useAuth } from '@rakuxon/auth';
@@ -119,6 +119,34 @@ export default function DashboardPage() {
   const uploadedCount = documents?.filter((document) => document.status === 'uploaded').length;
   const submittedCount = applications?.filter((application) => application.status === 'submitted').length;
 
+  const profileDone = profile ? profileCompleteness(profile) === 100 : false;
+  const documentsDone = documents ? uploadedCount === DOCUMENT_TYPES.length : false;
+
+  const nextSteps: { href: string; title: string; body: string; done: boolean }[] = [
+    {
+      href: '/dashboard/profile',
+      title: profileDone ? 'Profile complete' : 'Complete your profile',
+      body: profileDone
+        ? 'Every detail admissions teams need is on file. Update it any time.'
+        : 'The details admissions teams need to process your application.',
+      done: profileDone,
+    },
+    {
+      href: '/dashboard/documents',
+      title: documentsDone ? 'Documents uploaded' : 'Upload documents',
+      body: documentsDone
+        ? 'Every document type is on file. Replace one any time.'
+        : 'Transcripts, English test results and identification.',
+      done: documentsDone,
+    },
+    {
+      href: '/dashboard/applications',
+      title: 'Track applications',
+      body: 'See where each application stands, start to finish.',
+      done: false,
+    },
+  ];
+
   return (
     <section aria-labelledby="dashboard-heading">
       <ApplyIntentResolver />
@@ -158,29 +186,18 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        {[
-          {
-            href: '/dashboard/profile',
-            title: 'Complete your profile',
-            body: 'The details admissions teams need to process your application.',
-          },
-          {
-            href: '/dashboard/documents',
-            title: 'Upload documents',
-            body: 'Transcripts, English test results and identification.',
-          },
-          {
-            href: '/dashboard/applications',
-            title: 'Track applications',
-            body: 'See where each application stands, start to finish.',
-          },
-        ].map((card) => (
+        {nextSteps.map((card) => (
           <a
             key={card.href}
             href={card.href}
             className="rounded-md border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
           >
-            <h2 className="font-heading text-base font-semibold text-text">{card.title}</h2>
+            <h2 className="flex items-center gap-2 font-heading text-base font-semibold text-text">
+              {card.done && (
+                <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-primary" />
+              )}
+              {card.title}
+            </h2>
             <p className="mt-2 text-sm text-text-muted">{card.body}</p>
           </a>
         ))}
