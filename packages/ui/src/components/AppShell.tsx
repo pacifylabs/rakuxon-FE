@@ -34,6 +34,21 @@ export interface AppShellNotificationsSlot {
   onOpen: (id: string) => void;
 }
 
+export interface AppShellConversationItem {
+  id: string;
+  counterpartName: string;
+  lastMessage: string | null;
+  unreadCount: number;
+}
+
+export interface AppShellMessagesSlot {
+  items: AppShellConversationItem[];
+  unreadCount: number;
+  onOpen: (id: string) => void;
+  /** The compose/inbox screen's own URL — "See all messages" in the panel links here. */
+  href: string;
+}
+
 export interface AppShellAccountMenu {
   profileHref?: string;
   profileLabel?: string;
@@ -55,6 +70,8 @@ export interface AppShellProps {
    * its notifications, say.
    */
   notifications?: AppShellNotificationsSlot;
+  /** Backs the message icon with real conversations — same "omitted means the static panel" contract as `notifications`. */
+  messages?: AppShellMessagesSlot;
   /** A small pill next to the wordmark — "Admin", say — so the shell reads as a distinct area at a glance. */
   badge?: string;
   /**
@@ -344,6 +361,7 @@ export function AppShell({
   onSignOut,
   signOutLabel,
   notifications,
+  messages,
   badge,
   accountMenu,
   children,
@@ -382,6 +400,36 @@ export function AppShell({
       </ul>
     ) : undefined;
 
+  const messagesPanel =
+    messages && messages.items.length > 0 ? (
+      <div className="flex max-h-80 flex-col gap-1 overflow-y-auto">
+        <ul className="flex flex-col gap-1">
+          {messages.items.map((item) => (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => messages.onOpen(item.id)}
+                className={`flex w-full flex-col items-start gap-0.5 rounded-md p-3 text-left transition-colors hover:bg-surface-muted ${
+                  item.unreadCount > 0 ? 'bg-accent-soft' : ''
+                }`}
+              >
+                <span className="text-sm font-semibold text-text">{item.counterpartName}</span>
+                {item.lastMessage && (
+                  <span className="w-full truncate text-sm text-text-muted">{item.lastMessage}</span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <AppLink
+          href={messages.href}
+          className="rounded-md p-2 text-center text-sm font-semibold text-primary hover:bg-surface-muted"
+        >
+          See all messages
+        </AppLink>
+      </div>
+    ) : undefined;
+
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface px-5 lg:px-8">
@@ -418,7 +466,10 @@ export function AppShell({
             label="Messages"
             panelTitle="No messages yet"
             panelDescription="Messages from your counsellor and admissions teams will show up here."
-          />
+            badgeCount={messages?.unreadCount}
+          >
+            {messagesPanel}
+          </HeaderMenuButton>
           {accountMenu && (
             <>
               <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />

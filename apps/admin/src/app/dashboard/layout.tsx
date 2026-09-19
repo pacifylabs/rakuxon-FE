@@ -10,6 +10,7 @@ import {
   Globe2,
   Landmark,
   LayoutGrid,
+  MessageCircle,
   MessageSquareQuote,
   ScrollText,
   Settings,
@@ -22,10 +23,13 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { AppShell, Wordmark } from '@rakuxon/ui';
-import type { AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
-import type { Notification } from '@rakuxon/contract';
+import type { AppShellConversationItem, AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
+import type { ConversationSummary, Notification } from '@rakuxon/contract';
 
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
+
+/** Matches the "chat/presence: polling-based, refetch every 20-30s" decision — no push channel exists yet. */
+const MESSAGES_POLL_MS = 25_000;
 
 function toShellItem(notification: Notification): AppShellNotificationItem {
   return {
@@ -34,6 +38,15 @@ function toShellItem(notification: Notification): AppShellNotificationItem {
     body: notification.body,
     link: notification.link,
     readAt: notification.readAt,
+  };
+}
+
+function toShellConversation(conversation: ConversationSummary): AppShellConversationItem {
+  return {
+    id: conversation.id,
+    counterpartName: conversation.counterpartName,
+    lastMessage: conversation.lastMessage ?? null,
+    unreadCount: conversation.unreadCount,
   };
 }
 
@@ -63,6 +76,7 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
     },
     { href: '/dashboard/applications', label: 'Applications', icon: Users },
     { href: '/dashboard/students', label: 'Applicants', icon: GraduationCap },
+    { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle },
     {
       label: 'Admins',
       icon: Users,
@@ -97,6 +111,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { admin, signOut, hasPermission } = useAdminAuth();
   const client = useAdminApiClient();
   const [notifications, setNotifications] = useState<Notification[] | null>(null);
+  const [conversations, setConversations] = useState<ConversationSummary[] | null>(null);
 
   useEffect(() => {
     if (!admin) return;
@@ -107,6 +122,27 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         /* The bell falling back to "nothing here yet" is a fine outcome for a
            failed fetch — nothing on this page depends on notifications loading. */
       });
+  }, [client, admin]);
+
+  useEffect(() => {
+    if (!admin) return;
+    let cancelled = false;
+    const load = () => {
+      client
+        .listConversations()
+        .then((result) => {
+          if (!cancelled) setConversations(result);
+        })
+        .catch(() => {
+          /* Same fallback reasoning as notifications above — a failed poll just tries again next tick. */
+        });
+    };
+    load();
+    const interval = setInterval(load, MESSAGES_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [client, admin]);
 
   async function handleOpenNotification(id: string) {
@@ -129,6 +165,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
 
     if (target.link) router.push(target.link);
+  }
+
+  function handleOpenConversation(id: string) {
+    router.push(`/dashboard/messages/${id}`);
   }
 
   return (
@@ -166,6 +206,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 items: notifications.map(toShellItem),
                 unreadCount: notifications.filter((notification) => !notification.readAt).length,
                 onOpen: handleOpenNotification,
+              }
+            : undefined
+        }
+        messages={
+          conversations
+            ? {
+                items: conversations.map(toShellConversation),
+                unreadCount: conversations.reduce((sum, conversation) => sum + conversation.unreadCount, 0),
+                onOpen: handleOpenConversation,
+                href: '/dashboard/messages',
               }
             : undefined
         }

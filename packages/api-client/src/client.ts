@@ -1,9 +1,12 @@
 import type {
   Application,
   ArticleList,
+  AssignedAdmin,
   AuthTokens,
   ConfirmDocumentUploadRequest,
   ConsumedLink,
+  ConversationDetail,
+  ConversationSummary,
   CountryCount,
   CreateApplicationRequest,
   HealthResponse,
@@ -17,6 +20,8 @@ import type {
   RegisterAgencyRequest,
   RegisterStudentRequest,
   RegisterViaOnboardingLinkRequest,
+  SendMessageRequest,
+  StartConversationRequest,
   StudentDocument,
   StudentProfile,
   UnreadCount,
@@ -307,5 +312,35 @@ export class ApiClient {
 
   markNotificationRead(id: string): Promise<Notification> {
     return this.request<Notification>(`/v1/notifications/${id}/read`, { method: 'POST', auth: true });
+  }
+
+  /* -------------------------------------------------------------- messages */
+
+  listConversations(): Promise<ConversationSummary[]> {
+    return this.request<ConversationSummary[]>('/v1/messages/conversations', { auth: true });
+  }
+
+  getConversation(id: string): Promise<ConversationDetail> {
+    return this.request<ConversationDetail>(`/v1/messages/conversations/${id}`, { auth: true });
+  }
+
+  replyToConversation(id: string, body: SendMessageRequest): Promise<ConversationDetail> {
+    return this.request<ConversationDetail>(`/v1/messages/conversations/${id}/reply`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  listAssignedAdmins(): Promise<AssignedAdmin[]> {
+    return this.request<AssignedAdmin[]>('/v1/messages/assigned-admins', { auth: true });
+  }
+
+  startConversation(body: StartConversationRequest): Promise<ConversationDetail> {
+    return this.request<ConversationDetail>('/v1/messages/conversations', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 }

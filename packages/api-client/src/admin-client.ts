@@ -40,8 +40,12 @@ import type {
   AssignableAdminList,
   AuditLogList,
   ChangeAdminPasswordRequest,
+  ComposeMessageRequest,
+  ComposeResult,
   ConfirmAdminPasswordResetRequest,
   ConfirmDocumentUploadRequest,
+  ConversationDetail,
+  ConversationSummary,
   CreateAdminRequest,
   CreateArticleRequest,
   CreateCourseRequest,
@@ -60,6 +64,7 @@ import type {
   PreviewNotificationTemplateRequest,
   RejectDocumentRequest,
   ResourceAuditLog,
+  SendMessageRequest,
   SetCountryHomepageFeaturedRequest,
   SetStudentPasswordRequest,
   SetTenantStaffPasswordRequest,
@@ -919,6 +924,32 @@ export class AdminApiClient {
     body: PreviewNotificationTemplateRequest,
   ): Promise<NotificationTemplatePreview> {
     return this.request<NotificationTemplatePreview>(`/v1/admin/notification-templates/${id}/preview`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  /* -------------------------------------------------------------- messages */
+
+  listConversations(): Promise<ConversationSummary[]> {
+    return this.request<ConversationSummary[]>('/v1/admin/messages/conversations', { auth: true });
+  }
+
+  getConversation(id: string): Promise<ConversationDetail> {
+    return this.request<ConversationDetail>(`/v1/admin/messages/conversations/${id}`, { auth: true });
+  }
+
+  replyToConversation(id: string, body: SendMessageRequest): Promise<ConversationDetail> {
+    return this.request<ConversationDetail>(`/v1/admin/messages/conversations/${id}/reply`, {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  composeMessage(body: ComposeMessageRequest): Promise<ComposeResult> {
+    return this.request<ComposeResult>('/v1/admin/messages/compose', {
       method: 'POST',
       body,
       auth: true,

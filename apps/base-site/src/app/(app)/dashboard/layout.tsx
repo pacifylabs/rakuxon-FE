@@ -1,16 +1,19 @@
 'use client';
 
-import { Building2, ClipboardList, FileText, Home, User } from 'lucide-react';
+import { Building2, ClipboardList, FileText, Home, MessageCircle, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { GuardedPage, useApiClient, useAuth } from '@rakuxon/auth';
 import { AppShell, Wordmark } from '@rakuxon/ui';
-import type { AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
-import type { Notification } from '@rakuxon/contract';
+import type { AppShellConversationItem, AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
+import type { ConversationSummary, Notification } from '@rakuxon/contract';
 
 import { VerifyEmailBanner } from '@/components/dashboard/VerifyEmailBanner';
+
+/** Matches the "chat/presence: polling-based, refetch every 20-30s" decision — no push channel exists yet. */
+const MESSAGES_POLL_MS = 25_000;
 
 function toShellItem(notification: Notification): AppShellNotificationItem {
   return {
@@ -22,12 +25,22 @@ function toShellItem(notification: Notification): AppShellNotificationItem {
   };
 }
 
+function toShellConversation(conversation: ConversationSummary): AppShellConversationItem {
+  return {
+    id: conversation.id,
+    counterpartName: conversation.counterpartName,
+    lastMessage: conversation.lastMessage ?? null,
+    unreadCount: conversation.unreadCount,
+  };
+}
+
 const NAV_ITEMS: AppShellNavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/dashboard/schools', label: 'Schools', icon: Building2 },
   { href: '/dashboard/profile', label: 'Profile', icon: User },
   { href: '/dashboard/documents', label: 'Documents', icon: FileText },
   { href: '/dashboard/applications', label: 'Applications', icon: ClipboardList },
+  { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -35,6 +48,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
   const client = useApiClient();
   const [notifications, setNotifications] = useState<Notification[] | null>(null);
+  const [conversations, setConversations] = useState<ConversationSummary[] | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -45,6 +59,27 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         /* The bell falling back to "nothing here yet" is a fine outcome for a
            failed fetch — nothing on this page depends on notifications loading. */
       });
+  }, [client, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const load = () => {
+      client
+        .listConversations()
+        .then((result) => {
+          if (!cancelled) setConversations(result);
+        })
+        .catch(() => {
+          /* Same fallback reasoning as notifications above — a failed poll just tries again next tick. */
+        });
+    };
+    load();
+    const interval = setInterval(load, MESSAGES_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [client, user]);
 
   async function handleOpenNotification(id: string) {
@@ -67,6 +102,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
 
     if (target.link) router.push(target.link);
+  }
+
+  function handleOpenConversation(id: string) {
+    router.push(`/dashboard/messages/${id}`);
   }
 
   return (
@@ -100,6 +139,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 items: notifications.map(toShellItem),
                 unreadCount: notifications.filter((notification) => !notification.readAt).length,
                 onOpen: handleOpenNotification,
+              }
+            : undefined
+        }
+        messages={
+          conversations
+            ? {
+                items: conversations.map(toShellConversation),
+                unreadCount: conversations.reduce((sum, conversation) => sum + conversation.unreadCount, 0),
+                onOpen: handleOpenConversation,
+                href: '/dashboard/messages',
               }
             : undefined
         }

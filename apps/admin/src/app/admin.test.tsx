@@ -68,6 +68,9 @@ beforeEach(() => {
       if (url.includes('/admin/notifications')) {
         return json(200, []);
       }
+      if (url.includes('/admin/messages/conversations')) {
+        return json(200, []);
+      }
       return json(200, { status: 'ok', dependencies: { database: 'up' } });
     }),
   );
