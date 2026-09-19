@@ -504,9 +504,9 @@ function StudentDetail() {
         {student.educationHistory.length === 0 ? (
           <p className="mt-2 text-base text-text-muted">Nothing entered yet.</p>
         ) : (
-          <ul className="mt-4 flex flex-col gap-4">
+          <ul className="mt-4 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
             {student.educationHistory.map((entry, index) => (
-              <li key={index} className="rounded-md border border-border bg-surface p-4">
+              <li key={index} className="p-4">
                 <p className="font-semibold text-text">{entry.qualification}</p>
                 <p className="text-sm text-text-muted">
                   {entry.institutionName}
@@ -544,7 +544,7 @@ function StudentDetail() {
           )}
 
           {documents && (
-            <div className="mt-4 flex flex-col gap-3">
+            <div className="mt-4 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
               {DOCUMENT_TYPES.map((type) => (
                 <AdminDocumentRow
                   key={type}

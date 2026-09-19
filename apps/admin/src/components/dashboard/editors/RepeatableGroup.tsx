@@ -30,22 +30,24 @@ export function RepeatableGroup<T>({ label, items, onChange, createBlank, render
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-semibold text-text">{label}</legend>
-      <div className="flex flex-col gap-4">
-        {items.map((item, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={index} className="flex items-start gap-3 rounded-lg border border-border bg-surface p-4">
-            <div className="flex-1">{renderRow(item, (patch) => updateAt(index, patch), index)}</div>
-            <button
-              type="button"
-              onClick={() => removeAt(index)}
-              aria-label={`Remove ${label} entry ${index + 1}`}
-              className="grid size-9 shrink-0 place-items-center rounded-md text-text-muted hover:bg-surface-muted hover:text-danger"
-            >
-              <X aria-hidden="true" className="size-4" />
-            </button>
-          </div>
-        ))}
-      </div>
+      {items.length > 0 && (
+        <div className="flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
+          {items.map((item, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={index} className="flex items-start gap-3 p-4">
+              <div className="flex-1">{renderRow(item, (patch) => updateAt(index, patch), index)}</div>
+              <button
+                type="button"
+                onClick={() => removeAt(index)}
+                aria-label={`Remove ${label} entry ${index + 1}`}
+                className="grid size-9 shrink-0 place-items-center rounded-md text-text-muted hover:bg-surface-muted hover:text-danger"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <button
         type="button"

@@ -4,7 +4,7 @@ import { Globe2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, DataTable, EmptyState, StatusBadge, useToast } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, StatusBadge, Switch, useToast } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminCountry } from '@rakuxon/contract';
 
@@ -113,15 +113,15 @@ function CountriesList() {
     {
       header: 'Homepage',
       cell: (row) => (
-        <label className="inline-flex items-center gap-2 text-sm text-text">
-          <input
-            type="checkbox"
+        <span className="inline-flex items-center gap-2 text-sm text-text">
+          <Switch
             checked={Boolean(row.homepageFeaturedOrder)}
             disabled={!hasPermission('catalogue.publish') || pendingCode === row.code}
             onChange={() => toggleFeatured(row)}
+            label={`Feature ${row.name} on the homepage`}
           />
           {row.homepageFeaturedOrder ? 'Featured' : 'Not featured'}
-        </label>
+        </span>
       ),
     },
     {

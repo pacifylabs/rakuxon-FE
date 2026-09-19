@@ -126,7 +126,7 @@ function TotpSetupFlow({
 
   if (backupCodes) {
     return (
-      <div className="mt-6 max-w-md rounded-lg border border-border bg-surface p-5">
+      <div className="mt-6 max-w-md rounded-md border border-border bg-surface p-5">
         <p className="font-heading text-sm font-semibold text-text">Two-factor authentication is on</p>
         <p className="mt-2 text-sm text-text-muted">
           Save these backup codes somewhere safe — each works once, in place of your authenticator app, if you

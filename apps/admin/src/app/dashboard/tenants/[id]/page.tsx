@@ -154,7 +154,7 @@ function AddStaffForm({ tenantId, onAdded }: { tenantId: string; onAdded: (staff
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 flex max-w-md flex-col gap-4 rounded-lg border border-border bg-surface p-5">
+    <form onSubmit={handleSubmit} className="mt-4 flex max-w-md flex-col gap-4 rounded-md border border-border bg-surface p-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField label="First name" name="firstName" autoComplete="given-name" required />
         <FormField label="Last name" name="lastName" autoComplete="family-name" required />
@@ -416,7 +416,7 @@ function TenantDetail() {
         )}
 
         {staff && staff.length > 0 && (
-          <ul className="mt-4 rounded-lg border border-border bg-surface px-5">
+          <ul className="mt-4 rounded-md border border-border bg-surface px-5">
             {staff.map((member) => (
               <StaffRow key={member.id} staff={member} tenantId={tenant.id} />
             ))}

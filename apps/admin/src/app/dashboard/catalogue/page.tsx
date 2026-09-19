@@ -37,7 +37,7 @@ export default function CataloguePage() {
           <li key={section.href}>
             <a
               href={section.href}
-              className="flex h-full flex-col rounded-lg border border-border bg-surface p-6 transition-colors hover:bg-surface-muted"
+              className="flex h-full flex-col rounded-md border border-border bg-surface p-6 transition-colors hover:bg-surface-muted"
             >
               <span className="grid size-10 place-items-center rounded-md bg-accent-soft text-primary">
                 <section.icon aria-hidden="true" className="size-5" />

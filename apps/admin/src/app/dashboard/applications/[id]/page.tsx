@@ -305,7 +305,7 @@ function ApplicationDetail() {
                 ))}
               </ul>
             ) : (
-              <div className="mt-4 flex flex-col gap-3">
+              <div className="mt-4 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
                 {application.missingDocumentTypes.map((type) => {
                   const existing = unattachedUploadOf(type);
 
@@ -313,7 +313,7 @@ function ApplicationDetail() {
                     return (
                       <div
                         key={type}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-4"
+                        className="flex flex-wrap items-center justify-between gap-3 p-4"
                       >
                         <div>
                           <p className="font-heading text-sm font-semibold text-text">
@@ -348,16 +348,13 @@ function ApplicationDetail() {
                       onChanged={handleDocumentChanged}
                     />
                   ) : (
-                    <div
-                      key={type}
-                      className="rounded-lg border border-border bg-surface p-4 text-sm text-text-muted"
-                    >
+                    <div key={type} className="p-4 text-sm text-text-muted">
                       {DOCUMENT_TYPE_LABELS[type] ?? humanize(type)} — not uploaded.
                     </div>
                   );
                 })}
                 {documentsError && (
-                  <p role="alert" className="text-sm text-danger">
+                  <p role="alert" className="p-4 text-sm text-danger">
                     {documentsError}
                   </p>
                 )}
@@ -369,13 +366,13 @@ function ApplicationDetail() {
         {canManage && application.attachedDocumentIds.length > 0 && (
           <div className="mt-6">
             <p className="text-sm font-semibold text-text">Attached</p>
-            <ul className="mt-2 flex flex-col gap-2">
+            <ul className="mt-2 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
               {application.attachedDocumentIds.map((documentId) => {
                 const entry = documents?.find((doc) => doc.id === documentId);
                 return (
                   <li
                     key={documentId}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-4"
+                    className="flex flex-wrap items-center justify-between gap-3 p-4"
                   >
                     <p className="text-sm text-text">
                       {entry

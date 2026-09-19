@@ -123,7 +123,7 @@ export function AdminDocumentRow({
   const rejected = document?.status === 'rejected';
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
+    <div className="p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <span

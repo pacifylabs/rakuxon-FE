@@ -78,7 +78,7 @@ export default function ApplicationsPage() {
             <li key={application.id}>
               <a
                 href={`/dashboard/applications/${application.id}`}
-                className="flex items-center gap-4 rounded-lg border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
+                className="flex items-center gap-4 rounded-md border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
               >
                 <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-text-muted">
                   <FileStack aria-hidden="true" className="size-4" />

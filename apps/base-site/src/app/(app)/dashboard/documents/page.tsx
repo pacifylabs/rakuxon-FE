@@ -84,7 +84,7 @@ export default function DocumentsPage() {
                 <p className="mt-1 text-sm text-text-muted">{category.hint}</p>
               </div>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
                 {category.types.map((type) => (
                   <DocumentRow
                     key={type}

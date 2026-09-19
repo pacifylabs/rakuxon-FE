@@ -27,7 +27,7 @@ function RoleSelect({
           required
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="mt-2 block w-full rounded-lg border border-border bg-surface px-3 py-2 text-base text-text"
+          className="mt-2 block w-full rounded-md border border-border bg-surface px-3 py-2 text-base text-text"
         >
           <option value="">Choose a role</option>
           {roles.map((role) => (
@@ -88,7 +88,7 @@ function EditRole({
   }
 
   return (
-    <div className="mt-4 rounded-lg border border-border bg-surface-muted p-4">
+    <div className="mt-4 rounded-md border border-border bg-surface-muted p-4">
       <RoleSelect roles={roles} value={roleId} onChange={setRoleId} />
       {error && (
         <p role="alert" className="mt-3 text-sm text-danger">
@@ -163,7 +163,7 @@ function CreateAdminForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-surface p-6">
+    <form onSubmit={handleSubmit} className="rounded-md border border-border bg-surface p-6">
       <h2 className="font-heading text-lg font-semibold text-text">New admin</h2>
       <p className="mt-1 text-sm text-text-muted">
         Sets a real password directly — the new admin can change it via the reset flow afterwards.
@@ -306,9 +306,9 @@ function AdminsList() {
       )}
 
       {admins && admins.length > 0 && (
-        <ul className="mt-6 flex flex-col gap-3">
+        <ul className="mt-6 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
           {admins.map((admin) => (
-            <li key={admin.id} className="rounded-lg border border-border bg-surface p-5">
+            <li key={admin.id} className="p-5">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="font-heading text-base font-semibold text-text">

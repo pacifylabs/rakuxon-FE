@@ -24,9 +24,11 @@ export function EducationHistorySection({
         <p className="text-sm text-text-muted">Add at least your most recent school or institution.</p>
       )}
 
-      {entries.map((entry, index) => (
-        <div key={index} className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
-          <div className="flex items-start justify-between gap-4">
+      {entries.length > 0 && (
+        <div className="flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
+          {entries.map((entry, index) => (
+            <div key={index} className="flex flex-col gap-4 p-5">
+              <div className="flex items-start justify-between gap-4">
             <div className="grid flex-1 gap-4 sm:grid-cols-2">
               <FormField
                 label="Institution name"
@@ -95,9 +97,11 @@ export function EducationHistorySection({
             >
               <Trash2 aria-hidden="true" className="size-4" />
             </button>
-          </div>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
 
       <Button variant="ghost" type="button" onClick={onAdd} className="self-start">
         <Plus aria-hidden="true" className="mr-2 inline size-4" />

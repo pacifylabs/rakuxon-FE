@@ -56,7 +56,7 @@ function RoleForm({
   }
 
   return (
-    <form onSubmit={submit} className="mt-6 rounded-lg border border-border bg-surface p-6">
+    <form onSubmit={submit} className="mt-6 rounded-md border border-border bg-surface p-6">
       <h2 className="font-heading text-xl font-semibold text-text">
         {role ? `Edit ${role.name}` : 'New role'}
       </h2>
@@ -78,7 +78,7 @@ function RoleForm({
       <p className="mt-6 text-sm font-semibold text-text">{selected.size} permissions selected</p>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {[...groups].map(([group, items]) => (
-          <fieldset key={group} className="rounded-lg border border-border p-4">
+          <fieldset key={group} className="rounded-md border border-border p-4">
             <legend className="px-2 text-base font-semibold capitalize text-text">
               {group.replaceAll('-', ' ')}
             </legend>
@@ -216,67 +216,69 @@ function RolesList() {
           />
         </div>
       )}
-      <ul className="mt-6 flex flex-col gap-3">
-        {roles?.map((role) => (
-          <li key={role.id} className="rounded-lg border border-border bg-surface p-5">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h2 className="font-heading text-lg font-semibold text-text">{role.name}</h2>
-                <p className="mt-1 text-sm text-text-muted">{role.description}</p>
+      {roles && roles.length > 0 && (
+        <ul className="mt-6 flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
+          {roles.map((role) => (
+            <li key={role.id} className="p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h2 className="font-heading text-lg font-semibold text-text">{role.name}</h2>
+                  <p className="mt-1 text-sm text-text-muted">{role.description}</p>
+                  <p className="mt-2 text-sm text-text-muted">
+                    {role.adminCount} admins · {role.permissions.length} permissions
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    onClick={() => {
+                      setEditing(role);
+                      setDeleting(null);
+                    }}
+                  >
+                    Edit role
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    disabled={role.adminCount > 0 || pending}
+                    onClick={() => setDeleting(role.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+              {role.adminCount > 0 && (
                 <p className="mt-2 text-sm text-text-muted">
-                  {role.adminCount} admins · {role.permissions.length} permissions
+                  Reassign these admins before deleting this role.
                 </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="md"
-                  onClick={() => {
-                    setEditing(role);
-                    setDeleting(null);
-                  }}
-                >
-                  Edit role
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="md"
-                  disabled={role.adminCount > 0 || pending}
-                  onClick={() => setDeleting(role.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-            {role.adminCount > 0 && (
-              <p className="mt-2 text-sm text-text-muted">
-                Reassign these admins before deleting this role.
-              </p>
-            )}
-            {deleting === role.id && (
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <p className="text-sm text-text">Delete {role.name}?</p>
-                <Button
-                  variant="primary"
-                  size="md"
-                  disabled={pending}
-                  onClick={() => remove(role.id)}
-                >
-                  Confirm delete
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="md"
-                  disabled={pending}
-                  onClick={() => setDeleting(null)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+              )}
+              {deleting === role.id && (
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <p className="text-sm text-text">Delete {role.name}?</p>
+                  <Button
+                    variant="primary"
+                    size="md"
+                    disabled={pending}
+                    onClick={() => remove(role.id)}
+                  >
+                    Confirm delete
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    disabled={pending}
+                    onClick={() => setDeleting(null)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

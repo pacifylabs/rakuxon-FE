@@ -40,9 +40,9 @@ function StatCard({
   return (
     <a
       href={href}
-      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
+      className="flex flex-col gap-3 rounded-md border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
     >
-      <span className="grid size-10 place-items-center rounded-md bg-accent-soft text-primary">
+      <span className="grid size-10 place-items-center rounded-sm bg-accent-soft text-primary">
         <Icon aria-hidden="true" className="size-5" />
       </span>
       <p className="font-heading text-3xl font-bold text-text">{value}</p>
@@ -140,7 +140,7 @@ function DashboardHome() {
           </div>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-2">
-            <div className="rounded-lg border border-border bg-surface p-6">
+            <div className="rounded-md border border-border bg-surface p-6">
               <h2 className="font-heading text-lg font-semibold text-text">
                 Applications by status
               </h2>
@@ -154,7 +154,7 @@ function DashboardHome() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface p-6">
+            <div className="rounded-md border border-border bg-surface p-6">
               <h2 className="font-heading text-lg font-semibold text-text">
                 Student profile completion
               </h2>
@@ -168,7 +168,7 @@ function DashboardHome() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface p-6">
+            <div className="rounded-md border border-border bg-surface p-6">
               <h2 className="font-heading text-lg font-semibold text-text">Partners by status</h2>
               <div className="mt-6">
                 <BarChart
@@ -180,7 +180,7 @@ function DashboardHome() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface p-6">
+            <div className="rounded-md border border-border bg-surface p-6">
               <h2 className="font-heading text-lg font-semibold text-text">
                 Institutions by status
               </h2>

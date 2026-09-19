@@ -106,6 +106,8 @@ export type { SignUpPromptProps } from './SignUpPrompt';
 export { SocialIcon } from './SocialIcon';
 export { StatusBadge } from './StatusBadge';
 export type { StatusBadgeProps, StatusBadgeTone } from './StatusBadge';
+export { Switch } from './Switch';
+export type { SwitchProps } from './Switch';
 export { TestimonialCard, initialsOf } from './TestimonialCard';
 export type { TestimonialCardProps } from './TestimonialCard';
 export { TestimonialGrid } from './TestimonialGrid';

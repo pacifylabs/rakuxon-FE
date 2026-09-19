@@ -29,7 +29,7 @@ export function VerifyEmailBanner({ email }: { email: string }) {
   return (
     <div
       role="status"
-      className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-accent-soft px-5 py-4"
+      className="mb-6 flex flex-wrap items-center gap-3 rounded-md border border-border bg-accent-soft px-5 py-4"
     >
       <MailWarning aria-hidden="true" className="size-5 shrink-0 text-primary" />
       <p className="flex-1 text-sm text-text">

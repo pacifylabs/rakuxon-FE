@@ -107,7 +107,7 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
   const rejected = document?.status === 'rejected';
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-start gap-3">
         <span
           className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${

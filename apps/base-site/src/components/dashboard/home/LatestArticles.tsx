@@ -20,7 +20,7 @@ export function LatestArticles({ articles }: { articles: ArticleSummary[] }) {
           <li key={article.id} className="h-full">
             <a
               href={articleRoute(article.slug)}
-              className="flex h-full flex-col rounded-lg border border-border bg-surface p-5 shadow-sm transition-[transform,box-shadow] duration-base ease-standard hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              className="flex h-full flex-col rounded-md border border-border bg-surface p-5 shadow-sm transition-[transform,box-shadow] duration-base ease-standard hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
               <span className="flex items-center gap-2 text-sm text-text-muted">
                 {article.countryCode && <CountryFlag countryCode={article.countryCode} size="sm" />}

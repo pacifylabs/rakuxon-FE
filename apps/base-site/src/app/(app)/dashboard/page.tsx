@@ -130,7 +130,7 @@ export default function DashboardPage() {
         Complete your profile, upload your documents and track your applications from here.
       </p>
 
-      <div className="mt-8 grid grid-cols-2 gap-6 rounded-lg border border-border bg-surface p-6 sm:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-6 rounded-md border border-border bg-surface p-6 sm:grid-cols-3">
         <StatChip
           icon={UserCheck}
           tone="tone1"
@@ -178,7 +178,7 @@ export default function DashboardPage() {
           <a
             key={card.href}
             href={card.href}
-            className="rounded-lg border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
+            className="rounded-md border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
           >
             <h2 className="font-heading text-base font-semibold text-text">{card.title}</h2>
             <p className="mt-2 text-sm text-text-muted">{card.body}</p>
