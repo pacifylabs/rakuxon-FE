@@ -5,6 +5,7 @@ import { CtaBand, DestinationCard, PageHeader, SectionBand } from '@rakuxon/ui';
 import { DESTINATIONS_CTA, DESTINATIONS_INDEX, destinationCardContent } from '@/content/destinations';
 import { ROUTES } from '@/content/routes';
 import { fetchCountries } from '@/lib/catalogue/api';
+import { fetchDestinationCards } from '@/lib/destinations/api';
 
 /* Revalidated: the destination list is now whatever the catalogue holds. */
 export const revalidate = 300;
@@ -25,7 +26,8 @@ export default async function DestinationsPage() {
    * written guide link to it; the rest open the listing filtered to them,
    * which is a real page rather than a stub.
    */
-  const countries = await fetchCountries();
+  const [countries, guideCards] = await Promise.all([fetchCountries(), fetchDestinationCards()]);
+  const guides = Object.fromEntries(guideCards.map((guide) => [guide.slug, guide]));
 
   return (
     <>
@@ -43,7 +45,7 @@ export default async function DestinationsPage() {
 
         <ul className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {countries.map((entry) => {
-            const card = destinationCardContent(entry);
+            const card = destinationCardContent(entry, guides);
 
             return (
               <li key={entry.countryCode} className="h-full">

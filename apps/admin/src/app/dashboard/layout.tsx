@@ -43,6 +43,7 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
       children: [
         { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
         { href: '/dashboard/content/services', label: 'Services', icon: Compass },
+        { href: '/dashboard/content/destinations', label: 'Destinations', icon: Globe2 },
         { href: '/dashboard/content/site-settings', label: 'Site settings', icon: Settings },
       ],
     },

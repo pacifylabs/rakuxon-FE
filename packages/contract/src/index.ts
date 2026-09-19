@@ -163,6 +163,15 @@ export type AdminTestimonialDetail = Schemas['AdminTestimonialDetailDto'];
 export type CreateTestimonialRequest = Schemas['CreateTestimonialDto'];
 export type UpdateTestimonialRequest = Schemas['UpdateTestimonialDto'];
 
+export type DestinationCard = Schemas['DestinationCardDto'];
+export type DestinationGuide = Schemas['DestinationDto'];
+export type DestinationFact = Schemas['DestinationFactDto'];
+export type AdminDestinationSummary = Schemas['AdminDestinationSummaryDto'];
+export type AdminDestinationList = Schemas['AdminDestinationListDto'];
+export type AdminDestinationDetail = Schemas['AdminDestinationDetailDto'];
+export type CreateDestinationRequest = Schemas['CreateDestinationDto'];
+export type UpdateDestinationRequest = Schemas['UpdateDestinationDto'];
+
 export type AdminServiceSummary = Schemas['AdminServiceSummaryDto'];
 export type AdminServiceList = Schemas['AdminServiceListDto'];
 export type AdminServiceDetail = Schemas['AdminServiceDetailDto'];

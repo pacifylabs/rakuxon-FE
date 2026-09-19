@@ -10,42 +10,47 @@ import {
   UniversityCard,
 } from '@rakuxon/ui';
 
-import { COUNTRY_BY_SLUG, COUNTRIES, DESTINATIONS_CTA } from '@/content/destinations';
-import { ROUTES, SIGN_UP, countryRoute } from '@/content/routes';
-import type { CountrySlug } from '@/content/routes';
+import { DESTINATIONS_CTA, DESTINATION_FALLBACK_IMAGE } from '@/content/destinations';
+import { ROUTES, SIGN_UP } from '@/content/routes';
 import { UNIVERSITIES } from '@/content/universities';
+import { fetchDestinationGuide } from '@/lib/destinations/api';
 import { absoluteUrl } from '@/lib/site-url';
 
-export const dynamic = 'force-static';
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return COUNTRIES.map((country) => ({ country: country.slug }));
-}
+/* Revalidated: a guide can be edited and republished from the admin CMS at
+   any time — see content/destinations.ts's own note on this. */
+export const revalidate = 300;
 
 type Params = { params: Promise<{ country: string }> };
 
+function countryHref(slug: string): string {
+  return `/destinations/${slug}`;
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { country: slug } = await params;
-  const country = COUNTRY_BY_SLUG.get(slug as CountrySlug);
-  if (!country) return {};
+  const guide = await fetchDestinationGuide(slug);
+  if (!guide) return {};
 
   return {
-    title: `Study in ${country.shortName}`,
-    description: country.intro,
-    alternates: { canonical: countryRoute(slug as CountrySlug) },
+    title: `Study in ${guide.shortName}`,
+    description: guide.intro,
+    alternates: { canonical: countryHref(slug) },
   };
 }
 
 export default async function CountryPage({ params }: Params) {
   const { country: slug } = await params;
-  const country = COUNTRY_BY_SLUG.get(slug as CountrySlug);
-  if (!country) notFound();
+  const guide = await fetchDestinationGuide(slug);
+  if (!guide) notFound();
 
-  /* Campus cards for the illustrative institutions named on this country. */
-  const universities = UNIVERSITIES.filter((university) =>
-    country.universities.includes(university.name),
-  );
+  /* Campus cards for the illustrative institutions named on this guide. */
+  const universities = UNIVERSITIES.filter((university) => guide.universities.includes(university.name));
+
+  const heroImage = guide.heroImageUrl
+    ? { src: guide.heroImageUrl, alt: guide.heroImageAlt }
+    : guide.cardImageUrl
+      ? { src: guide.cardImageUrl, alt: guide.cardImageAlt }
+      : DESTINATION_FALLBACK_IMAGE;
 
   return (
     <>
@@ -61,8 +66,8 @@ export default async function CountryPage({ params }: Params) {
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: country.shortName,
-                item: absoluteUrl(countryRoute(slug as CountrySlug)),
+                name: guide.shortName,
+                item: absoluteUrl(countryHref(slug)),
               },
             ],
           }),
@@ -70,16 +75,16 @@ export default async function CountryPage({ params }: Params) {
       />
       <ImageHero
         eyebrow="Study destination"
-        title={`Study in ${country.shortName}`}
+        title={`Study in ${guide.shortName}`}
         titleId="country-heading"
-        subcopy={country.intro}
+        subcopy={guide.intro}
         primaryCta={{ label: 'Get a shortlist', href: SIGN_UP }}
         secondaryCta={{ label: 'All destinations', href: ROUTES.destinations }}
-        image={country.heroImage}
+        image={heroImage}
       >
         <Breadcrumbs
           trail={[{ label: 'Destinations', href: ROUTES.destinations }]}
-          current={country.shortName}
+          current={guide.shortName}
         />
       </ImageHero>
 
@@ -88,12 +93,12 @@ export default async function CountryPage({ params }: Params) {
           id="country-why-heading"
           className="font-heading text-2xl font-bold text-text md:text-3xl"
         >
-          {country.whyHeading}
+          {guide.whyHeading}
         </h2>
-        <p className="mt-4 max-w-prose text-base text-text-muted">{country.why}</p>
+        <p className="mt-4 max-w-prose text-base text-text-muted">{guide.why}</p>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {country.whyPoints.map((point) => (
+          {guide.whyPoints.map((point) => (
             <li
               key={point}
               className="rounded-lg border border-border bg-surface p-5 text-sm text-text shadow-sm"
@@ -115,7 +120,7 @@ export default async function CountryPage({ params }: Params) {
           Indicative public ranges to help you plan. They are not quotes: your actual cost depends
           on the institution, the city and the course.
         </p>
-        <FactGrid className="mt-10" facts={country.facts} columns={3} sample />
+        <FactGrid className="mt-10" facts={guide.facts} columns={3} sample />
       </SectionBand>
 
       {universities.length > 0 && (
@@ -124,7 +129,7 @@ export default async function CountryPage({ params }: Params) {
             id="country-universities-heading"
             className="font-heading text-2xl font-bold text-text md:text-3xl"
           >
-            Popular institutions in {country.shortName}
+            Popular institutions in {guide.shortName}
           </h2>
           <ul
             data-sample="true"
@@ -134,7 +139,7 @@ export default async function CountryPage({ params }: Params) {
               <li key={university.name} className="h-full">
                 <UniversityCard
                   name={university.name}
-                  country={country.shortName}
+                  country={guide.shortName}
                   src={university.src}
                   alt={university.alt}
                   href={ROUTES.universities}
@@ -150,10 +155,10 @@ export default async function CountryPage({ params }: Params) {
           id="country-help-heading"
           className="font-heading text-2xl font-bold text-text md:text-3xl"
         >
-          How Rakuxon helps with {country.shortName} applications
+          How Rakuxon helps with {guide.shortName} applications
         </h2>
         <ol className="mt-10 grid items-stretch gap-6 md:grid-cols-3">
-          {country.helpPoints.map((point, index) => (
+          {guide.helpPoints.map((point, index) => (
             <li key={point} className="rounded-lg border border-border bg-surface p-6 shadow-sm">
               <span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-base font-bold text-on-primary">
                 {index + 1}
@@ -167,7 +172,7 @@ export default async function CountryPage({ params }: Params) {
       <SectionBand tone="surface" labelledBy="country-cta-heading">
         <CtaBand
           headingId="country-cta-heading"
-          heading={`Ready to apply to ${country.shortName}?`}
+          heading={`Ready to apply to ${guide.shortName}?`}
           subline={DESTINATIONS_CTA.subline}
           cta={DESTINATIONS_CTA.cta}
           reassurance={DESTINATIONS_CTA.reassurance}

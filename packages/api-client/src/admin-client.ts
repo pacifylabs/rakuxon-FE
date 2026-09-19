@@ -33,6 +33,9 @@ import type {
   AdminTestimonialDetail,
   AdminTestimonialList,
   AdminTestimonialSummary,
+  AdminDestinationDetail,
+  AdminDestinationList,
+  AdminDestinationSummary,
   AssignApplicationRequest,
   AssignableAdminList,
   AuditLogList,
@@ -42,6 +45,7 @@ import type {
   CreateAdminRequest,
   CreateArticleRequest,
   CreateCourseRequest,
+  CreateDestinationRequest,
   CreateInstitutionRequest,
   CreateIntakeTermRequest,
   CreateServiceRequest,
@@ -64,6 +68,7 @@ import type {
   UpdateAdminProfileRequest,
   UpdateArticleRequest,
   UpdateCourseRequest,
+  UpdateDestinationRequest,
   UpdateInstitutionRequest,
   UpdateIntakeTermRequest,
   UpdateServiceRequest,
@@ -464,6 +469,57 @@ export class AdminApiClient {
 
   revertTestimonialToDraft(id: string): Promise<AdminTestimonialSummary> {
     return this.request<AdminTestimonialSummary>(`/v1/admin/testimonials/${id}/revert-to-draft`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  /* ----------------------------------------------------------- destinations */
+
+  listAdminDestinations(
+    query: { status?: string; page?: number; limit?: number } = {},
+  ): Promise<AdminDestinationList> {
+    return this.request<AdminDestinationList>(`/v1/admin/destinations${toQuery(query)}`, {
+      auth: true,
+    });
+  }
+
+  getDestinationDetail(id: string): Promise<AdminDestinationDetail> {
+    return this.request<AdminDestinationDetail>(`/v1/admin/destinations/${id}`, { auth: true });
+  }
+
+  updateDestination(id: string, body: UpdateDestinationRequest): Promise<AdminDestinationDetail> {
+    return this.request<AdminDestinationDetail>(`/v1/admin/destinations/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  createDestination(body: CreateDestinationRequest): Promise<AdminDestinationDetail> {
+    return this.request<AdminDestinationDetail>('/v1/admin/destinations', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
+  publishDestination(id: string): Promise<AdminDestinationSummary> {
+    return this.request<AdminDestinationSummary>(`/v1/admin/destinations/${id}/publish`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  suspendDestination(id: string): Promise<AdminDestinationSummary> {
+    return this.request<AdminDestinationSummary>(`/v1/admin/destinations/${id}/suspend`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  revertDestinationToDraft(id: string): Promise<AdminDestinationSummary> {
+    return this.request<AdminDestinationSummary>(`/v1/admin/destinations/${id}/revert-to-draft`, {
       method: 'POST',
       auth: true,
     });

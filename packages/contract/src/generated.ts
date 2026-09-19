@@ -2267,6 +2267,125 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/destinations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List published destination guides, for the /destinations grid */
+        get: operations["DestinationsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/destinations/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One published destination guide, in full */
+        get: operations["DestinationsController_getBySlug_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/destinations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List destination guides, including drafts and suspended records */
+        get: operations["AdminDestinationsController_list_v1"];
+        put?: never;
+        /**
+         * Create a destination guide
+         * @description Starts life as draft.
+         */
+        post: operations["AdminDestinationsController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/destinations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminDestinationsController_getDetail_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminDestinationsController_update_v1"];
+        trace?: never;
+    };
+    "/v1/admin/destinations/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminDestinationsController_publish_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/destinations/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminDestinationsController_suspend_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/destinations/{id}/revert-to-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminDestinationsController_revertToDraft_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3729,7 +3848,7 @@ export interface components {
         };
         AdminUploadSignatureRequestDto: {
             /** @enum {string} */
-            folder: "testimonials" | "institutions" | "articles" | "site-settings";
+            folder: "testimonials" | "institutions" | "articles" | "site-settings" | "destinations";
         };
         AdminUploadSignatureDto: {
             cloudName: string;
@@ -3740,6 +3859,98 @@ export interface components {
             publicId: string;
             /** @description POST the file here as multipart form data. */
             uploadUrl: string;
+        };
+        DestinationCardDto: {
+            slug: string;
+            shortName: string;
+            cardImageUrl: string | null;
+            cardImageAlt: string;
+            tagline: string;
+        };
+        DestinationFactDto: {
+            label: string;
+            value: string;
+            hint?: string;
+        };
+        DestinationDto: {
+            slug: string;
+            name: string;
+            shortName: string;
+            cardImageUrl: string | null;
+            cardImageAlt: string;
+            heroImageUrl: string | null;
+            heroImageAlt: string;
+            tagline: string;
+            intro: string;
+            whyHeading: string;
+            why: string;
+            whyPoints: string[];
+            facts: components["schemas"]["DestinationFactDto"][];
+            universities: string[];
+            helpPoints: string[];
+        };
+        CreateDestinationDto: {
+            slug: string;
+            name: string;
+            shortName: string;
+            tagline: string;
+            intro: string;
+            whyHeading: string;
+            why: string;
+        };
+        AdminDestinationDetailDto: {
+            slug: string;
+            name: string;
+            shortName: string;
+            cardImageUrl: string | null;
+            cardImageAlt: string;
+            heroImageUrl: string | null;
+            heroImageAlt: string;
+            tagline: string;
+            intro: string;
+            whyHeading: string;
+            why: string;
+            whyPoints: string[];
+            facts: components["schemas"]["DestinationFactDto"][];
+            universities: string[];
+            helpPoints: string[];
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["PublishStatus"];
+            displayOrder: number;
+        };
+        AdminDestinationSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            shortName: string;
+            tagline: string;
+            status: components["schemas"]["PublishStatus"];
+            displayOrder: number;
+        };
+        AdminDestinationListDto: {
+            items: components["schemas"]["AdminDestinationSummaryDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        UpdateDestinationDto: {
+            slug?: string;
+            name?: string;
+            shortName?: string;
+            cardImageUrl?: string | null;
+            cardImageAlt?: string;
+            heroImageUrl?: string | null;
+            heroImageAlt?: string;
+            tagline?: string;
+            intro?: string;
+            whyHeading?: string;
+            why?: string;
+            whyPoints?: string[];
+            facts?: components["schemas"]["DestinationFactDto"][];
+            universities?: string[];
+            helpPoints?: string[];
+            displayOrder?: number;
         };
     };
     responses: never;
@@ -7429,6 +7640,201 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminUploadSignatureDto"];
+                };
+            };
+        };
+    };
+    DestinationsController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinationCardDto"][];
+                };
+            };
+        };
+    };
+    DestinationsController_getBySlug_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinationDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_list_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PublishStatus"];
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationListDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDestinationDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationDetailDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_getDetail_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationDetailDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDestinationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationDetailDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_publish_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_suspend_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminDestinationsController_revertToDraft_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDestinationSummaryDto"];
                 };
             };
         };
