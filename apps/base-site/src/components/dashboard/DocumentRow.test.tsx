@@ -11,7 +11,13 @@ function renderRow(document: StudentDocument | undefined) {
   return render(
     <ToastProvider>
       <AuthProvider baseUrl="https://api.test">
-        <DocumentRow type="identity" label="Identity" document={document} onUploaded={vi.fn()} onDeleted={vi.fn()} />
+        <DocumentRow
+          type="identity"
+          label="Identity"
+          document={document}
+          onUploaded={vi.fn()}
+          onDeleted={vi.fn()}
+        />
       </AuthProvider>
     </ToastProvider>,
   );
@@ -30,11 +36,13 @@ const base: StudentDocument = {
 };
 
 describe('<DocumentRow/>', () => {
-  it('shows the rejection reason and offers to upload a replacement', () => {
+  it('shows the rejection reason and a dropzone to upload a replacement', () => {
     renderRow({ ...base, status: 'rejected', rejectionReason: 'The scan is illegible.' });
 
-    expect(screen.getByText('Rejected: The scan is illegible.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /upload replacement/i })).toBeInTheDocument();
+    expect(screen.getByText(/Rejected: The scan is illegible\./)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /drag and drop, or click to browse/i }),
+    ).toBeInTheDocument();
   });
 
   it('shows the filename, not a rejection reason, for an uploaded document', () => {
@@ -44,9 +52,12 @@ describe('<DocumentRow/>', () => {
     expect(screen.queryByText(/^Rejected:/)).not.toBeInTheDocument();
   });
 
-  it('offers a plain upload, not "replacement", when nothing has been uploaded yet', () => {
+  it('offers a real drag-and-drop dropzone, not a plain button, when nothing has been uploaded yet', () => {
     renderRow(undefined);
 
-    expect(screen.getByRole('button', { name: 'Upload' })).toBeInTheDocument();
+    const dropzone = screen.getByRole('button', { name: /drag and drop, or click to browse/i });
+    expect(dropzone).toBeInTheDocument();
+    // The document type's own label still identifies which slot this is.
+    expect(screen.getByText('Identity')).toBeInTheDocument();
   });
 });

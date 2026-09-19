@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, FileText, Trash2, XCircle } from 'lucide-react';
+import { CheckCircle2, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
@@ -107,47 +107,30 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
   const rejected = document?.status === 'rejected';
 
   return (
-    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-start gap-3">
-        <span
-          className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
-            uploaded
-              ? 'bg-primary/15 text-primary'
-              : rejected
-                ? 'bg-danger/15 text-danger'
-                : 'bg-surface-muted text-text-muted'
-          }`}
-        >
-          {uploaded ? (
-            <CheckCircle2 aria-hidden="true" className="size-4" />
-          ) : rejected ? (
-            <XCircle aria-hidden="true" className="size-4" />
-          ) : (
-            <FileText aria-hidden="true" className="size-4" />
-          )}
-        </span>
-        <div>
-          <p className="font-heading text-sm font-semibold text-text">{label}</p>
-          {uploaded && document && (
-            <p className="mt-1 text-sm text-text-muted">
-              {document.originalFilename}
-              {document.bytes ? ` · ${formatBytes(document.bytes)}` : ''}
-            </p>
-          )}
-          {rejected && document?.rejectionReason && (
-            <p className="mt-1 text-sm text-danger">Rejected: {document.rejectionReason}</p>
-          )}
-          {error && (
-            <p role="alert" className="mt-1 text-sm text-danger">
-              {error}
-            </p>
-          )}
-        </div>
-      </div>
+    <div className="flex flex-col gap-3 p-4">
+      {uploaded ? (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-primary/15 text-primary">
+              <CheckCircle2 aria-hidden="true" className="size-4" />
+            </span>
+            <div>
+              <p className="font-heading text-sm font-semibold text-text">{label}</p>
+              {document && (
+                <p className="mt-1 text-sm text-text-muted">
+                  {document.originalFilename}
+                  {document.bytes ? ` · ${formatBytes(document.bytes)}` : ''}
+                </p>
+              )}
+              {error && (
+                <p role="alert" className="mt-1 text-sm text-danger">
+                  {error}
+                </p>
+              )}
+            </div>
+          </div>
 
-      <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-        {uploaded ? (
-          <>
+          <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
             <DropzoneUploader
               label="Replace"
               layout="inline"
@@ -165,18 +148,26 @@ export function DocumentRow({ type, label, document, onUploaded, onDeleted }: Do
             >
               <Trash2 aria-hidden="true" className="size-4" />
             </button>
-          </>
-        ) : (
+          </div>
+        </div>
+      ) : (
+        <>
+          {rejected && document?.rejectionReason && (
+            <p className="flex items-center gap-2 text-sm text-danger">
+              <XCircle aria-hidden="true" className="size-4 shrink-0" />
+              Rejected: {document.rejectionReason}
+            </p>
+          )}
           <DropzoneUploader
-            label={rejected ? 'Upload replacement' : 'Upload'}
-            layout="inline"
+            label={label}
             variant="document"
             onUpload={handleFile}
             uploading={uploading}
+            error={error}
             disabled={uploading}
           />
-        )}
-      </div>
+        </>
+      )}
 
       <ConfirmDialog
         open={confirmingRemove}
