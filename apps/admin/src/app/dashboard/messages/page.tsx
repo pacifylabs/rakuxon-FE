@@ -4,7 +4,7 @@ import { ChevronRight, MessageCircle } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, EmptyState } from '@rakuxon/ui';
+import { Button, EmptyState, PresenceDot } from '@rakuxon/ui';
 import type { ConversationSummary } from '@rakuxon/contract';
 
 import { useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
@@ -84,7 +84,10 @@ export default function AdminMessagesPage() {
                   <MessageCircle aria-hidden="true" className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-heading text-sm font-semibold text-text">{conversation.counterpartName}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-heading text-sm font-semibold text-text">{conversation.counterpartName}</p>
+                    <PresenceDot online={conversation.counterpartOnline} />
+                  </div>
                   {conversation.lastMessage && (
                     <p className="mt-1 truncate text-sm text-text-muted">{conversation.lastMessage}</p>
                   )}

@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 
 import { AppLink } from './AppLink';
 import { EmptyState } from './EmptyState';
+import { PresenceDot } from './PresenceDot';
 import { Wordmark } from './Wordmark';
 import { initialsOf } from './TestimonialCard';
 
@@ -37,6 +38,7 @@ export interface AppShellNotificationsSlot {
 export interface AppShellConversationItem {
   id: string;
   counterpartName: string;
+  counterpartOnline: boolean;
   lastMessage: string | null;
   unreadCount: number;
 }
@@ -413,7 +415,10 @@ export function AppShell({
                   item.unreadCount > 0 ? 'bg-accent-soft' : ''
                 }`}
               >
-                <span className="text-sm font-semibold text-text">{item.counterpartName}</span>
+                <span className="flex w-full items-center gap-2">
+                  <span className="text-sm font-semibold text-text">{item.counterpartName}</span>
+                  <PresenceDot online={item.counterpartOnline} />
+                </span>
                 {item.lastMessage && (
                   <span className="w-full truncate text-sm text-text-muted">{item.lastMessage}</span>
                 )}

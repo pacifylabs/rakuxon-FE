@@ -343,4 +343,9 @@ export class ApiClient {
       auth: true,
     });
   }
+
+  /** Polled every ~60s while a session is open — drives the "online" indicator in messaging. */
+  heartbeat(): Promise<void> {
+    return this.request<void>('/v1/students/me/heartbeat', { method: 'POST', auth: true });
+  }
 }

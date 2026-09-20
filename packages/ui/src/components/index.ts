@@ -17,6 +17,8 @@ export { BarChart } from './BarChart';
 export type { BarChartDatum, BarChartProps } from './BarChart';
 export { PieChart } from './PieChart';
 export type { PieChartDatum, PieChartProps } from './PieChart';
+export { PresenceDot } from './PresenceDot';
+export type { PresenceDotProps } from './PresenceDot';
 export { AuthCard } from './AuthCard';
 export { FormField } from './FormField';
 export type { FormFieldProps } from './FormField';

@@ -30,6 +30,8 @@ import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-
 
 /** Matches the "chat/presence: polling-based, refetch every 20-30s" decision — no push channel exists yet. */
 const MESSAGES_POLL_MS = 25_000;
+/** Comfortably inside the backend's 2-minute "online" window, so one missed tick never flickers offline. */
+const HEARTBEAT_POLL_MS = 60_000;
 
 function toShellItem(notification: Notification): AppShellNotificationItem {
   return {
@@ -45,6 +47,7 @@ function toShellConversation(conversation: ConversationSummary): AppShellConvers
   return {
     id: conversation.id,
     counterpartName: conversation.counterpartName,
+    counterpartOnline: conversation.counterpartOnline,
     lastMessage: conversation.lastMessage ?? null,
     unreadCount: conversation.unreadCount,
   };
@@ -143,6 +146,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       cancelled = true;
       clearInterval(interval);
     };
+  }, [client, admin]);
+
+  useEffect(() => {
+    if (!admin) return;
+    const beat = () => {
+      client.heartbeat().catch(() => {
+        /* A missed heartbeat just means one fewer "online" tick for others to see — never worth surfacing. */
+      });
+    };
+    beat();
+    const interval = setInterval(beat, HEARTBEAT_POLL_MS);
+    return () => clearInterval(interval);
   }, [client, admin]);
 
   async function handleOpenNotification(id: string) {

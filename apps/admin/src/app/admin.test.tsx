@@ -71,6 +71,9 @@ beforeEach(() => {
       if (url.includes('/admin/messages/conversations')) {
         return json(200, []);
       }
+      if (url.includes('/admin/account/me/heartbeat')) {
+        return new Response(null, { status: 204 });
+      }
       return json(200, { status: 'ok', dependencies: { database: 'up' } });
     }),
   );

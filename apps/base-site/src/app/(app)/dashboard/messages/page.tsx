@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { Button, EmptyState, useToast } from '@rakuxon/ui';
+import { Button, EmptyState, PresenceDot, useToast } from '@rakuxon/ui';
 import type { AssignedAdmin, ConversationSummary } from '@rakuxon/contract';
 
 function errorMessage(caught: unknown, fallback: string): string {
@@ -97,15 +97,16 @@ export default function MessagesPage() {
                 >
                   {assignedAdmins.map((admin) => (
                     <option key={admin.id} value={admin.id}>
-                      {admin.firstName} {admin.lastName}
+                      {admin.firstName} {admin.lastName} — {admin.online ? 'Online' : 'Offline'}
                     </option>
                   ))}
                 </select>
               </label>
             )}
             {assignedAdmins.length === 1 && (
-              <p className="text-sm text-text-muted">
+              <p className="flex items-center gap-2 text-sm text-text-muted">
                 To: <span className="font-semibold text-text">{assignedAdmins[0]!.firstName} {assignedAdmins[0]!.lastName}</span>
+                <PresenceDot online={assignedAdmins[0]!.online} />
               </p>
             )}
             <textarea
@@ -146,7 +147,10 @@ export default function MessagesPage() {
                   <MessageCircle aria-hidden="true" className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-heading text-sm font-semibold text-text">{conversation.counterpartName}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-heading text-sm font-semibold text-text">{conversation.counterpartName}</p>
+                    <PresenceDot online={conversation.counterpartOnline} />
+                  </div>
                   {conversation.lastMessage && (
                     <p className="mt-1 truncate text-sm text-text-muted">{conversation.lastMessage}</p>
                   )}

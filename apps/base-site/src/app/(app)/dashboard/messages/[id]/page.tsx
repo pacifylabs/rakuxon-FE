@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
 import { useApiClient } from '@rakuxon/auth';
-import { Button, useToast } from '@rakuxon/ui';
+import { Button, PresenceDot, useToast } from '@rakuxon/ui';
 import type { ConversationDetail } from '@rakuxon/contract';
 
 const THREAD_POLL_MS = 20_000;
@@ -89,9 +89,12 @@ export default function ConversationPage() {
       >
         ← All messages
       </button>
-      <h1 id="conversation-heading" className="mt-2 font-heading text-3xl font-bold text-text">
-        {conversation.counterpartName}
-      </h1>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <h1 id="conversation-heading" className="font-heading text-3xl font-bold text-text">
+          {conversation.counterpartName}
+        </h1>
+        <PresenceDot online={conversation.counterpartOnline} />
+      </div>
 
       <ol className="mt-6 flex flex-col gap-3">
         {conversation.messages.map((message) => {
