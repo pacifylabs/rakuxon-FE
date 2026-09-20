@@ -9,6 +9,7 @@ import type { ReactNode } from 'react';
 import { AppLink } from './AppLink';
 import { EmptyState } from './EmptyState';
 import { PresenceDot } from './PresenceDot';
+import { ThemeToggle } from './ThemeToggle';
 import { Wordmark } from './Wordmark';
 import { initialsOf } from './TestimonialCard';
 
@@ -66,6 +67,8 @@ export interface AppShellProps {
   userEmail?: string;
   onSignOut: () => void;
   signOutLabel?: string;
+  /** Show the saved light, dark, and system theme control in the header. */
+  showThemeToggle?: boolean;
   /**
    * Backs the bell icon with real data. Omitted, the bell renders exactly
    * the static "nothing here yet" panel it always has — a page still loading
@@ -364,6 +367,7 @@ export function AppShell({
   signOutLabel,
   notifications,
   messages,
+  showThemeToggle = false,
   badge,
   accountMenu,
   children,
@@ -437,7 +441,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface px-5 lg:px-8">
+      <header className="sticky top-0 z-20 flex min-h-16 flex-wrap items-center justify-between gap-2 border-b border-border bg-surface px-3 py-2 sm:h-16 sm:flex-nowrap sm:gap-4 sm:px-5 sm:py-0 lg:px-8">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -456,7 +460,8 @@ export function AppShell({
           )}
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1">
+          {showThemeToggle && <ThemeToggle />}
           <HeaderMenuButton
             icon={Bell}
             label="Notifications"

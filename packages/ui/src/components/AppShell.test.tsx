@@ -112,3 +112,32 @@ describe('<AppShell/> badge and account menu', () => {
     expect(onSignOut).toHaveBeenCalled();
   });
 });
+
+describe('<AppShell/> theme control', () => {
+  it('switches themes, remembers the preference, and returns to system mode', async () => {
+    document.cookie = 'rakuxon-theme=;path=/;max-age=0';
+    document.documentElement.removeAttribute('data-theme');
+    const shell = (
+      <AppShell navItems={navItems} homeHref="/dashboard" onSignOut={vi.fn()} showThemeToggle>
+        <p>content</p>
+      </AppShell>
+    );
+    const user = userEvent.setup();
+    const first = render(shell);
+    try {
+      await user.click(screen.getByRole('button', { name: 'System theme. Switch to light theme.' }));
+      expect(document.documentElement).toHaveAttribute('data-theme', 'light');
+      await user.click(screen.getByRole('button', { name: 'Light theme. Switch to dark theme.' }));
+      expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
+      expect(document.cookie).toContain('rakuxon-theme=dark');
+      first.unmount();
+      render(shell);
+      await user.click(screen.getByRole('button', { name: 'Dark theme. Switch to system theme.' }));
+      expect(document.documentElement).not.toHaveAttribute('data-theme');
+      expect(document.cookie).toContain('rakuxon-theme=system');
+    } finally {
+      document.cookie = 'rakuxon-theme=;path=/;max-age=0';
+      document.documentElement.removeAttribute('data-theme');
+    }
+  });
+});

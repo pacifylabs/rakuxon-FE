@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
-import { ThemeProvider, ToastProvider, baseTokens } from '@rakuxon/ui';
+import { ThemeProvider, ToastProvider, baseTokens, themeScript } from '@rakuxon/ui';
 
 import { SessionProvider } from '@/components/SessionProvider';
 import './globals.css';
@@ -30,7 +30,10 @@ const BRAND_LOGO = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <ThemeProvider tokens={{ brand: BRAND_LOGO }}>
           <ToastProvider>

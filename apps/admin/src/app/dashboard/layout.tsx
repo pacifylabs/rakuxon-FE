@@ -202,6 +202,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       }
     >
       <AppShell
+        showThemeToggle
         navItems={navItems(hasPermission)}
         homeHref="/dashboard"
         userName={admin ? `${admin.firstName} ${admin.lastName}` : undefined}
