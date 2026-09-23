@@ -9,13 +9,19 @@ import type { DocumentType } from '@rakuxon/contract';
 export const DOCUMENT_TYPE_META: Record<DocumentType, { label: string; hint: string }> = {
   identity: { label: 'International Passport', hint: 'Passport or national ID.' },
   academic_certificate: { label: 'Academic certificate', hint: 'Degree or diploma certificate.' },
-  academic_transcript: { label: 'Degree transcript', hint: 'Your full academic record, not just the certificate.' },
+  academic_transcript: {
+    label: 'Degree transcript',
+    hint: 'Your full academic record, not just the certificate.',
+  },
   secondary_marksheet: { label: 'Secondary marksheet', hint: 'Final-year school results.' },
   senior_secondary_marksheet: {
     label: 'WAEC/NECO certificate',
     hint: 'Where your system has a separate senior stage.',
   },
-  english_test: { label: 'English test result', hint: 'IELTS, TOEFL or equivalent, if you have one.' },
+  english_test: {
+    label: 'English test result',
+    hint: 'IELTS, TOEFL or equivalent, if you have one.',
+  },
   medical: { label: 'Medical record', hint: 'Only where your chosen course requires one.' },
   cv_resume: { label: 'Updated CV/Resume', hint: 'Your most recent CV or resume.' },
   recommendation_letter: {
@@ -34,7 +40,10 @@ export const DOCUMENT_TYPES = Object.keys(DOCUMENT_TYPE_META) as DocumentType[];
 export const REQUIRED_DOCUMENT_TYPES: DocumentType[] = [
   'identity',
   'academic_certificate',
-  'english_test',
+  'academic_transcript',
+  'recommendation_letter',
+  'cv_resume',
+  'senior_secondary_marksheet',
 ];
 
 /**
@@ -42,7 +51,12 @@ export const REQUIRED_DOCUMENT_TYPES: DocumentType[] = [
  * once, rather than repeating similar wording on every row — one sentence of
  * "why this matters" per group instead of six.
  */
-export const DOCUMENT_CATEGORIES: { id: string; label: string; hint: string; types: DocumentType[] }[] = [
+export const DOCUMENT_CATEGORIES: {
+  id: string;
+  label: string;
+  hint: string;
+  types: DocumentType[];
+}[] = [
   {
     id: 'identity',
     label: 'Identity',

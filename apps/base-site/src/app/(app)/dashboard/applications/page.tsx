@@ -85,7 +85,7 @@ export default function ApplicationsPage() {
                 </span>
                 <div className="flex-1">
                   <p className="font-heading text-sm font-semibold text-text">
-                    Application {application.id.slice(0, 8)}
+                    Application {application.referenceCode}
                   </p>
                   <div className="mt-2">
                     <ApplicationStatusBadge status={application.status} />

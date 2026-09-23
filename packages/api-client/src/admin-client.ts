@@ -650,7 +650,7 @@ export class AdminApiClient {
   /* ---------------------------------------------------------- applications */
 
   listAdminApplications(
-    query: { status?: string; tenantId?: string; page?: number; limit?: number } = {},
+    query: { status?: string; tenantId?: string; q?: string; page?: number; limit?: number } = {},
   ): Promise<AdminApplicationList> {
     return this.request<AdminApplicationList>(`/v1/admin/applications${toQuery(query)}`, {
       auth: true,
@@ -713,11 +713,15 @@ export class AdminApiClient {
   }
 
   getStudentAuditLog(studentId: string): Promise<ResourceAuditLog> {
-    return this.request<ResourceAuditLog>(`/v1/admin/students/${studentId}/audit-log`, { auth: true });
+    return this.request<ResourceAuditLog>(`/v1/admin/students/${studentId}/audit-log`, {
+      auth: true,
+    });
   }
 
   getTenantAuditLog(tenantId: string): Promise<ResourceAuditLog> {
-    return this.request<ResourceAuditLog>(`/v1/admin/tenants/${tenantId}/audit-log`, { auth: true });
+    return this.request<ResourceAuditLog>(`/v1/admin/tenants/${tenantId}/audit-log`, {
+      auth: true,
+    });
   }
 
   getAdminAuditLog(adminId: string): Promise<ResourceAuditLog> {
@@ -747,7 +751,11 @@ export class AdminApiClient {
   }
 
   assignAdminRole(id: string, roleId: string): Promise<AdminSummary> {
-    return this.request(`/v1/admin/admins/${id}/role`, { method: 'PATCH', body: { roleId }, auth: true });
+    return this.request(`/v1/admin/admins/${id}/role`, {
+      method: 'PATCH',
+      body: { roleId },
+      auth: true,
+    });
   }
 
   listAdminPermissions(): Promise<Permission[]> {
@@ -805,7 +813,11 @@ export class AdminApiClient {
   }
 
   createAdminStudent(body: AdminCreateStudentRequest): Promise<AdminStudentDetail> {
-    return this.request<AdminStudentDetail>('/v1/admin/students', { method: 'POST', body, auth: true });
+    return this.request<AdminStudentDetail>('/v1/admin/students', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
   }
 
   setAdminStudentPassword(id: string, body: SetStudentPasswordRequest): Promise<void> {
@@ -901,11 +913,15 @@ export class AdminApiClient {
   /* ------------------------------------------------------ notification templates */
 
   listNotificationTemplates(): Promise<NotificationTemplateSummary[]> {
-    return this.request<NotificationTemplateSummary[]>('/v1/admin/notification-templates', { auth: true });
+    return this.request<NotificationTemplateSummary[]>('/v1/admin/notification-templates', {
+      auth: true,
+    });
   }
 
   getNotificationTemplateDetail(id: string): Promise<NotificationTemplateDetail> {
-    return this.request<NotificationTemplateDetail>(`/v1/admin/notification-templates/${id}`, { auth: true });
+    return this.request<NotificationTemplateDetail>(`/v1/admin/notification-templates/${id}`, {
+      auth: true,
+    });
   }
 
   updateNotificationTemplate(
@@ -923,11 +939,14 @@ export class AdminApiClient {
     id: string,
     body: PreviewNotificationTemplateRequest,
   ): Promise<NotificationTemplatePreview> {
-    return this.request<NotificationTemplatePreview>(`/v1/admin/notification-templates/${id}/preview`, {
-      method: 'POST',
-      body,
-      auth: true,
-    });
+    return this.request<NotificationTemplatePreview>(
+      `/v1/admin/notification-templates/${id}/preview`,
+      {
+        method: 'POST',
+        body,
+        auth: true,
+      },
+    );
   }
 
   /* -------------------------------------------------------------- messages */
@@ -937,7 +956,9 @@ export class AdminApiClient {
   }
 
   getConversation(id: string): Promise<ConversationDetail> {
-    return this.request<ConversationDetail>(`/v1/admin/messages/conversations/${id}`, { auth: true });
+    return this.request<ConversationDetail>(`/v1/admin/messages/conversations/${id}`, {
+      auth: true,
+    });
   }
 
   replyToConversation(id: string, body: SendMessageRequest): Promise<ConversationDetail> {

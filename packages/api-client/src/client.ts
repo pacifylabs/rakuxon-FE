@@ -437,7 +437,7 @@ export class ApiClient {
   }
 
   listAgencyApplications(
-    query: { status?: string; studentId?: string; page?: number; limit?: number } = {},
+    query: { status?: string; studentId?: string; q?: string; page?: number; limit?: number } = {},
   ): Promise<AdminApplicationList> {
     return this.request<AdminApplicationList>(`/v1/agency/applications${toQuery(query)}`, {
       auth: true,

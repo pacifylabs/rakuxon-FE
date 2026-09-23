@@ -4017,6 +4017,11 @@ export interface components {
         ApplicationDto: {
             /** Format: uuid */
             id: string;
+            /**
+             * @description Human-readable code — searchable, readable over the phone.
+             * @example R26-0001
+             */
+            referenceCode: string;
             /** Format: uuid */
             courseId: string;
             /** Format: uuid */
@@ -4037,6 +4042,8 @@ export interface components {
         AdminApplicationSummaryDto: {
             /** Format: uuid */
             id: string;
+            /** @example R26-0001 */
+            referenceCode: string;
             /** Format: uuid */
             tenantId: string;
             tenantName: string;
@@ -4077,6 +4084,8 @@ export interface components {
         AdminApplicationDetailDto: {
             /** Format: uuid */
             id: string;
+            /** @example R26-0001 */
+            referenceCode: string;
             /** Format: uuid */
             tenantId: string;
             tenantName: string;
@@ -7431,6 +7440,8 @@ export interface operations {
                 status?: components["schemas"]["ApplicationStatus"];
                 tenantId?: string;
                 studentId?: string;
+                /** @description Free text over the application's reference code. */
+                q?: string;
                 page?: number;
                 limit?: number;
             };
@@ -8470,6 +8481,8 @@ export interface operations {
                 status?: components["schemas"]["ApplicationStatus"];
                 tenantId?: string;
                 studentId?: string;
+                /** @description Free text over the application's reference code. */
+                q?: string;
                 page?: number;
                 limit?: number;
             };

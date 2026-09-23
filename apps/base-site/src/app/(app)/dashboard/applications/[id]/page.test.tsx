@@ -50,6 +50,7 @@ function draftApplication(attachedDocumentIds: string[] = []) {
   );
   return {
     id: 'app-1',
+    referenceCode: 'R26-0001',
     status: 'draft',
     studentId: 's1',
     courseId: 'c1',
@@ -148,7 +149,9 @@ describe('<ApplicationDetailPage/>', () => {
     const submit = await screen.findByRole('button', { name: 'Submit application' });
     expect(submit).toBeDisabled();
     expect(
-      screen.getByText('Every required document needs to be attached and approved before you can submit.'),
+      screen.getByText(
+        'Every required document needs to be attached and approved before you can submit.',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -168,7 +171,9 @@ describe('<ApplicationDetailPage/>', () => {
 
     expect(await screen.findByText(/Pending review/)).toBeInTheDocument();
     // Not attachable again — it's already attached, just not approved yet.
-    expect(screen.queryByRole('button', { name: 'Attach to this application' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Attach to this application' }),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Detach' })).toBeInTheDocument();
   });
 
@@ -189,7 +194,8 @@ describe('<ApplicationDetailPage/>', () => {
   it('shows the assigned success manager once submitted and assigned', async () => {
     const fetchMock = vi.fn(async (url: string) => {
       const href = String(url);
-      if (href.endsWith('/v1/applications/app-1')) return json(200, submittedApplication('Ada Lovelace'));
+      if (href.endsWith('/v1/applications/app-1'))
+        return json(200, submittedApplication('Ada Lovelace'));
       if (href.endsWith('/v1/documents')) return json(200, [document]);
       return json(404, {});
     });

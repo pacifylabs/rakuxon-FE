@@ -23,12 +23,14 @@ export default function ApplicationsPage() {
   const [pageInfo, setPageInfo] = useState({ page: 1, pageCount: 1 });
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
     try {
       const result = await apiClient.listAgencyApplications({
         status: statusFilter === 'all' ? undefined : statusFilter,
+        q: q.trim() || undefined,
         page,
       });
       setItems(result.items);
@@ -41,7 +43,7 @@ export default function ApplicationsPage() {
           : 'Could not load applications. Please try again.',
       );
     }
-  }, [apiClient, statusFilter, page]);
+  }, [apiClient, statusFilter, q, page]);
 
   useEffect(() => {
     setItems(null);
@@ -51,9 +53,15 @@ export default function ApplicationsPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [statusFilter]);
+  }, [statusFilter, q]);
 
   const columns: DataTableColumn<AdminApplicationSummary>[] = [
+    {
+      header: 'Reference',
+      cell: (row) => (
+        <span className="whitespace-nowrap font-mono text-sm text-text">{row.referenceCode}</span>
+      ),
+    },
     {
       header: 'Student',
       cell: (row) => (
@@ -102,22 +110,35 @@ export default function ApplicationsPage() {
         Every application from your students. Open one to see its documents and status in full.
       </p>
 
-      <div role="group" aria-label="Filter by status" className="mt-6 flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((filter) => (
-          <button
-            key={filter.value}
-            type="button"
-            onClick={() => setStatusFilter(filter.value)}
-            aria-pressed={statusFilter === filter.value}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              statusFilter === filter.value
-                ? 'bg-primary text-on-primary'
-                : 'bg-surface-muted text-text-muted hover:bg-accent-soft'
-            }`}
-          >
-            {filter.label}
-          </button>
-        ))}
+      <div className="mt-6 flex flex-wrap items-center gap-4">
+        <div role="group" aria-label="Filter by status" className="flex flex-wrap gap-2">
+          {STATUS_FILTERS.map((filter) => (
+            <button
+              key={filter.value}
+              type="button"
+              onClick={() => setStatusFilter(filter.value)}
+              aria-pressed={statusFilter === filter.value}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                statusFilter === filter.value
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-muted text-text-muted hover:bg-accent-soft'
+              }`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
+        <label className="ml-auto flex items-center gap-2 text-sm text-text-muted">
+          <span className="sr-only">Search by reference code</span>
+          <input
+            type="search"
+            value={q}
+            onChange={(event) => setQ(event.target.value)}
+            placeholder="Search by reference code, e.g. R26-0001…"
+            className="w-64 rounded-md border border-border bg-surface px-4 py-2 text-sm text-text focus-visible:outline-none focus-visible:ring"
+          />
+        </label>
       </div>
 
       {error && (

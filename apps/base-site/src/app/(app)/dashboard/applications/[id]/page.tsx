@@ -172,7 +172,7 @@ export default function ApplicationDetailPage() {
     <section aria-labelledby="application-heading">
       <div className="flex flex-wrap items-center gap-3">
         <h1 id="application-heading" className="font-heading text-3xl font-bold text-text">
-          Application {application.id.slice(0, 8)}
+          Application {application.referenceCode}
         </h1>
         <ApplicationStatusBadge status={application.status} />
       </div>
@@ -186,7 +186,8 @@ export default function ApplicationDetailPage() {
           </p>
           {application.assignedAdminName && (
             <p className="mt-4 max-w-prose text-base text-text">
-              Your success manager: <span className="font-semibold">{application.assignedAdminName}</span>
+              Your success manager:{' '}
+              <span className="font-semibold">{application.assignedAdminName}</span>
             </p>
           )}
         </>

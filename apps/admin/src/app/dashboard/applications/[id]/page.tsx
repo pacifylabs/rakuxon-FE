@@ -219,6 +219,9 @@ function ApplicationDetail() {
         <h1 id="application-heading" className="font-heading text-3xl font-bold text-text">
           {application.courseTitle}
         </h1>
+        <span className="whitespace-nowrap font-mono text-sm text-text-muted">
+          {application.referenceCode}
+        </span>
         <ApplicationStatusBadge status={application.status} />
       </div>
       <p className="mt-2 text-base text-text-muted">{application.institutionName}</p>

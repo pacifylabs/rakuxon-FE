@@ -30,6 +30,7 @@ function ApplicationsList() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [tenantId, setTenantId] = useState('');
+  const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
@@ -37,6 +38,7 @@ function ApplicationsList() {
       const result = await client.listAdminApplications({
         status: statusFilter === 'all' ? undefined : statusFilter,
         tenantId: tenantId.trim() || undefined,
+        q: q.trim() || undefined,
         page,
       });
       setItems(result.items);
@@ -49,7 +51,7 @@ function ApplicationsList() {
           : 'Could not load applications. Please try again.',
       );
     }
-  }, [client, statusFilter, tenantId, page]);
+  }, [client, statusFilter, tenantId, q, page]);
 
   useEffect(() => {
     setItems(null);
@@ -59,9 +61,15 @@ function ApplicationsList() {
 
   useEffect(() => {
     setPage(1);
-  }, [statusFilter, tenantId]);
+  }, [statusFilter, tenantId, q]);
 
   const columns: DataTableColumn<AdminApplicationSummary>[] = [
+    {
+      header: 'Reference',
+      cell: (row) => (
+        <span className="whitespace-nowrap font-mono text-sm text-text">{row.referenceCode}</span>
+      ),
+    },
     {
       header: 'Student',
       cell: (row) => (
@@ -131,6 +139,17 @@ function ApplicationsList() {
         </div>
 
         <label className="ml-auto flex items-center gap-2 text-sm text-text-muted">
+          <span className="sr-only">Search by reference code</span>
+          <input
+            type="search"
+            value={q}
+            onChange={(event) => setQ(event.target.value)}
+            placeholder="Search by reference code, e.g. R26-0001…"
+            className="w-64 rounded-md border border-border bg-surface px-4 py-2 text-sm text-text focus-visible:outline-none focus-visible:ring"
+          />
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-text-muted">
           <span className="sr-only">Filter by partner id</span>
           <input
             type="search"
@@ -164,7 +183,7 @@ function ApplicationsList() {
               <EmptyState
                 icon={FileStack}
                 title="No applications match this filter"
-                description="Try a different status or partner id."
+                description="Try a different status, reference code or partner id."
               />
             }
           />
