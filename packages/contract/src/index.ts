@@ -29,6 +29,8 @@ export type ConsumedLink = Schemas['ConsumedLinkDto'];
 export type PeekOnboardingLinkRequest = Schemas['PeekOnboardingLinkDto'];
 export type PeekedLink = Schemas['PeekedLinkDto'];
 export type RegisterViaOnboardingLinkRequest = Schemas['RegisterViaOnboardingLinkDto'];
+export type OnboardingLinkSummary = Schemas['OnboardingLinkSummaryDto'];
+export type OnboardingLinkList = Schemas['OnboardingLinkListDto'];
 export type StudentProfile = Schemas['StudentProfileDto'];
 export type UpdateStudentProfileRequest = Schemas['UpdateStudentProfileDto'];
 export type Address = Schemas['AddressDto'];
@@ -209,3 +211,13 @@ export type ApiPath = keyof paths;
 
 export type AdminRoleSummary = Schemas['AdminRoleSummaryDto'];
 export type SaveAdminRoleRequest = Schemas['SaveAdminRoleDto'];
+
+/*
+ * Agency — a partner's own view of their tenant. List/detail shapes are the
+ * same `Admin*`/`TenantStaff*` DTOs the platform-admin screens use (the
+ * backend wraps the same services with tenant scoping rather than
+ * duplicating the response shape), so only the agency-specific requests and
+ * the dashboard summary need their own alias here.
+ */
+export type AgencyDashboardSummary = Schemas['AgencyDashboardSummaryDto'];
+export type CreateAgencyStaffRequest = Schemas['CreateAgencyStaffDto'];

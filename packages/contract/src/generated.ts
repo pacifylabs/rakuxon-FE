@@ -1027,7 +1027,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** The caller's own agency's invitation links */
+        get: operations["OnboardingLinksController_list_v1"];
         put?: never;
         /**
          * Issue a student invitation link
@@ -2278,6 +2279,178 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/agency/dashboard/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own agency totals and status breakdown */
+        get: operations["AgencyDashboardController_getSummary_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own agency's students */
+        get: operations["AgencyStudentsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/students/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of the caller's own agency's students */
+        get: operations["AgencyStudentsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/students/{id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of the caller's own agency's students' uploaded documents */
+        get: operations["AgencyStudentsController_listDocuments_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own agency's applications */
+        get: operations["AgencyApplicationsController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/applications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of the caller's own agency's applications */
+        get: operations["AgencyApplicationsController_get_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/applications/{id}/documents/{documentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach one of the student's already-uploaded documents to their application */
+        post: operations["AgencyApplicationsController_attachDocument_v1"];
+        /** Detach a document from the application */
+        delete: operations["AgencyApplicationsController_detachDocument_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own agency's staff */
+        get: operations["AgencyStaffController_list_v1"];
+        put?: never;
+        /** Invite a counselor into the caller's own agency */
+        post: operations["AgencyStaffController_addStaff_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/staff/{userId}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend one of the caller's own agency's staff */
+        post: operations["AgencyStaffController_suspend_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/staff/{userId}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reactivate one of the caller's own agency's staff */
+        post: operations["AgencyStaffController_reactivate_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/dashboard/summary": {
         parameters: {
             query?: never;
@@ -3441,6 +3614,23 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
         };
+        OnboardingLinkSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example student@example.com */
+            inviteeEmail: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            consumedAt: string | null;
+            /** Format: date-time */
+            revokedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        OnboardingLinkListDto: {
+            items: components["schemas"]["OnboardingLinkSummaryDto"][];
+        };
         ConsumeOnboardingLinkDto: {
             /** @description The token from the invitation link. */
             token: string;
@@ -4085,6 +4275,30 @@ export interface components {
         StatusCountDto: {
             key: string;
             count: number;
+        };
+        AgencyDashboardSummaryDto: {
+            /** Format: uuid */
+            tenantId: string;
+            tenantName: string;
+            tenantStatus: components["schemas"]["TenantStatus"];
+            totalStudents: number;
+            totalApplications: number;
+            applicationsByStatus: components["schemas"]["StatusCountDto"][];
+            studentsWithCompleteProfile: number;
+            studentsWithIncompleteProfile: number;
+        };
+        CreateAgencyStaffDto: {
+            /** @example counselor@example.com */
+            email: string;
+            /** @example Ada */
+            firstName: string;
+            /** @example Lovelace */
+            lastName: string;
+            /**
+             * @description A temporary password the counselor can change via the reset flow.
+             * @example correct-horse-battery
+             */
+            password: string;
         };
         AdminDashboardSummaryDto: {
             totalTenants: number;
@@ -6041,6 +6255,25 @@ export interface operations {
             };
         };
     };
+    OnboardingLinksController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OnboardingLinkListDto"];
+                };
+            };
+        };
+    };
     OnboardingLinksController_issue_v1: {
         parameters: {
             query?: never;
@@ -6251,6 +6484,7 @@ export interface operations {
             query?: {
                 /** @description Free text over the student’s name or email. */
                 q?: string;
+                tenantId?: string;
                 page?: number;
                 limit?: number;
             };
@@ -7085,6 +7319,7 @@ export interface operations {
             query?: {
                 status?: components["schemas"]["ApplicationStatus"];
                 tenantId?: string;
+                studentId?: string;
                 page?: number;
                 limit?: number;
             };
@@ -7985,6 +8220,287 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AgencyDashboardController_getSummary_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgencyDashboardSummaryDto"];
+                };
+            };
+        };
+    };
+    AgencyStudentsController_list_v1: {
+        parameters: {
+            query?: {
+                /** @description Free text over the student’s name or email. */
+                q?: string;
+                tenantId?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentListDto"];
+                };
+            };
+        };
+    };
+    AgencyStudentsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentDetailDto"];
+                };
+            };
+            /** @description No student with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AgencyStudentsController_listDocuments_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDto"][];
+                };
+            };
+            /** @description No student with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AgencyApplicationsController_list_v1: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ApplicationStatus"];
+                tenantId?: string;
+                studentId?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationListDto"];
+                };
+            };
+        };
+    };
+    AgencyApplicationsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+            /** @description No application with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AgencyApplicationsController_attachDocument_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+        };
+    };
+    AgencyApplicationsController_detachDocument_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                documentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+        };
+    };
+    AgencyStaffController_list_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantStaffListDto"];
+                };
+            };
+        };
+    };
+    AgencyStaffController_addStaff_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAgencyStaffDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantStaffDto"];
+                };
+            };
+        };
+    };
+    AgencyStaffController_suspend_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantStaffDto"];
+                };
+            };
+        };
+    };
+    AgencyStaffController_reactivate_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantStaffDto"];
+                };
             };
         };
     };

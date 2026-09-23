@@ -1,86 +1,110 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { ClipboardList, GraduationCap, UserCheck, UserX } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { GuardedPage, useAuth } from '@rakuxon/auth';
-import { Button, SectionBand, Wordmark } from '@rakuxon/ui';
+import { useAuth } from '@rakuxon/auth';
+import { ApiError, NetworkError } from '@rakuxon/api-client';
+import { StatChip } from '@rakuxon/ui';
+import type { AgencyDashboardSummary } from '@rakuxon/contract';
 
-import { HealthBadge } from '@/components/HealthBadge';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
-
-function Workspace() {
-  const { user, signOut, hasRole } = useAuth();
-  const router = useRouter();
-
+function PendingBanner() {
   return (
-    <>
-      <header className="w-full border-b border-border bg-surface">
-        <div className="mx-auto flex w-full max-w-content items-center justify-between gap-4 px-5 py-3">
-          <Wordmark href="/dashboard" />
-          <div className="flex items-center gap-4">
-            <HealthBadge baseUrl={API_BASE_URL} />
-            <Button
-              variant="ghost"
-              onClick={async () => {
-                await signOut();
-                router.push('/auth/login');
-              }}
-            >
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main id="main">
-        <SectionBand labelledBy="dashboard-heading">
-          <h1 id="dashboard-heading" className="font-heading text-3xl font-bold text-text">
-            Welcome back, {user?.firstName}
-          </h1>
-          <p className="mt-4 max-w-prose text-base text-text-muted">
-            Your pipeline, document review and applications land here as the later stages ship.
-          </p>
-
-          <dl className="mt-10 grid gap-6 sm:grid-cols-3">
-            {[
-              { label: 'Signed in as', value: user?.email ?? '—' },
-              { label: 'Role', value: user?.role ?? '—' },
-              { label: 'Workspace', value: user?.tenantId ?? '—' },
-            ].map((item) => (
-              <div key={item.label} className="rounded-lg border border-border bg-surface p-5">
-                <dt className="text-sm text-text-muted">{item.label}</dt>
-                <dd className="mt-2 break-all font-heading text-base font-semibold text-text">
-                  {item.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          {/* Role-gated: a counselor should not see agency administration. */}
-          {hasRole('agency_admin') && (
-            <section aria-labelledby="admin-heading" className="mt-12">
-              <h2 id="admin-heading" className="font-heading text-xl font-bold text-text">
-                Agency administration
-              </h2>
-              <p className="mt-2 max-w-prose text-sm text-text-muted">
-                Invite counselors, manage roles and configure your workspace. Visible to agency
-                administrators only.
-              </p>
-            </section>
-          )}
-        </SectionBand>
-      </main>
-    </>
+    <div className="mt-6 rounded-md border border-border bg-surface-muted px-5 py-4">
+      <p className="font-heading text-sm font-semibold text-text">
+        Your partner account is awaiting approval
+      </p>
+      <p className="mt-1 text-sm text-text-muted">
+        A Rakuxon admin needs to approve your agency before you can invite students. Everything else
+        on this dashboard will work as soon as that happens.
+      </p>
+    </div>
   );
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const { user, apiClient } = useAuth();
+  const [summary, setSummary] = useState<AgencyDashboardSummary | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      setSummary(await apiClient.getAgencyDashboardSummary());
+      setError(null);
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not load your dashboard. Please try again.',
+      );
+    }
+  }, [apiClient]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   return (
-    <GuardedPage onUnauthenticated={() => router.replace('/auth/login')}>
-      <Workspace />
-    </GuardedPage>
+    <section aria-labelledby="dashboard-heading">
+      <h1 id="dashboard-heading" className="font-heading text-3xl font-bold text-text">
+        Welcome back, {user?.firstName}
+      </h1>
+      <p className="mt-2 max-w-prose text-base text-text-muted">
+        Your students, applications and pipeline in one place.
+      </p>
+
+      {summary && summary.tenantStatus !== 'active' && <PendingBanner />}
+
+      {error && (
+        <p role="alert" className="mt-6 text-base text-danger">
+          {error}
+        </p>
+      )}
+
+      {!summary && !error && (
+        <p role="status" className="mt-6 text-base text-text-muted">
+          Loading…
+        </p>
+      )}
+
+      {summary && (
+        <>
+          <div className="mt-10 flex flex-wrap gap-10">
+            <StatChip icon={GraduationCap} value={String(summary.totalStudents)} label="Students" />
+            <StatChip
+              icon={ClipboardList}
+              value={String(summary.totalApplications)}
+              label="Applications"
+            />
+            <StatChip
+              icon={UserCheck}
+              value={String(summary.studentsWithCompleteProfile)}
+              label="Profiles complete"
+            />
+            <StatChip
+              icon={UserX}
+              value={String(summary.studentsWithIncompleteProfile)}
+              label="Profiles incomplete"
+            />
+          </div>
+
+          {summary.applicationsByStatus.length > 0 && (
+            <div className="mt-12">
+              <h2 className="font-heading text-xl font-semibold text-text">
+                Applications by status
+              </h2>
+              <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-4">
+                {summary.applicationsByStatus.map((row) => (
+                  <div key={row.key}>
+                    <dt className="text-sm text-text-muted capitalize">{row.key}</dt>
+                    <dd className="mt-1 font-heading text-xl font-bold text-text">{row.count}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 }

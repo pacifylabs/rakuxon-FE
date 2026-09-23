@@ -1,4 +1,9 @@
 import type {
+  AdminApplicationDetail,
+  AdminApplicationList,
+  AdminStudentDetail,
+  AdminStudentList,
+  AgencyDashboardSummary,
   Application,
   ArticleList,
   AssignedAdmin,
@@ -8,6 +13,7 @@ import type {
   ConversationDetail,
   ConversationSummary,
   CountryCount,
+  CreateAgencyStaffRequest,
   CreateApplicationRequest,
   HealthResponse,
   IntakeTerm,
@@ -15,6 +21,7 @@ import type {
   LoginRequest,
   Notification,
   OnboardingLink,
+  OnboardingLinkList,
   PeekedLink,
   ReferenceCountry,
   RegisterAgencyRequest,
@@ -24,6 +31,8 @@ import type {
   StartConversationRequest,
   StudentDocument,
   StudentProfile,
+  TenantStaff,
+  TenantStaffList,
   UnreadCount,
   UpdateStudentProfileRequest,
   UploadSignature,
@@ -195,6 +204,14 @@ export class ApiClient {
     });
   }
 
+  listOnboardingLinks(): Promise<OnboardingLinkList> {
+    return this.request<OnboardingLinkList>('/v1/onboarding-links', { auth: true });
+  }
+
+  revokeOnboardingLink(id: string): Promise<void> {
+    return this.request<void>(`/v1/onboarding-links/${id}`, { method: 'DELETE', auth: true });
+  }
+
   consumeOnboardingLink(token: string): Promise<ConsumedLink> {
     return this.request<ConsumedLink>('/v1/onboarding-links/consume', {
       method: 'POST',
@@ -311,7 +328,10 @@ export class ApiClient {
   }
 
   markNotificationRead(id: string): Promise<Notification> {
-    return this.request<Notification>(`/v1/notifications/${id}/read`, { method: 'POST', auth: true });
+    return this.request<Notification>(`/v1/notifications/${id}/read`, {
+      method: 'POST',
+      auth: true,
+    });
   }
 
   /* -------------------------------------------------------------- messages */
@@ -348,4 +368,88 @@ export class ApiClient {
   heartbeat(): Promise<void> {
     return this.request<void>('/v1/students/me/heartbeat', { method: 'POST', auth: true });
   }
+
+  /* ---------------------------------------------------------------- agency */
+
+  getAgencyDashboardSummary(): Promise<AgencyDashboardSummary> {
+    return this.request<AgencyDashboardSummary>('/v1/agency/dashboard/summary', { auth: true });
+  }
+
+  listAgencyStudents(
+    query: { q?: string; page?: number; limit?: number } = {},
+  ): Promise<AdminStudentList> {
+    return this.request<AdminStudentList>(`/v1/agency/students${toQuery(query)}`, { auth: true });
+  }
+
+  getAgencyStudent(id: string): Promise<AdminStudentDetail> {
+    return this.request<AdminStudentDetail>(`/v1/agency/students/${id}`, { auth: true });
+  }
+
+  /** What a student has uploaded, so the application screen has something to attach. */
+  listAgencyStudentDocuments(id: string): Promise<StudentDocument[]> {
+    return this.request<StudentDocument[]>(`/v1/agency/students/${id}/documents`, { auth: true });
+  }
+
+  listAgencyApplications(
+    query: { status?: string; studentId?: string; page?: number; limit?: number } = {},
+  ): Promise<AdminApplicationList> {
+    return this.request<AdminApplicationList>(`/v1/agency/applications${toQuery(query)}`, {
+      auth: true,
+    });
+  }
+
+  getAgencyApplication(id: string): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(`/v1/agency/applications/${id}`, { auth: true });
+  }
+
+  attachAgencyApplicationDocument(
+    applicationId: string,
+    documentId: string,
+  ): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(
+      `/v1/agency/applications/${applicationId}/documents/${documentId}`,
+      { method: 'POST', auth: true },
+    );
+  }
+
+  detachAgencyApplicationDocument(
+    applicationId: string,
+    documentId: string,
+  ): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(
+      `/v1/agency/applications/${applicationId}/documents/${documentId}`,
+      { method: 'DELETE', auth: true },
+    );
+  }
+
+  listAgencyStaff(): Promise<TenantStaffList> {
+    return this.request<TenantStaffList>('/v1/agency/staff', { auth: true });
+  }
+
+  addAgencyStaff(body: CreateAgencyStaffRequest): Promise<TenantStaff> {
+    return this.request<TenantStaff>('/v1/agency/staff', { method: 'POST', body, auth: true });
+  }
+
+  suspendAgencyStaff(userId: string): Promise<TenantStaff> {
+    return this.request<TenantStaff>(`/v1/agency/staff/${userId}/suspend`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  reactivateAgencyStaff(userId: string): Promise<TenantStaff> {
+    return this.request<TenantStaff>(`/v1/agency/staff/${userId}/reactivate`, {
+      method: 'POST',
+      auth: true,
+    });
+  }
+}
+
+/** Query-string builder that drops undefined/empty values rather than sending `?page=undefined`. */
+function toQuery(params: Record<string, string | number | undefined>): string {
+  const entries = Object.entries(params).filter(
+    ([, value]) => value !== undefined && value !== '',
+  ) as [string, string | number][];
+  if (entries.length === 0) return '';
+  return `?${new URLSearchParams(entries.map(([key, value]) => [key, String(value)])).toString()}`;
 }

@@ -196,6 +196,13 @@ describe('register screen', () => {
 });
 
 describe('dashboard', () => {
+  /*
+   * The signed-out redirect and the role gate both moved to
+   * `dashboard/layout.tsx` (an `AppShell` wrapped in `GuardedPage`) once the
+   * placeholder page grew into the real one — `DashboardPage` itself now
+   * assumes it's always rendered inside that shell, the same way every
+   * other `dashboard/*` page in this app does.
+   */
   const signedIn = (role = 'agency_admin') =>
     window.localStorage.setItem(
       'rakuxon.session',
@@ -205,51 +212,46 @@ describe('dashboard', () => {
       }),
     );
 
-  it('redirects a signed-out visitor and shows nothing protected', async () => {
-    mockFetch(() => json(200, {}));
-    renderApp(<DashboardPage />);
-
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/auth/login'));
-    expect(screen.queryByText(/Welcome back/)).not.toBeInTheDocument();
+  const summary = (over: Record<string, unknown> = {}) => ({
+    tenantId: 't1',
+    tenantName: 'Northwind',
+    tenantStatus: 'active',
+    totalStudents: 4,
+    totalApplications: 6,
+    applicationsByStatus: [
+      { key: 'draft', count: 2 },
+      { key: 'submitted', count: 5 },
+    ],
+    studentsWithCompleteProfile: 3,
+    studentsWithIncompleteProfile: 1,
+    ...over,
   });
 
-  it('greets a signed-in user', async () => {
+  it('greets a signed-in user and shows their totals', async () => {
     signedIn();
-    mockFetch(() => json(200, { status: 'ok', dependencies: { database: 'up' } }));
+    mockFetch(() => json(200, summary()));
     renderApp(<DashboardPage />);
 
     expect(await screen.findByText(/Welcome back, Ada/)).toBeInTheDocument();
-    expect(replace).not.toHaveBeenCalled();
+    expect(await screen.findByText('4')).toBeInTheDocument();
+    expect(screen.getByText('6')).toBeInTheDocument();
   });
 
-  it('shows agency administration to an admin', async () => {
-    signedIn('agency_admin');
-    mockFetch(() => json(200, { status: 'ok', dependencies: { database: 'up' } }));
+  it('shows a pending-approval banner for a tenant still awaiting approval', async () => {
+    signedIn();
+    mockFetch(() => json(200, summary({ tenantStatus: 'pending' })));
     renderApp(<DashboardPage />);
 
-    expect(
-      await screen.findByRole('heading', { name: 'Agency administration' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/awaiting approval/)).toBeInTheDocument();
   });
 
-  it('hides agency administration from a counselor', async () => {
-    signedIn('counselor');
-    mockFetch(() => json(200, { status: 'ok', dependencies: { database: 'up' } }));
+  it('does not show the pending banner once the tenant is active', async () => {
+    signedIn();
+    mockFetch(() => json(200, summary({ tenantStatus: 'active' })));
     renderApp(<DashboardPage />);
 
     await screen.findByText(/Welcome back/);
-    expect(
-      screen.queryByRole('heading', { name: 'Agency administration' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('reports API health, distinguishing degraded from unreachable', async () => {
-    signedIn();
-    mockFetch(() => json(200, { status: 'ok', dependencies: { database: 'down' } }));
-    renderApp(<DashboardPage />);
-
-    const badge = await screen.findByRole('status');
-    await waitFor(() => expect(badge).toHaveAttribute('data-status', 'degraded'));
+    expect(screen.queryByText(/awaiting approval/)).not.toBeInTheDocument();
   });
 
   it('reports an unreachable API', async () => {
@@ -262,7 +264,6 @@ describe('dashboard', () => {
     );
     renderApp(<DashboardPage />);
 
-    const badge = await screen.findByRole('status');
-    await waitFor(() => expect(badge).toHaveAttribute('data-status', 'unreachable'));
+    expect(await screen.findByText(/could not reach the server/i)).toBeInTheDocument();
   });
 });
