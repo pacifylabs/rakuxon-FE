@@ -22,6 +22,8 @@ export type LoginRequest = Schemas['LoginDto'];
 export type RegisterAgencyRequest = Schemas['RegisterAgencyDto'];
 export type RegisterStudentRequest = Schemas['RegisterStudentDto'];
 export type RefreshRequest = Schemas['RefreshDto'];
+export type UpdateMyProfileRequest = Schemas['UpdateMyProfileDto'];
+export type ChangeMyPasswordRequest = Schemas['ChangeMyPasswordDto'];
 export type HealthResponse = Schemas['HealthResponseDto'];
 export type OnboardingLink = Schemas['OnboardingLinkDto'];
 export type IssueOnboardingLinkRequest = Schemas['IssueOnboardingLinkDto'];
@@ -54,6 +56,10 @@ export type ReferenceCountry = Schemas['CountryDto'];
 export type CountryCount = Schemas['CountryCountDto'];
 export type ArticleSummary = Schemas['ArticleSummaryDto'];
 export type ArticleList = Schemas['ArticleListDto'];
+export type InstitutionSummary = Schemas['InstitutionSummaryDto'];
+export type InstitutionList = Schemas['InstitutionListDto'];
+export type CourseSummary = Schemas['CourseSummaryDto'];
+export type CourseList = Schemas['CourseListDto'];
 
 export type Testimonial = Schemas['TestimonialDto'];
 export type IntakeTerm = Schemas['IntakeTermDto'];
@@ -221,3 +227,4 @@ export type SaveAdminRoleRequest = Schemas['SaveAdminRoleDto'];
  */
 export type AgencyDashboardSummary = Schemas['AgencyDashboardSummaryDto'];
 export type CreateAgencyStaffRequest = Schemas['CreateAgencyStaffDto'];
+export type CreateAgencyStudentRequest = Schemas['CreateAgencyStudentDto'];

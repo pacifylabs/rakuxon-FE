@@ -408,6 +408,24 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Update the caller's own name */
+        patch: operations["AuthController_updateMe_v1"];
+        trace?: never;
+    };
+    "/v1/auth/me/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change the caller's own password */
+        post: operations["AuthController_changeMyPassword_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -2306,7 +2324,8 @@ export interface paths {
         /** The caller's own agency's students */
         get: operations["AgencyStudentsController_list_v1"];
         put?: never;
-        post?: never;
+        /** Bring a student directly into the caller's own agency */
+        post: operations["AgencyStudentsController_create_v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2394,6 +2413,23 @@ export interface paths {
         post: operations["AgencyApplicationsController_attachDocument_v1"];
         /** Detach a document from the application */
         delete: operations["AgencyApplicationsController_detachDocument_v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agency/applications/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit a draft application on the student's behalf */
+        post: operations["AgencyApplicationsController_submit_v1"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3087,6 +3123,17 @@ export interface components {
             code: string;
             /** @description The redirect URI the code was issued against. */
             redirectUri: string;
+        };
+        UpdateMyProfileDto: {
+            /** @example Ada */
+            firstName?: string;
+            /** @example Lovelace */
+            lastName?: string;
+        };
+        ChangeMyPasswordDto: {
+            currentPassword: string;
+            /** @example a-brand-new-passphrase */
+            newPassword: string;
         };
         HighlightSegmentDto: {
             /** @example Uni */
@@ -4287,6 +4334,19 @@ export interface components {
             studentsWithCompleteProfile: number;
             studentsWithIncompleteProfile: number;
         };
+        CreateAgencyStudentDto: {
+            /** @example student@example.com */
+            email: string;
+            /** @example Grace */
+            firstName: string;
+            /** @example Hopper */
+            lastName: string;
+            /**
+             * @description A temporary password the student can change via the reset flow.
+             * @example correct-horse-battery
+             */
+            password: string;
+        };
         CreateAgencyStaffDto: {
             /** @example counselor@example.com */
             email: string;
@@ -5157,6 +5217,57 @@ export interface operations {
                 };
             };
             /** @description Missing, invalid or expired bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_updateMe_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMyProfileDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthUserDto"];
+                };
+            };
+        };
+    };
+    AuthController_changeMyPassword_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeMyPasswordDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The current password is not correct. */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -8267,6 +8378,36 @@ export interface operations {
             };
         };
     };
+    AgencyStudentsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAgencyStudentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStudentDetailDto"];
+                };
+            };
+            /** @description That email is already registered in this agency. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AgencyStudentsController_get_v1: {
         parameters: {
             query?: never;
@@ -8417,6 +8558,41 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminApplicationDetailDto"];
                 };
+            };
+        };
+    };
+    AgencyApplicationsController_submit_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationDetailDto"];
+                };
+            };
+            /** @description The profile is incomplete or a required document is missing. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description This application has already been submitted. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

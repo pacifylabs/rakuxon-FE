@@ -114,17 +114,27 @@ export function AuthProvider({ baseUrl, children }: { baseUrl: string; children:
       if (!current || isExpired(current)) return;
       try {
         const user = await client.me();
-        if (sessionRef.current?.accessToken === current.accessToken &&
-            readSession()?.accessToken === current.accessToken) apply({ ...current, user });
-      } catch { /* A failed profile refresh must not discard a valid login. */ }
+        if (
+          sessionRef.current?.accessToken === current.accessToken &&
+          readSession()?.accessToken === current.accessToken
+        )
+          apply({ ...current, user });
+      } catch {
+        /* A failed profile refresh must not discard a valid login. */
+      }
     };
     window.addEventListener('storage', sync);
     window.addEventListener('focus', refreshUser);
     window.addEventListener('rakuxon:email-verified', refreshUser);
+    /* Dispatched by a settings screen after a successful name change — same
+       refresh path email verification already uses, so the header updates
+       without waiting for the next window focus or token rotation. */
+    window.addEventListener('rakuxon:profile-updated', refreshUser);
     return () => {
       window.removeEventListener('storage', sync);
       window.removeEventListener('focus', refreshUser);
       window.removeEventListener('rakuxon:email-verified', refreshUser);
+      window.removeEventListener('rakuxon:profile-updated', refreshUser);
     };
   }, [client, apply]);
 
@@ -149,8 +159,10 @@ export function AuthProvider({ baseUrl, children }: { baseUrl: string; children:
           const tokens = await client.refresh(current.refreshToken);
           // Logout or a new login while the request was in flight wins.
           const latest = readSession();
-          if (sessionRef.current?.refreshToken === current.refreshToken &&
-              latest?.refreshToken === current.refreshToken) {
+          if (
+            sessionRef.current?.refreshToken === current.refreshToken &&
+            latest?.refreshToken === current.refreshToken
+          ) {
             apply(sessionFromTokens(tokens));
           }
         } catch {

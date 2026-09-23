@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useAuth } from '@rakuxon/auth';
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { ApplicationStatusBadge, Button, StatusBadge } from '@rakuxon/ui';
+import { ApplicationStatusBadge, Button, StatusBadge, useToast } from '@rakuxon/ui';
 import type { AdminApplicationDetail, StudentDocument } from '@rakuxon/contract';
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -32,12 +32,14 @@ export default function ApplicationDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { apiClient } = useAuth();
+  const toast = useToast();
 
   const [application, setApplication] = useState<AdminApplicationDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [documents, setDocuments] = useState<StudentDocument[] | null>(null);
   const [documentsError, setDocumentsError] = useState<string | null>(null);
   const [pendingDocumentId, setPendingDocumentId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -103,6 +105,24 @@ export default function ApplicationDetailPage() {
       );
     } finally {
       setPendingDocumentId(null);
+    }
+  }
+
+  async function submit() {
+    if (!application) return;
+    setSubmitting(true);
+    try {
+      setApplication(await apiClient.submitAgencyApplication(application.id));
+      toast.success('Application submitted.');
+    } catch (caught) {
+      const message =
+        caught instanceof ApiError || caught instanceof NetworkError
+          ? caught.message
+          : 'Could not submit this application. Please try again.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -181,6 +201,11 @@ export default function ApplicationDetailPage() {
             <StatusBadge tone="positive">Ready to submit</StatusBadge>
           ) : (
             <StatusBadge tone="neutral">Not yet ready</StatusBadge>
+          )}
+          {application.status === 'draft' && application.readyToSubmit && (
+            <Button variant="primary" size="md" disabled={submitting} onClick={submit}>
+              {submitting ? 'Submitting…' : 'Submit application'}
+            </Button>
           )}
         </div>
 

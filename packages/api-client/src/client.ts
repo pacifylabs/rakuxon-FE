@@ -8,14 +8,19 @@ import type {
   ArticleList,
   AssignedAdmin,
   AuthTokens,
+  AuthUser,
+  ChangeMyPasswordRequest,
   ConfirmDocumentUploadRequest,
   ConsumedLink,
   ConversationDetail,
   ConversationSummary,
   CountryCount,
   CreateAgencyStaffRequest,
+  CreateAgencyStudentRequest,
+  CourseList,
   CreateApplicationRequest,
   HealthResponse,
+  InstitutionList,
   IntakeTerm,
   IssueOnboardingLinkRequest,
   LoginRequest,
@@ -34,6 +39,7 @@ import type {
   TenantStaff,
   TenantStaffList,
   UnreadCount,
+  UpdateMyProfileRequest,
   UpdateStudentProfileRequest,
   UploadSignature,
   UploadSignatureRequest,
@@ -162,6 +168,15 @@ export class ApiClient {
     return this.request<AuthTokens['user']>('/v1/auth/me', { method: 'POST', auth: true });
   }
 
+  /** Any role's own name — distinct from `updateMyProfile`, the student-only profile-fields PATCH. */
+  updateMyAccount(body: UpdateMyProfileRequest): Promise<AuthUser> {
+    return this.request<AuthUser>('/v1/auth/me', { method: 'PATCH', body, auth: true });
+  }
+
+  changeMyPassword(body: ChangeMyPasswordRequest): Promise<void> {
+    return this.request<void>('/v1/auth/me/change-password', { method: 'POST', body, auth: true });
+  }
+
   requestPasswordReset(email: string): Promise<void> {
     return this.request<void>('/v1/auth/password-reset/request', {
       method: 'POST',
@@ -253,6 +268,28 @@ export class ApiClient {
   /** Latest guidance articles, for a home-page teaser. Public — no session needed. */
   listArticles(limit = 3): Promise<ArticleList> {
     return this.request<ArticleList>(`/v1/catalogue/articles?limit=${limit}`);
+  }
+
+  /** Browse published universities — filter by country or free text. Public — no session needed. */
+  listInstitutions(
+    query: { country?: string; q?: string; page?: number; limit?: number } = {},
+  ): Promise<InstitutionList> {
+    return this.request<InstitutionList>(`/v1/catalogue/institutions${toQuery(query)}`);
+  }
+
+  /** Browse published courses — filter by country, level, discipline or institution. Public — no session needed. */
+  listCourses(
+    query: {
+      country?: string;
+      q?: string;
+      level?: string;
+      discipline?: string;
+      institutionSlug?: string;
+      page?: number;
+      limit?: number;
+    } = {},
+  ): Promise<CourseList> {
+    return this.request<CourseList>(`/v1/catalogue/courses${toQuery(query)}`);
   }
 
   updateMyProfile(body: UpdateStudentProfileRequest): Promise<StudentProfile> {
@@ -385,6 +422,15 @@ export class ApiClient {
     return this.request<AdminStudentDetail>(`/v1/agency/students/${id}`, { auth: true });
   }
 
+  /** Brings a student in directly, no invite-link round trip. */
+  createAgencyStudent(body: CreateAgencyStudentRequest): Promise<AdminStudentDetail> {
+    return this.request<AdminStudentDetail>('/v1/agency/students', {
+      method: 'POST',
+      body,
+      auth: true,
+    });
+  }
+
   /** What a student has uploaded, so the application screen has something to attach. */
   listAgencyStudentDocuments(id: string): Promise<StudentDocument[]> {
     return this.request<StudentDocument[]>(`/v1/agency/students/${id}/documents`, { auth: true });
@@ -420,6 +466,13 @@ export class ApiClient {
       `/v1/agency/applications/${applicationId}/documents/${documentId}`,
       { method: 'DELETE', auth: true },
     );
+  }
+
+  submitAgencyApplication(applicationId: string): Promise<AdminApplicationDetail> {
+    return this.request<AdminApplicationDetail>(`/v1/agency/applications/${applicationId}/submit`, {
+      method: 'POST',
+      auth: true,
+    });
   }
 
   listAgencyStaff(): Promise<TenantStaffList> {

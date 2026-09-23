@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useAuth } from '@rakuxon/auth';
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { DataTable, EmptyState, Pagination, StatusBadge } from '@rakuxon/ui';
+import { Button, DataTable, EmptyState, Pagination, StatusBadge } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AdminStudentSummary } from '@rakuxon/contract';
 
@@ -93,12 +93,23 @@ export default function StudentsPage() {
 
   return (
     <section aria-labelledby="students-heading">
-      <h1 id="students-heading" className="font-heading text-3xl font-bold text-text">
-        Students
-      </h1>
-      <p className="mt-2 max-w-prose text-base text-text-muted">
-        Everyone you've referred or invited. Open one to see their profile and applications.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 id="students-heading" className="font-heading text-3xl font-bold text-text">
+            Students
+          </h1>
+          <p className="mt-2 max-w-prose text-base text-text-muted">
+            Everyone you've referred or invited. Open one to see their profile and applications.
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => window.location.assign('/dashboard/students/new')}
+        >
+          New student
+        </Button>
+      </div>
 
       <label className="mt-6 flex max-w-sm items-center gap-2 text-sm text-text-muted">
         <span className="sr-only">Search by name or email</span>

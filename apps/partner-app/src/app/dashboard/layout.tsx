@@ -1,12 +1,14 @@
 'use client';
 
-import { ClipboardList, GraduationCap, LayoutGrid, UserPlus, Users } from 'lucide-react';
+import { ClipboardList, GraduationCap, LayoutGrid, School, UserPlus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { GuardedPage, useAuth } from '@rakuxon/auth';
 import { AppShell, Wordmark } from '@rakuxon/ui';
 import type { AppShellNavItem } from '@rakuxon/ui';
+
+import { VerifyEmailBanner } from '@/components/dashboard/VerifyEmailBanner';
 
 /**
  * No notifications bell, messages panel or heartbeat here — all three ride
@@ -25,6 +27,7 @@ function navItems(
     { href: '/dashboard/students', label: 'Students', icon: GraduationCap },
     { href: '/dashboard/applications', label: 'Applications', icon: ClipboardList },
     { href: '/dashboard/invite', label: 'Invite students', icon: UserPlus },
+    { href: '/dashboard/schools', label: 'Schools', icon: School },
     ...(hasRole('agency_admin') ? [{ href: '/dashboard/staff', label: 'Staff', icon: Users }] : []),
   ];
 }
@@ -60,7 +63,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           router.push('/auth/login');
         }}
         badge="Partner"
+        accountMenu={{ profileHref: '/dashboard/settings', securityHref: '/dashboard/settings' }}
       >
+        {user && !user.emailVerifiedAt && <VerifyEmailBanner email={user.email} />}
         {children}
       </AppShell>
     </GuardedPage>
