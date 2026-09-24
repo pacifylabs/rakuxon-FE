@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useAuth } from '@rakuxon/auth';
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { ApplicationStatusBadge, Button, StatusBadge, useToast } from '@rakuxon/ui';
+import { ApplicationStatusBadge, Button, StatusBadge, formatDateTime, useToast } from '@rakuxon/ui';
 import type { AdminApplicationDetail, StudentDocument } from '@rakuxon/contract';
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -187,12 +187,10 @@ export default function ApplicationDetailPage() {
 
         <dl className="grid gap-6">
           <Field label="Assigned to" value={application.assignedAdminName ?? '—'} />
-          <Field label="Created" value={new Date(application.createdAt).toLocaleString()} />
+          <Field label="Created" value={formatDateTime(application.createdAt)} />
           <Field
             label="Submitted"
-            value={
-              application.submittedAt ? new Date(application.submittedAt).toLocaleString() : ''
-            }
+            value={application.submittedAt ? formatDateTime(application.submittedAt) : ''}
           />
         </dl>
       </div>

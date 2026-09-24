@@ -38,6 +38,8 @@ import type {
   AdminDestinationSummary,
   AssignApplicationRequest,
   AssignableAdminList,
+  AttendanceRecord,
+  AttendanceRecordList,
   AuditLogList,
   ChangeAdminPasswordRequest,
   ComposeMessageRequest,
@@ -76,6 +78,7 @@ import type {
   TenantList,
   TenantStaff,
   TenantStaffList,
+  TodayAttendance,
   TotpEnabled,
   TotpSetup,
   UpdateAdminProfileRequest,
@@ -516,6 +519,42 @@ export class AdminApiClient {
 
   deleteMediaAsset(id: string): Promise<void> {
     return this.request<void>(`/v1/admin/media-assets/${id}`, { method: 'DELETE', auth: true });
+  }
+
+  /* ------------------------------------------------------------ attendance */
+
+  clockIn(): Promise<AttendanceRecord> {
+    return this.request<AttendanceRecord>('/v1/admin/attendance/me/clock-in', {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  clockOut(): Promise<AttendanceRecord> {
+    return this.request<AttendanceRecord>('/v1/admin/attendance/me/clock-out', {
+      method: 'POST',
+      auth: true,
+    });
+  }
+
+  getTodayAttendance(): Promise<TodayAttendance> {
+    return this.request<TodayAttendance>('/v1/admin/attendance/me/today', { auth: true });
+  }
+
+  listMyAttendance(
+    query: { from?: string; to?: string; page?: number; limit?: number } = {},
+  ): Promise<AttendanceRecordList> {
+    return this.request<AttendanceRecordList>(`/v1/admin/attendance/me${toQuery(query)}`, {
+      auth: true,
+    });
+  }
+
+  listAttendance(
+    query: { adminId?: string; from?: string; to?: string; page?: number; limit?: number } = {},
+  ): Promise<AttendanceRecordList> {
+    return this.request<AttendanceRecordList>(`/v1/admin/attendance${toQuery(query)}`, {
+      auth: true,
+    });
   }
 
   /* ----------------------------------------------------------- destinations */

@@ -4,7 +4,7 @@ import { ScrollText } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { DataTable, EmptyState, Pagination } from '@rakuxon/ui';
+import { DataTable, EmptyState, Pagination, formatDateTime } from '@rakuxon/ui';
 import type { DataTableColumn } from '@rakuxon/ui';
 import type { AuditLogEntry } from '@rakuxon/contract';
 
@@ -68,9 +68,7 @@ function ActivityLogList() {
     {
       header: 'When',
       cell: (row) => (
-        <span className="whitespace-nowrap text-text-muted">
-          {new Date(row.createdAt).toLocaleString()}
-        </span>
+        <span className="whitespace-nowrap text-text-muted">{formatDateTime(row.createdAt)}</span>
       ),
     },
     {

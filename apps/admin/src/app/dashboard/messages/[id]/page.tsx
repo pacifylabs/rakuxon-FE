@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { Button, PresenceDot, useToast } from '@rakuxon/ui';
+import { Button, PresenceDot, formatDateTime, useToast } from '@rakuxon/ui';
 import type { ConversationDetail } from '@rakuxon/contract';
 
 import { useAdminApiClient } from '@/lib/admin-auth';
@@ -108,8 +108,10 @@ export default function AdminConversationPage() {
                 }`}
               >
                 <p className="whitespace-pre-wrap text-sm">{message.body}</p>
-                <p className={`mt-1 text-xs ${mine ? 'text-on-primary opacity-80' : 'text-text-muted'}`}>
-                  {new Date(message.createdAt).toLocaleString()}
+                <p
+                  className={`mt-1 text-xs ${mine ? 'text-on-primary opacity-80' : 'text-text-muted'}`}
+                >
+                  {formatDateTime(message.createdAt)}
                 </p>
               </div>
             </li>

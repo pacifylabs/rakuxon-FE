@@ -192,6 +192,10 @@ export type MediaAssetList = Schemas['MediaAssetListDto'];
 export type CreateMediaAssetRequest = Schemas['CreateMediaAssetDto'];
 export type UpdateMediaAssetRequest = Schemas['UpdateMediaAssetDto'];
 
+export type AttendanceRecord = Schemas['AttendanceRecordDto'];
+export type AttendanceRecordList = Schemas['AttendanceRecordListDto'];
+export type TodayAttendance = Schemas['TodayAttendanceDto'];
+
 export type NotificationTemplateSummary = Schemas['NotificationTemplateSummaryDto'];
 export type NotificationTemplateDetail = Schemas['NotificationTemplateDetailDto'];
 export type UpdateNotificationTemplateRequest = Schemas['UpdateNotificationTemplateDto'];

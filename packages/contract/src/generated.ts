@@ -2935,6 +2935,91 @@ export interface paths {
         patch: operations["AdminMediaAssetsController_update_v1"];
         trace?: never;
     };
+    "/v1/admin/attendance/me/clock-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clock the caller in for today */
+        post: operations["AdminAttendanceController_clockIn_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/attendance/me/clock-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clock the caller out for today */
+        post: operations["AdminAttendanceController_clockOut_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/attendance/me/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's attendance record for today, if any */
+        get: operations["AdminAttendanceController_today_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/attendance/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's own attendance history */
+        get: operations["AdminAttendanceController_listMine_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every admin's clock-in/out log, filterable by admin and date range */
+        get: operations["AdminAttendanceController_list_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4728,6 +4813,28 @@ export interface components {
             title?: string;
             description?: string | null;
             category?: components["schemas"]["MediaAssetCategory"];
+        };
+        AttendanceRecordDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adminId: string;
+            adminName: string;
+            /** @example 2026-09-24 */
+            date: string;
+            /** Format: date-time */
+            clockInAt: string;
+            /** Format: date-time */
+            clockOutAt: string | null;
+        };
+        TodayAttendanceDto: {
+            record: components["schemas"]["AttendanceRecordDto"] | null;
+        };
+        AttendanceRecordListDto: {
+            items: components["schemas"]["AttendanceRecordDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
         };
     };
     responses: never;
@@ -9546,6 +9653,117 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MediaAssetDto"];
+                };
+            };
+        };
+    };
+    AdminAttendanceController_clockIn_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceRecordDto"];
+                };
+            };
+        };
+    };
+    AdminAttendanceController_clockOut_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceRecordDto"];
+                };
+            };
+        };
+    };
+    AdminAttendanceController_today_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodayAttendanceDto"];
+                };
+            };
+        };
+    };
+    AdminAttendanceController_listMine_v1: {
+        parameters: {
+            query?: {
+                adminId?: string;
+                /** @description Inclusive start date. */
+                from?: string;
+                /** @description Inclusive end date. */
+                to?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceRecordListDto"];
+                };
+            };
+        };
+    };
+    AdminAttendanceController_list_v1: {
+        parameters: {
+            query?: {
+                adminId?: string;
+                /** @description Inclusive start date. */
+                from?: string;
+                /** @description Inclusive end date. */
+                to?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceRecordListDto"];
                 };
             };
         };

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
+import { formatDateTime } from '@rakuxon/ui';
 import type { AuditLogEntry, ResourceAuditLog } from '@rakuxon/contract';
 
 const ACTOR_LABEL: Record<AuditLogEntry['actorType'], string> = {
@@ -60,11 +61,13 @@ export function HistoryPanel({ load }: { load: () => Promise<ResourceAuditLog> }
           {entries.map((entry) => (
             <li key={entry.id}>
               <p className="text-sm text-text">
-                <span className="font-semibold">{entry.actorName ?? ACTOR_LABEL[entry.actorType]}</span>{' '}
+                <span className="font-semibold">
+                  {entry.actorName ?? ACTOR_LABEL[entry.actorType]}
+                </span>{' '}
                 {entry.description}
               </p>
               <p className="mt-0.5 text-xs text-text-muted">
-                {ACTOR_LABEL[entry.actorType]} · {new Date(entry.createdAt).toLocaleString()}
+                {ACTOR_LABEL[entry.actorType]} · {formatDateTime(entry.createdAt)}
               </p>
             </li>
           ))}

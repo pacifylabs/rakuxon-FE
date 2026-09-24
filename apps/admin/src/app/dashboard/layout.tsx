@@ -5,6 +5,7 @@ import {
   Building2,
   BookOpen,
   CalendarDays,
+  Clock,
   Compass,
   FolderOpen,
   GraduationCap,
@@ -94,6 +95,7 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
     { href: '/dashboard/applications', label: 'Applications', icon: Users },
     { href: '/dashboard/students', label: 'Applicants', icon: GraduationCap },
     { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle },
+    { href: '/dashboard/attendance', label: 'Attendance', icon: Clock },
     {
       label: 'Admins',
       icon: Users,

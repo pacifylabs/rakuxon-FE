@@ -4,7 +4,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { ApplicationStatusBadge, Button, ConfirmDialog, StatusBadge, useToast } from '@rakuxon/ui';
+import {
+  ApplicationStatusBadge,
+  Button,
+  ConfirmDialog,
+  StatusBadge,
+  formatDateTime,
+  useToast,
+} from '@rakuxon/ui';
 import type { AdminApplicationDetail, AssignableAdmin, StudentDocument } from '@rakuxon/contract';
 
 import { AdminDocumentRow } from '@/components/dashboard/AdminDocumentRow';
@@ -267,12 +274,10 @@ function ApplicationDetail() {
               <dd className="mt-1 text-base text-text">{application.assignedAdminName ?? '—'}</dd>
             )}
           </div>
-          <Field label="Created" value={new Date(application.createdAt).toLocaleString()} />
+          <Field label="Created" value={formatDateTime(application.createdAt)} />
           <Field
             label="Submitted"
-            value={
-              application.submittedAt ? new Date(application.submittedAt).toLocaleString() : ''
-            }
+            value={application.submittedAt ? formatDateTime(application.submittedAt) : ''}
           />
         </dl>
       </div>
