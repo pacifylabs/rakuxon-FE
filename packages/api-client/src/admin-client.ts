@@ -52,10 +52,13 @@ import type {
   CreateDestinationRequest,
   CreateInstitutionRequest,
   CreateIntakeTermRequest,
+  CreateMediaAssetRequest,
   CreateServiceRequest,
   CreateTenantStaffRequest,
   CreateTestimonialRequest,
   DisableTotpRequest,
+  MediaAsset,
+  MediaAssetList,
   Notification,
   NotificationTemplateDetail,
   NotificationTemplatePreview,
@@ -81,6 +84,7 @@ import type {
   UpdateDestinationRequest,
   UpdateInstitutionRequest,
   UpdateIntakeTermRequest,
+  UpdateMediaAssetRequest,
   UpdateNotificationTemplateRequest,
   UpdateServiceRequest,
   UpdateSiteSettingsRequest,
@@ -484,6 +488,34 @@ export class AdminApiClient {
       method: 'POST',
       auth: true,
     });
+  }
+
+  /* ---------------------------------------------------------- media assets */
+
+  listMediaAssets(
+    query: { category?: string; q?: string; page?: number; limit?: number } = {},
+  ): Promise<MediaAssetList> {
+    return this.request<MediaAssetList>(`/v1/admin/media-assets${toQuery(query)}`, { auth: true });
+  }
+
+  getMediaAsset(id: string): Promise<MediaAsset> {
+    return this.request<MediaAsset>(`/v1/admin/media-assets/${id}`, { auth: true });
+  }
+
+  createMediaAsset(body: CreateMediaAssetRequest): Promise<MediaAsset> {
+    return this.request<MediaAsset>('/v1/admin/media-assets', { method: 'POST', body, auth: true });
+  }
+
+  updateMediaAsset(id: string, body: UpdateMediaAssetRequest): Promise<MediaAsset> {
+    return this.request<MediaAsset>(`/v1/admin/media-assets/${id}`, {
+      method: 'PATCH',
+      body,
+      auth: true,
+    });
+  }
+
+  deleteMediaAsset(id: string): Promise<void> {
+    return this.request<void>(`/v1/admin/media-assets/${id}`, { method: 'DELETE', auth: true });
   }
 
   /* ----------------------------------------------------------- destinations */

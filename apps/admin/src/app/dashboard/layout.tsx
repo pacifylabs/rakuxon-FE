@@ -6,6 +6,7 @@ import {
   BookOpen,
   CalendarDays,
   Compass,
+  FolderOpen,
   GraduationCap,
   Globe2,
   Landmark,
@@ -23,7 +24,11 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { AppShell, Wordmark } from '@rakuxon/ui';
-import type { AppShellConversationItem, AppShellNavItem, AppShellNotificationItem } from '@rakuxon/ui';
+import type {
+  AppShellConversationItem,
+  AppShellNavItem,
+  AppShellNotificationItem,
+} from '@rakuxon/ui';
 import type { ConversationSummary, Notification } from '@rakuxon/contract';
 
 import { RequirePermission, useAdminApiClient, useAdminAuth } from '@/lib/admin-auth';
@@ -70,11 +75,20 @@ function navItems(hasPermission: (key: string) => boolean): AppShellNavItem[] {
       label: 'Content',
       icon: MessageSquareQuote,
       children: [
-        { href: '/dashboard/content/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+        {
+          href: '/dashboard/content/testimonials',
+          label: 'Testimonials',
+          icon: MessageSquareQuote,
+        },
         { href: '/dashboard/content/services', label: 'Services', icon: Compass },
         { href: '/dashboard/content/destinations', label: 'Destinations', icon: Globe2 },
         { href: '/dashboard/content/site-settings', label: 'Site settings', icon: Settings },
-        { href: '/dashboard/content/notification-templates', label: 'Notification templates', icon: Bell },
+        {
+          href: '/dashboard/content/notification-templates',
+          label: 'Notification templates',
+          icon: Bell,
+        },
+        { href: '/dashboard/content/media', label: 'Media library', icon: FolderOpen },
       ],
     },
     { href: '/dashboard/applications', label: 'Applications', icon: Users },
@@ -229,7 +243,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           conversations
             ? {
                 items: conversations.map(toShellConversation),
-                unreadCount: conversations.reduce((sum, conversation) => sum + conversation.unreadCount, 0),
+                unreadCount: conversations.reduce(
+                  (sum, conversation) => sum + conversation.unreadCount,
+                  0,
+                ),
                 onOpen: handleOpenConversation,
                 href: '/dashboard/messages',
               }

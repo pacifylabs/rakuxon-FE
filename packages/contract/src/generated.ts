@@ -2896,6 +2896,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/media-assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Browse the media library, filterable by category */
+        get: operations["AdminMediaAssetsController_list_v1"];
+        put?: never;
+        /**
+         * Add a file to the media library
+         * @description The file itself goes through /admin/uploads/signature first — this saves the result's metadata.
+         */
+        post: operations["AdminMediaAssetsController_create_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/media-assets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminMediaAssetsController_get_v1"];
+        put?: never;
+        post?: never;
+        /** Remove a file from the library */
+        delete: operations["AdminMediaAssetsController_remove_v1"];
+        options?: never;
+        head?: never;
+        /** Edit a file's title, description or category */
+        patch: operations["AdminMediaAssetsController_update_v1"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4551,7 +4590,7 @@ export interface components {
         };
         AdminUploadSignatureRequestDto: {
             /** @enum {string} */
-            folder: "testimonials" | "institutions" | "articles" | "site-settings" | "destinations";
+            folder: "testimonials" | "institutions" | "articles" | "site-settings" | "destinations" | "media-assets";
         };
         AdminUploadSignatureDto: {
             cloudName: string;
@@ -4654,6 +4693,41 @@ export interface components {
             universities?: string[];
             helpPoints?: string[];
             displayOrder?: number;
+        };
+        /** @enum {string} */
+        MediaAssetCategory: "social_toolkit" | "brand_asset" | "design" | "other";
+        MediaAssetDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string | null;
+            category: components["schemas"]["MediaAssetCategory"];
+            fileUrl: string;
+            mimeType: string | null;
+            bytes: number | null;
+            uploadedByAdminName: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        MediaAssetListDto: {
+            items: components["schemas"]["MediaAssetDto"][];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
+        CreateMediaAssetDto: {
+            title: string;
+            description?: string;
+            category: components["schemas"]["MediaAssetCategory"];
+            fileUrl: string;
+            cloudinaryPublicId: string;
+            mimeType?: string;
+            bytes?: number;
+        };
+        UpdateMediaAssetDto: {
+            title?: string;
+            description?: string | null;
+            category?: components["schemas"]["MediaAssetCategory"];
         };
     };
     responses: never;
@@ -9359,6 +9433,119 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminDestinationSummaryDto"];
+                };
+            };
+        };
+    };
+    AdminMediaAssetsController_list_v1: {
+        parameters: {
+            query?: {
+                category?: components["schemas"]["MediaAssetCategory"];
+                /** @description Free text over the title and description. */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAssetListDto"];
+                };
+            };
+        };
+    };
+    AdminMediaAssetsController_create_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMediaAssetDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAssetDto"];
+                };
+            };
+        };
+    };
+    AdminMediaAssetsController_get_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAssetDto"];
+                };
+            };
+        };
+    };
+    AdminMediaAssetsController_remove_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminMediaAssetsController_update_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMediaAssetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAssetDto"];
                 };
             };
         };

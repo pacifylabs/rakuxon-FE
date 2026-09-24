@@ -186,6 +186,12 @@ export type AdminServiceDetail = Schemas['AdminServiceDetailDto'];
 export type CreateServiceRequest = Schemas['CreateServiceDto'];
 export type UpdateServiceRequest = Schemas['UpdateServiceDto'];
 
+export type MediaAssetCategory = Schemas['MediaAssetCategory'];
+export type MediaAsset = Schemas['MediaAssetDto'];
+export type MediaAssetList = Schemas['MediaAssetListDto'];
+export type CreateMediaAssetRequest = Schemas['CreateMediaAssetDto'];
+export type UpdateMediaAssetRequest = Schemas['UpdateMediaAssetDto'];
+
 export type NotificationTemplateSummary = Schemas['NotificationTemplateSummaryDto'];
 export type NotificationTemplateDetail = Schemas['NotificationTemplateDetailDto'];
 export type UpdateNotificationTemplateRequest = Schemas['UpdateNotificationTemplateDto'];
