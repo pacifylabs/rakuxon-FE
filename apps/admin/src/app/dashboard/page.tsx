@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 
 import { ApiError, NetworkError } from '@rakuxon/api-client';
-import { BarChart, PieChart } from '@rakuxon/ui';
+import { BarChart, PieChart, StatChip } from '@rakuxon/ui';
 import type { AdminDashboardSummary } from '@rakuxon/contract';
 
 import { HealthBadge } from '@/components/HealthBadge';
@@ -26,8 +26,8 @@ function labelFor(key: string): string {
   return STATUS_LABELS[key] ?? key;
 }
 
-function StatCard({
-  icon: Icon,
+function StatLink({
+  icon,
   label,
   value,
   href,
@@ -40,13 +40,9 @@ function StatCard({
   return (
     <a
       href={href}
-      className="flex flex-col gap-3 rounded-md border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
+      className="rounded-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
     >
-      <span className="grid size-10 place-items-center rounded-sm bg-accent-soft text-primary">
-        <Icon aria-hidden="true" className="size-5" />
-      </span>
-      <p className="font-heading text-3xl font-bold text-text">{value}</p>
-      <p className="text-sm text-text-muted">{label}</p>
+      <StatChip icon={icon} value={String(value)} label={label} />
     </a>
   );
 }
@@ -100,38 +96,38 @@ function DashboardHome() {
 
       {summary && (
         <>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <StatCard
+          <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
+            <StatLink
               icon={ShieldCheck}
               label="Partners"
               value={summary.totalTenants}
               href="/dashboard/tenants"
             />
-            <StatCard
+            <StatLink
               icon={Landmark}
               label="Institutions"
               value={summary.totalInstitutions}
               href="/dashboard/catalogue/institutions"
             />
-            <StatCard
+            <StatLink
               icon={GraduationCap}
               label="Courses"
               value={summary.totalCourses}
               href="/dashboard/catalogue/courses"
             />
-            <StatCard
+            <StatLink
               icon={BookOpen}
               label="Articles"
               value={summary.totalArticles}
               href="/dashboard/catalogue/articles"
             />
-            <StatCard
+            <StatLink
               icon={Users}
               label="Applicants"
               value={summary.totalStudents}
               href="/dashboard/students"
             />
-            <StatCard
+            <StatLink
               icon={FileStack}
               label="Applications"
               value={summary.totalApplications}
@@ -139,8 +135,8 @@ function DashboardHome() {
             />
           </div>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-2">
-            <div className="rounded-md border border-border bg-surface p-6">
+          <div className="mt-12 grid gap-8 lg:grid-cols-2">
+            <div>
               <h2 className="font-heading text-lg font-semibold text-text">
                 Applications by status
               </h2>
@@ -154,7 +150,7 @@ function DashboardHome() {
               </div>
             </div>
 
-            <div className="rounded-md border border-border bg-surface p-6">
+            <div>
               <h2 className="font-heading text-lg font-semibold text-text">
                 Student profile completion
               </h2>
@@ -168,7 +164,7 @@ function DashboardHome() {
               </div>
             </div>
 
-            <div className="rounded-md border border-border bg-surface p-6">
+            <div>
               <h2 className="font-heading text-lg font-semibold text-text">Partners by status</h2>
               <div className="mt-6">
                 <BarChart
@@ -180,7 +176,7 @@ function DashboardHome() {
               </div>
             </div>
 
-            <div className="rounded-md border border-border bg-surface p-6">
+            <div>
               <h2 className="font-heading text-lg font-semibold text-text">
                 Institutions by status
               </h2>
